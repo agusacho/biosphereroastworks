@@ -618,21 +618,32 @@
             <h4 class="mb-2" style="font-size: 1rem; color: var(--text-muted);">Pilih Metode Pembayaran</h4>
             
             <div class="payment-methods">
-                <!-- Virtual Account -->
-                <div class="payment-option" onclick="selectPaymentMethod('BCA Virtual Account', this)">
-                    <i class="fa-solid fa-building-columns" style="color: #0066AE;"></i>
-                    <div style="flex-grow: 1;">
-                        <strong style="display: block;">BCA Virtual Account</strong>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Verifikasi Otomatis</span>
-                    </div>
-                </div>
-                <div class="payment-option" onclick="selectPaymentMethod('Mandiri Virtual Account', this)">
-                    <i class="fa-solid fa-building-columns" style="color: #F2A900;"></i>
-                    <div style="flex-grow: 1;">
-                        <strong style="display: block;">Mandiri Virtual Account</strong>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Verifikasi Otomatis</span>
-                    </div>
-                </div>
+               <h4 class="mb-2" style="font-size: 1rem; color: var(--text-muted);">Pilih Metode Pembayaran</h4>
+<div class="payment-methods">
+    <div class="payment-option" onclick="selectPaymentMethod('BCA Virtual Account', this)">
+        <i class="fa-solid fa-building-columns" style="color: #0066AE;"></i>
+        <div style="flex-grow: 1;">
+            <strong style="display: block;">BCA Virtual Account</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Verifikasi Otomatis</span>
+        </div>
+    </div>
+
+    <div class="payment-option" onclick="selectPaymentMethod('Mandiri Virtual Account', this)">
+        <i class="fa-solid fa-building-columns" style="color: #003D79;"></i>
+        <div style="flex-grow: 1;">
+            <strong style="display: block;">Mandiri Virtual Account</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Verifikasi Otomatis</span>
+        </div>
+    </div>
+
+    <div class="payment-option" onclick="selectPaymentMethod('QRIS', this)">
+        <i class="fa-solid fa-qrcode" style="color: #E65100;"></i>
+        <div style="flex-grow: 1;">
+            <strong style="display: block;">QRIS (Gopay, OVO, Dana, dll)</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Scan QR Code</span>
+        </div>
+    </div>
+</div>
 
                 <!-- E-Wallet -->
                 <div class="payment-option" onclick="selectPaymentMethod('GoPay', this)">
@@ -1491,6 +1502,56 @@
             updateCartBadge();
             document.getElementById('filterOrigin').style.display = 'block'; 
             document.getElementById('filterProcess').style.display = 'block';
+
+            /* --- LOGIKA CHECKOUT & PEMBAYARAN --- */
+let selectedPaymentMethod = '';
+
+// Fungsi untuk memilih metode pembayaran
+function selectPaymentMethod(method, element) {
+    selectedPaymentMethod = method;
+    
+    // Hapus styling aktif (class 'selected') dari semua opsi
+    const options = document.querySelectorAll('.payment-option');
+    options.forEach(opt => {
+        opt.style.borderColor = 'var(--border)';
+        opt.style.backgroundColor = 'var(--surface)';
+        opt.classList.remove('selected');
+    });
+    
+    // Tambahkan styling aktif pada metode yang dipilih saat ini
+    element.style.borderColor = 'var(--accent)';
+    element.style.backgroundColor = 'rgba(212, 175, 55, 0.1)';
+    element.classList.add('selected');
+}
+
+// Fungsi untuk memproses pembayaran
+function processPayment() {
+    if (!selectedPaymentMethod) {
+        alert('Silakan pilih metode pembayaran terlebih dahulu!');
+        return;
+    }
+    
+    showLoader(); // Menampilkan animasi loading
+    
+    // Simulasi proses API checkout
+    setTimeout(() => {
+        hideLoader(); // Menyembunyikan animasi loading
+        
+        if (selectedPaymentMethod === 'QRIS') {
+            alert(`Pesanan berhasil dibuat! Silakan scan kode QRIS yang muncul untuk menyelesaikan pembayaran Anda.`);
+            // Catatan: Arahkan pengguna ke halaman QR Code / Tampilkan Modal QR Code di sini
+        } else {
+            alert(`Pesanan berhasil dibuat! Silakan selesaikan tagihan melalui ${selectedPaymentMethod}.`);
+        }
+        
+        // Reset keranjang belanja setelah berhasil
+        cart = [];
+        saveCart();
+        renderCart();
+        closeModal('paymentModal'); 
+        updateCartBadge();
+    }, 1500);
+}
         });
 
     </script>
