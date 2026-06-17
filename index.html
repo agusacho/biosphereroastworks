@@ -1412,13 +1412,14 @@
 
             const total = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
             
-            // Data untuk disimpan di database
+            // PERBAIKAN PENTING UNTUK SUPABASE:
+            // - items di-stringify agar aman disimpan sebagai teks (menghindari error array JSON).
+            // - properti created_at dihapus agar Supabase yang otomatis menambahkan waktunya.
             const orderData = {
-                items: cart,
+                items: JSON.stringify(cart), 
                 total_price: total,
                 payment_method: selectedPaymentMethod,
-                status: 'paid', // Kita asumsikan pembayaran simulasi langsung berhasil (Paid)
-                created_at: new Date().toISOString()
+                status: 'paid'
             };
 
             // 2. Simpan ke Supabase jika terhubung
@@ -1428,7 +1429,11 @@
                     if (error) throw error;
                 } catch (err) {
                     console.error("Error Checkout to Supabase:", err);
-                    alert("Maaf, terjadi kesalahan saat menyimpan detail pesanan ke sistem.");
+                    
+                    // Menampilkan pesan error ASLI dari Supabase ke layar agar mudah di-debug (diperbaiki)
+                    const errorMessage = err.message || "Error tidak diketahui";
+                    alert(`GAGAL MENYIMPAN KE DATABASE!\n\nAlasan dari Supabase:\n"${errorMessage}"\n\nSaran Perbaikan di Supabase Anda:\n1. Pastikan tabel 'orders' sudah ada.\n2. Pastikan RLS (Row Level Security) untuk tabel 'orders' sudah di-disable, ATAU Anda sudah menambahkan "Insert Policy" untuk publik.\n3. Pastikan kolom yang ada: items (text/jsonb), total_price (int8/numeric), payment_method (text), status (text).`);
+                    
                     hideLoader();
                     return;
                 }
@@ -1472,7 +1477,8 @@
                 e.target.reset();
             } catch (err) {
                 console.error("Error Send Contact:", err);
-                alert("Maaf, gagal mengirim pesan Anda.");
+                const errorMessage = err.message || "Error tidak diketahui";
+                alert(`GAGAL MENGIRIM PESAN!\n\nAlasan dari Supabase:\n"${errorMessage}"\n\nPastikan RLS sudah di-disable pada tabel 'contacts'.`);
             } finally {
                 hideLoader();
                 document.getElementById('btnSubmitContact').disabled = false;
