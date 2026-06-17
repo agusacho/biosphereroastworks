@@ -15,6 +15,9 @@
 
     <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript"
+  src="https://app.sandbox.midtrans.com/snap/snap.js"
+  data-client-key="MASUKKAN_CLIENT_KEY_SANDBOX_ANDA"></script>
 
     <style>
         /* ==========================================================================
@@ -1525,34 +1528,89 @@ function selectPaymentMethod(method, element) {
 }
 
 // Fungsi untuk memproses pembayaran
-function processPayment() {
+async function processPayment() {
     if (!selectedPaymentMethod) {
         alert('Silakan pilih metode pembayaran terlebih dahulu!');
         return;
     }
     
-    showLoader(); // Menampilkan animasi loading
+    showLoader(); 
+    const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const orderId = 'ORD-' + Math.floor(Math.random() * 1000000) + '-' + Date.now();
     
-    // Simulasi proses API checkout
-    setTimeout(() => {
-        hideLoader(); // Menyembunyikan animasi loading
-        
-        if (selectedPaymentMethod === 'QRIS') {
-            alert(`Pesanan berhasil dibuat! Silakan scan kode QRIS yang muncul untuk menyelesaikan pembayaran Anda.`);
-            // Catatan: Arahkan pengguna ke halaman QR Code / Tampilkan Modal QR Code di sini
-        } else {
-            alert(`Pesanan berhasil dibuat! Silakan selesaikan tagihan melalui ${selectedPaymentMethod}.`);
-        }
-        
-        // Reset keranjang belanja setelah berhasil
-        cart = [];
-        saveCart();
-        renderCart();
-        closeModal('paymentModal'); 
-        updateCartBadge();
-    }, 1500);
-}
+    try {
+        // 1. Simpan data pesanan awal ke Supabase dengan status 'pending'
+        const { data, error } = await _supabase
+            .from('orders')
+            .insert([
+                { 
+                    order_id: orderId,
+                    total_price: total,
+                    payment_method: selectedPaymentMethod,
+                    status: 'pending' 
+                }
+            ]);
+
+        if (error) throw error;
+
+        // 2. Ambil Snap Token dari Jembatan Backend (Supabase Edge Function)
+        // Kita mengirim info order_id, total harga, dan pilihan metode ke backend
+        const response = await fetch('https://XYZ_PROJECT_ID_ANDA.supabase.co/functions/v1/generate-snap-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + _supabase.supabaseKey // Menggunakan token anon Supabase Anda
+            },
+            body: JSON.stringify({
+                order_id: orderId,
+                gross_amount: total,
+                payment_type: selectedPaymentMethod // 'Mandiri Virtual Account' atau 'QRIS'
+            })
         });
+
+        if (!response.ok) throw new Error("Gagal mengambil token pembayaran dari server.");
+        
+        const resultToken = await response.json();
+        const snapToken = resultToken.token;
+
+        // 3. Panggil Pop-up Autentikasi Pembayaran Midtrans Snap
+        window.snap.pay(snapToken, {
+            onSuccess: function(result) {
+                /* Fungsi ini berjalan jika user langsung menyelesaikan pembayaran di pop-up */
+                alert("Pembayaran Berhasil Diverifikasi! Terima kasih.");
+                console.log(result);
+                
+                // Kosongkan keranjang belanja
+                cart = [];
+                saveCart();
+                renderCart();
+                closeModal('paymentModal'); 
+                updateCartBadge();
+            },
+            onPending: function(result) {
+                /* Fungsi jika nomor VA/QRIS sudah muncul, tapi user belum bayar (masih pending) */
+                alert("Instruksi pembayaran telah dibuat. Silakan selesaikan pembayaran Anda sebelum kedaluwarsa.");
+                console.log(result);
+                closeModal('paymentModal');
+            },
+            onError: function(result) {
+                /* Fungsi jika transaksi gagal atau ditolak bank */
+                alert("Pembayaran Gagal! Silakan coba kembali.");
+                console.log(result);
+            },
+            onClose: function() {
+                /* Fungsi jika user menutup pop-up sebelum membayar */
+                alert('Anda menutup halaman pembayaran sebelum menyelesaikan transaksi.');
+            }
+        });
+
+    } catch (err) {
+        console.error("Error Sistem Pembayaran:", err);
+        alert(`Terjadi kesalahan: ${err.message}`);
+    } finally {
+        hideLoader();
+    }
+}
 
     </script>
 </body>
