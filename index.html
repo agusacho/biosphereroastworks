@@ -744,74 +744,51 @@
         </section>
 
         <!-- SECTION: Produk -->
-        <section id="Produk" class="section-padding" style="background-color: var(--bg-color);">
-            <div class="container">
-                <div class="text-center mb-8">
-                    <h2>Koleksi Biosphere</h2>
-                    <p>Pilih dari biji hijau, biji sangrai, atau minuman siap saji kami.</p>
-                </div>
+      <section id="shop" class="section-padding">
+    <div class="container">
+        <div class="text-center mb-8">
+            <h2>Koleksi Produk Kami</h2>
+            <p>Eksplorasi rasa dari biji kopi pilihan dan minuman segar kami.</p>
+        </div>
 
-                <button class="btn btn-outline mobile-filter-btn" onclick="toggleSidebar()">
-                    <i class="fa-solid fa-filter"></i> Filter Produk
+        <div class="shop-layout">
+            <aside class="sidebar">
+                <button class="btn btn-primary mobile-filter-btn" id="btnToggleFilter">
+                    <i class="fas fa-filter"></i> Filter
                 </button>
+                <div class="filter-group">
+                    <h4>Kategori</h4>
+                    <label class="filter-label">
+                        <input type="radio" name="kategori" value="semua" checked> Semua Produk
+                    </label>
+                    <label class="filter-label">
+                        <input type="radio" name="kategori" value="Minuman Kopi"> Minuman Kopi
+                    </label>
+                    <label class="filter-label">
+                        <input type="radio" name="kategori" value="roasted-bean"> Roasted Bean
+                    </label>
+                </div>
+            </aside>
 
-                <div class="shop-layout">
-                    <!-- Sidebar Filters -->
-                    <aside class="sidebar" id="filterSidebar">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3>Filter</h3>
-                            <button class="close-btn" style="display: none;" id="closeSidebarBtn" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <h4>Kategori</h4>
-                            <label class="filter-label"><input type="radio" name="category" value="all" checked> Semua</label>
-                            <label class="filter-label"><input type="radio" name="category" value="green"> Green Bean</label>
-                            <label class="filter-label"><input type="radio" name="category" value="roasted"> Roasted Bean</label>
-                            <label class="filter-label"><input type="radio" name="category" value="drink"> Minuman Kopi</label>
-                        </div>
-
-                        <div class="filter-group" id="filterOrigin" style="display: none;">
-                            <h4>Asal (Origin)</h4>
-                            <label class="filter-label"><input type="checkbox" value="Ciwidey" class="filter-origin"> Ciwidey</label>
-                            <label class="filter-label"><input type="checkbox" value="Kamojang" class="filter-origin"> Kamojang</label>
-                            <label class="filter-label"><input type="checkbox" value="Garut" class="filter-origin"> Garut</label>
-                            <label class="filter-label"><input type="checkbox" value="Toraja" class="filter-origin"> Toraja</label>
-                        </div>
-
-                        <div class="filter-group" id="filterProcess" style="display: none;">
-                            <h4>Proses</h4>
-                            <label class="filter-label"><input type="checkbox" value="Natural" class="filter-process"> Natural</label>
-                            <label class="filter-label"><input type="checkbox" value="Washed" class="filter-process"> Washed</label>
-                            <label class="filter-label"><input type="checkbox" value="Honey" class="filter-process"> Honey</label>
-                            <label class="filter-label"><input type="checkbox" value="Anaerob" class="filter-process"> Anaerob</label>
-                        </div>
-
-                        <button class="btn btn-outline" style="width: 100%;" onclick="resetFilters()">Reset Filter</button>
-                    </aside>
-
-                    <!-- Main Product Area -->
-                    <div class="shop-main">
-                        <div class="shop-header">
-                            <p><strong id="productCount">0</strong> produk ditampilkan</p>
-                            <div class="search-sort">
-                                <input type="text" id="searchInput" class="form-control" placeholder="Cari kopi..." style="max-width: 200px;">
-                                <select id="sortSelect" class="form-control" style="max-width: 180px;">
-                                    <option value="default">Urutkan</option>
-                                    <option value="price-asc">Harga Terendah</option>
-                                    <option value="price-desc">Harga Tertinggi</option>
-                                    <option value="rating">Rating Tertinggi</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="product-grid" id="productGrid">
-                            <!-- Products injected via JS -->
-                        </div>
+            <main>
+                <div class="shop-header">
+                    <p>Menampilkan <span id="productCount">0</span> produk</p>
+                    <div class="search-sort">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Cari nama produk...">
+                        <select class="form-control" id="sortSelect">
+                            <option value="terbaru">Terbaru</option>
+                            <option value="termurah">Termurah</option>
+                            <option value="termahal">Termahal</option>
+                        </select>
                     </div>
                 </div>
-            </div>
-        </section>
+
+                <div class="product-grid" id="productGrid">
+                    </div>
+            </main>
+        </div>
+    </div>
+</section>
 
         <!-- SECTION: TENTANG KAMI -->
         <section id="tentang" class="section-padding" style="background-color: var(--surface);">
