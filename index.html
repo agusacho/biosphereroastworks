@@ -1005,35 +1005,85 @@
         };
 
         /* --- 5. INITIALIZE DATA --- */
-        async function fetchProducts() {
-            if(!isSupabaseConfigured) {
-                renderProducts(currentFilteredProducts);
-                return;
-            }
-            
-            try {
-                showLoader();
-                const { data, error } = await _supabase.from('products').select('*');
-                if (error) throw error;
-                
-                if (data && data.length > 0) {
-                    productsDB = data.map(item => {
-                        let parsedVariants = item.variants;
-                        if (typeof item.variants === 'string') {
-                            try { parsedVariants = JSON.parse(item.variants); } catch(e) { parsedVariants = []; }
-                        }
-                        return { ...item, id: String(item.id), variants: parsedVariants };
-                    });
-                    currentFilteredProducts = [...productsDB];
-                }
-            } catch (err) {
-                console.error("Gagal menarik data dari Supabase.", err);
-            } finally {
-                renderProducts(currentFilteredProducts);
-                hideLoader();
-            }
+       function renderProducts(products) {
+    const productGrid = document.getElementById('productGrid');
+    productGrid.innerHTML = '';
+
+    products.forEach(product => {
+        // Menyesuaikan warna badge dengan nilai 'category' dari Supabase
+        let badgeClass = 'badge-green';
+        if (product.category === 'roasted-bean') {
+            badgeClass = 'badge-roasted';
+        } else if (product.category === 'Minuman Kopi') {
+            badgeClass = 'badge-drink';
         }
 
+        // Format angka ke format Rupiah
+        const formattedPrice = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(product.price);
+
+        // Render card
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        card.innerHTML = `
+            <div class="product-img-wrapper">
+                <span class="category-badge ${badgeClass}">${product.category}</span>
+                <div class="img-placeholder" style="font-size: 5rem; height: 100%;">
+                    ${product.image_icon}
+                </div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">${product.name}</h3>
+                
+                <p class="product-rating" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">
+                    ${product.description}
+                </p>
+                
+                <div class="product-price">${formattedPrice}</div>
+                
+                <p style="font-size: 0.8rem; font-weight: bold; color: ${product.stock_quantity > 0 ? 'var(--success)' : 'var(--danger)'}; margin-bottom: 12px;">
+                    ${product.stock_quantity > 0 ? `Stok: ${product.stock_quantity}` : 'Stok Habis'}
+                </p>
+                
+                <div class="product-actions">
+                    <button class="btn btn-outline" onclick="viewDetail(${product.id})">Detail</button>
+                    <button class="btn btn-primary" ${product.stock_quantity <= 0 ? 'disabled' : ''} 
+                            onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.image_icon}')">
+                        <i class="fas fa-shopping-cart"></i> ${product.stock_quantity > 0 ? 'Beli' : 'Habis'}
+                    </button>
+                </div>
+            </div>
+        `;
+        productGrid.appendChild(card);
+    });
+
+    // Perbarui counter jumlah produk di bagian header katalog
+    const countElement = document.getElementById('productCount');
+    if(countElement) countElement.innerText = products.length;
+}
+
+/* --- FUNGSI FETCH PRODUK DARI SUPABASE --- */
+async function fetchProducts() {
+    try {
+        // Asumsi nama tabel di Supabase adalah 'products'
+        const { data: products, error } = await _supabase
+            .from('products') 
+            .select('id, name, description, price, image_icon, category, stock_quantity, created_at')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        
+        // Render ke antarmuka pengguna
+        renderProducts(products);
+
+    } catch (err) {
+        console.error("Error mengambil data produk:", err);
+    }
+}
         /* --- 6. UI INTERACTION --- */
         window.addEventListener('scroll', () => {
             const header = document.querySelector('header');
