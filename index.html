@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -21,7 +22,7 @@
 
     <style>
         /* ==========================================================================
-           1. CSS VARIABLES & RESET (TEMA TOSCA & EMAS METALIK)
+           1. CSS VARIABLES & RESET (TEMA PUTIH & EMAS METALIK)
            ========================================================================== */
         :root {
             /* Warna Dasar */
@@ -39,7 +40,7 @@
             --border: #D1D8D6;
             
             /* Gradient Metalik */
-            --metallic-tosca: linear-gradient(135deg, #053330 0%, #168782 45%, #20B2AA 50%, #168782 55%, #053330 100%);
+            --metallic-white: linear-gradient(135deg, #D1D8D6 0%, #FFFFFF 45%, #F8F9F9 50%, #FFFFFF 55%, #D1D8D6 100%);
             --metallic-gold: linear-gradient(135deg, #997A15 0%, #E6C238 40%, #FFF5C3 50%, #E6C238 60%, #997A15 100%);
             
             /* Shadow & Utility */
@@ -111,14 +112,16 @@
         }
         
         .btn-primary {
-            background-image: var(--metallic-tosca);
-            color: var(--surface);
-            box-shadow: 0 4px 15px rgba(22, 135, 130, 0.3);
+            background-image: var(--metallic-white);
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(209, 216, 214, 0.5);
+            border: 1px solid var(--border);
         }
         .btn-primary:hover { 
             background-position: right center; 
-            box-shadow: 0 6px 20px rgba(22, 135, 130, 0.5);
+            box-shadow: 0 6px 20px rgba(209, 216, 214, 0.8);
             transform: translateY(-2px);
+            border-color: var(--primary);
         }
         
         .btn-accent {
@@ -138,9 +141,8 @@
             color: var(--primary);
         }
         .btn-outline:hover {
-            background-image: var(--metallic-tosca);
-            color: var(--surface);
-            border-color: transparent;
+            background-image: var(--metallic-white);
+            color: var(--primary);
         }
 
         /* Forms */
@@ -164,14 +166,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--metallic-tosca);
-            color: rgba(255,255,255,0.9);
+            background: var(--metallic-white);
+            color: var(--primary);
             font-family: var(--font-heading);
             font-style: italic;
             text-align: center;
             padding: 20px;
             background-size: 200% auto;
             animation: gradientMove 5s ease infinite alternate;
+            border: 1px solid var(--border);
         }
         
         @keyframes gradientMove {
@@ -314,7 +317,10 @@
             z-index: 1;
         }
 
-        .slide:nth-child(1) { background-image: var(--metallic-tosca); }
+        .slide:nth-child(1) { background-image: var(--metallic-white); }
+        /* Lighten overlay for the white metallic slide to make it pop */
+        .slide:nth-child(1)::before { background: rgba(255, 255, 255, 0.6); }
+        
         .slide:nth-child(2) { background-image: linear-gradient(135deg, #0A2624, #168782); }
         .slide:nth-child(3) { background-image: var(--metallic-gold); }
 
@@ -325,6 +331,12 @@
             color: var(--surface);
             padding: 0 20px;
             max-width: 800px;
+        }
+
+        .slide:nth-child(1) .slide-content h2,
+        .slide:nth-child(1) .slide-content p {
+            color: var(--primary);
+            text-shadow: none;
         }
 
         .slide-content h2 {
@@ -455,7 +467,7 @@
             text-transform: uppercase;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .badge-green { background-image: var(--metallic-tosca); }  
+        .badge-green { background-image: var(--metallic-white); color: var(--primary); border: 1px solid var(--border); }  
         .badge-roasted { background-image: var(--metallic-gold); color: var(--primary); }  
         .Minuman Kopi { background-color: #0A2624; }  
 
@@ -486,7 +498,7 @@
 
         .roast-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
         .roast-table th, .roast-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); }
-        .roast-table th { background-image: var(--metallic-tosca); color: var(--surface); font-family: var(--font-heading); }
+        .roast-table th { background-image: var(--metallic-white); color: var(--primary); font-family: var(--font-heading); border-bottom: 2px solid var(--primary); }
         
         .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
         .blog-card { background: var(--surface); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); cursor: pointer; transition: var(--transition); }
@@ -496,8 +508,8 @@
         .blog-date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; display: block; }
         
         .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        .contact-info { background-image: var(--metallic-tosca); color: var(--surface); padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
-        .contact-info h3 { color: var(--accent); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .contact-info { background-image: var(--metallic-white); color: var(--text-main); padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
+        .contact-info h3 { color: var(--primary); text-shadow: none; }
         .info-item { display: flex; gap: 16px; margin-bottom: 24px; }
         .info-item i { color: var(--accent); font-size: 1.5rem; }
 
@@ -542,7 +554,7 @@
         .variant-selector { margin-bottom: 20px; }
         
         .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background-image: var(--metallic-tosca); color: var(--surface); padding: 12px 24px; border-radius: var(--radius); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.3s ease; border-left: 4px solid var(--accent); }
+        .toast { background-image: var(--metallic-white); color: var(--primary); padding: 12px 24px; border-radius: var(--radius); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.3s ease; border-left: 4px solid var(--accent); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
         .toast.show { transform: translateX(0); }
         .toast i { color: var(--accent); }
 
@@ -971,7 +983,7 @@
 
         /* --- 2. DATA PRODUK (Fallback jika Database Kosong) --- */
         let productsDB = [
-            { id: '1', name: 'Ciwidey Arabica Bio-Natural', category: 'green', origin: 'Ciwidey', process: 'Natural', price: 95000, rating: 4.8, notes: 'Fruity, Jackfruit hints', imageStyle: 'var(--metallic-tosca)' },
+            { id: '1', name: 'Ciwidey Arabica Bio-Natural', category: 'green', origin: 'Ciwidey', process: 'Natural', price: 95000, rating: 4.8, notes: 'Fruity, Jackfruit hints', imageStyle: 'var(--metallic-white)' },
             { id: '2', name: 'Kamojang Vinoso', category: 'roasted', origin: 'Kamojang', process: 'Anaerob', type: 'Experimental', notes: 'Grape, Wine', rating: 5.0, imageStyle: 'var(--metallic-gold)',
               variants: [ { name: '100 gram', price: 59900 }, { name: '200 gram', price: 114500 } ] }
         ];
@@ -1189,7 +1201,7 @@ async function fetchProducts() {
                 const priceStr = isVariant ? `Mulai ${formatRupiah(basePrice)}` : formatRupiah(basePrice);
                 
                 // Selang-seling warna placeholder jika tidak diset dari DB
-                const defaultImageStyle = index % 2 === 0 ? 'var(--metallic-tosca)' : 'var(--metallic-gold)';
+                const defaultImageStyle = index % 2 === 0 ? 'var(--metallic-white)' : 'var(--metallic-gold)';
 
                 const card = document.createElement('div');
                 card.className = 'product-card';
@@ -1301,7 +1313,7 @@ async function fetchProducts() {
             const modalBody = document.getElementById('productModalBody');
             modalBody.innerHTML = `
                 <div class="product-detail-layout">
-                    <div class="product-detail-img img-placeholder" style="background: ${p.imageStyle || 'var(--metallic-tosca)'}; font-size: 2rem;">
+                    <div class="product-detail-img img-placeholder" style="background: ${p.imageStyle || 'var(--metallic-white)'}; font-size: 2rem;">
                         ${p.name ? p.name.split(' ')[0] : 'Kopi'}
                     </div>
                     <div class="product-detail-info">
@@ -1374,7 +1386,7 @@ async function fetchProducts() {
                 variantName: 'Default',
                 price: Number(p.price || 0),
                 qty: 1,
-                imageStyle: p.imageStyle || 'var(--metallic-tosca)'
+                imageStyle: p.imageStyle || 'var(--metallic-white)'
             });
         };
 
@@ -1397,7 +1409,7 @@ async function fetchProducts() {
                 variantName: variantName,
                 price: price,
                 qty: qty,
-                imageStyle: currentModalProduct.imageStyle || 'var(--metallic-tosca)'
+                imageStyle: currentModalProduct.imageStyle || 'var(--metallic-white)'
             });
 
             closeModal('productModal');
@@ -1591,3 +1603,5 @@ async function fetchProducts() {
     </script>
 </body>
 </html>
+
+```
