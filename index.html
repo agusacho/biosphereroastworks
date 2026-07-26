@@ -1606,41 +1606,60 @@ async function fetchProducts() {
 
             showLoader();
 
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            const total = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
-            
-            const orderData = {
-                items: JSON.stringify(cart), 
-                total_price: total,
-                payment_method: selectedPaymentMethod,
-                status: 'paid'
+            // Kumpulkan data order
+            const payload = {
+                cart: cart,
+                customer: {
+                    name: currentUser ? (currentUser.user_metadata?.name || 'User') : 'Guest',
+                    email: currentUser ? currentUser.email : 'guest@example.com'
+                },
+                paymentMethod: selectedPaymentMethod
             };
 
-            if(isSupabaseConfigured) {
-                try {
-                    const { error } = await _supabase.from('orders').insert([orderData]);
-                    if (error) throw error;
-                } catch (err) {
-                    console.error("Error Checkout to Supabase:", err);
-                    const errorMessage = err.message || "Error tidak diketahui";
-                    alert(`GAGAL MENYIMPAN KE DATABASE!nnAlasan dari Supabase:n"${errorMessage}"nnSaran Perbaikan di Supabase Anda:n1. Pastikan tabel 'orders' sudah ada.n2. Pastikan RLS (Row Level Security) untuk tabel 'orders' sudah di-disable, ATAU Anda sudah menambahkan "Insert Policy" untuk publik.n3. Pastikan kolom yang ada: items (text/jsonb), total_price (int8/numeric), payment_method (text), status (text).`);
-                    
-                    hideLoader();
-                    return;
+            try {
+                // Panggil Backend API Vercel Serverless Function
+                const response = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Terjadi kesalahan saat memproses pembayaran');
                 }
-            } else {
-                console.log("Simulasi Offline: Order berhasil dibayar, namun tidak tersimpan di database eksternal.");
+
+                hideLoader();
+                closeModal('paymentModal');
+
+                // Panggil Pop-up Midtrans Snap
+                window.snap.pay(data.token, {
+                    onSuccess: function(result){
+                        alert("Pembayaran berhasil! Pesanan Anda akan segera diproses.");
+                        cart = [];
+                        saveCart();
+                        renderCart();
+                    },
+                    onPending: function(result){
+                        alert("Menunggu pembayaran Anda!");
+                        cart = [];
+                        saveCart();
+                        renderCart();
+                    },
+                    onError: function(result){
+                        alert("Pembayaran gagal!");
+                    },
+                    onClose: function(){
+                        alert('Anda menutup popup tanpa menyelesaikan pembayaran');
+                    }
+                });
+
+            } catch (err) {
+                console.error("Checkout Error:", err);
+                alert(`Gagal memproses pembayaran:\n${err.message}`);
+                hideLoader();
             }
-
-            hideLoader();
-            closeModal('paymentModal');
-
-            alert(`✅ PEMBAYARAN BERHASIL!nnMetode: ${selectedPaymentMethod}nTotal Dibayar: ${formatRupiah(total)}nnTerima kasih telah berbelanja di Biosphere Roast Works. Pesanan Anda akan segera diproses.`);
-
-            cart = [];
-            saveCart();
-            renderCart();
         }
 
         /* --- 11. CONTACT FORM LOGIC --- */
