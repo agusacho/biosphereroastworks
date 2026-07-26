@@ -1110,3 +1110,26 @@
     }
 }
 
+
+/* --- LOGO IMAGE IN NAVBAR --- */
+.nav-logo-img {
+    height: 48px;
+    width: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(15, 91, 88, 0.2);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+.logo:hover .nav-logo-img {
+    transform: rotate(10deg) scale(1.1);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+    border-color: var(--accent);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
