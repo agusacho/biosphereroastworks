@@ -838,3 +838,20 @@ async function fetchProducts() {
                 btn.disabled = false;
             }
         }
+
+        /* --- 14. CATEGORY FILTERING --- */
+        window.filterCategory = function(category) {
+            const secMinuman = document.getElementById('section-minuman');
+            const secRoasted = document.getElementById('section-roasted');
+            
+            if(category === 'all') {
+                if(secMinuman) secMinuman.style.display = 'block';
+                if(secRoasted) secRoasted.style.display = 'block';
+            } else if(category === 'minuman') {
+                if(secMinuman) secMinuman.style.display = 'block';
+                if(secRoasted) secRoasted.style.display = 'none';
+            } else if(category === 'roasted') {
+                if(secMinuman) secMinuman.style.display = 'none';
+                if(secRoasted) secRoasted.style.display = 'block';
+            }
+        };
