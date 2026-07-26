@@ -50,6 +50,7 @@
         /* --- 5. INITIALIZE DATA --- */
        function renderProducts(products) {
     const productGrid = document.getElementById('productGrid');
+    if (!productGrid) return; // Exit silently if not on shop page
     productGrid.innerHTML = '';
 
     products.forEach(product => {
@@ -106,7 +107,7 @@
 
     // Perbarui counter jumlah produk di bagian header katalog
     const countElement = document.getElementById('productCount');
-    if(countElement) countElement.innerText = products.length;
+    if (countElement) countElement.innerText = products.length;
 }
 
 /* --- FUNGSI FETCH PRODUK DARI SUPABASE --- */
