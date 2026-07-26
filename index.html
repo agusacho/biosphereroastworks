@@ -492,7 +492,7 @@
         .process-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 60px; }
         .step-card { background: var(--surface); padding: 30px 20px; text-align: center; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); position: relative; border-bottom: 3px solid var(--accent); }
         .step-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 16px; }
-        .step-card::after { content: '\f0da'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: -15px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 1.5rem; }
+        .step-card::after { content: 'f0da'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: -15px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 1.5rem; }
         .step-card:last-child::after { display: none; }
 
         .roast-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
@@ -1234,7 +1234,7 @@ async function fetchProducts() {
 
     } catch (err) {
         console.error("Error Fetch Products:", err);
-        alert(\`Gagal memuat produk!\nAlasan: ${err.message}\`);
+        alert(`Gagal memuat produk!nAlasan: ${err.message}`);
     } finally {
         // Matikan animasi loading
         if (typeof hideLoader === "function") hideLoader();
@@ -1252,7 +1252,7 @@ async function fetchProducts() {
             });
             document.querySelectorAll('.nav-links a').forEach(a => {
                 a.classList.remove('active');
-                if (a.getAttribute('href') === \`#${current}\`) a.classList.add('active');
+                if (a.getAttribute('href') === `#${current}`) a.classList.add('active');
             });
         });
 
@@ -1306,51 +1306,7 @@ async function fetchProducts() {
                 : Number(product.price);
         };
 
-        const renderProducts = (products) => {
-            const grid = document.getElementById('productGrid');
-            document.getElementById('productCount').innerText = products.length;
-            grid.innerHTML = '';
 
-            if(products.length === 0) {
-                grid.innerHTML = \`<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">Tidak ada produk yang cocok dengan filter.</div>\`;
-                return;
-            }
-
-            products.forEach((p, index) => {
-                let badgeClass = 'badge-green';
-                let badgeText = 'Green Bean';
-                if(p.category === 'roasted') { badgeClass = 'badge-roasted'; badgeText = 'Roasted Bean'; }
-                if(p.category === 'drink') { badgeClass = 'Minuman Kopi'; badgeText = 'Minuman'; }
-
-                const basePrice = getBasePrice(p);
-                const isVariant = p.variants && Array.isArray(p.variants) && p.variants.length > 0;
-                const priceStr = isVariant ? \`Mulai ${formatRupiah(basePrice)}\` : formatRupiah(basePrice);
-                
-                // Selang-seling warna placeholder jika tidak diset dari DB
-                const defaultImageStyle = index % 2 === 0 ? 'var(--metallic-white)' : 'var(--metallic-gold)';
-
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = \`
-                    <div class="product-img-wrapper">
-                        <span class="category-badge ${badgeClass}">${badgeText}</span>
-                        <div class="img-placeholder" style="background: ${p.imageStyle || defaultImageStyle}">
-                            ${p.name ? p.name.split(' ')[0] : 'Kopi'}<br>${p.category ? p.category.toUpperCase() : ''}
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${p.name}</h3>
-                        <div class="product-rating"><i class="fa-solid fa-star"></i> ${p.rating || 0}</div>
-                        <div class="product-price">${priceStr}</div>
-                        <div class="product-actions">
-                            <button class="btn btn-outline" onclick="openProductDetail('${p.id}')">Detail</button>
-                            <button class="btn btn-primary" onclick="quickAddToCart('${p.id}')"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                \`;
-                grid.appendChild(card);
-            });
-        };
 
         const applyFilters = () => {
             let filtered = allProductsData.length > 0 ? allProductsData : productsDB;
@@ -1393,7 +1349,7 @@ async function fetchProducts() {
         document.querySelectorAll('.filter-origin, .filter-process').forEach(cb => cb.addEventListener('change', applyFilters));
 
         const filterByCategory = (cat) => {
-            document.querySelector(\`input[name="category"][value="${cat}"]\`).checked = true;
+            document.querySelector(`input[name="category"][value="${cat}"]`).checked = true;
             activeCategoryFilter = cat;
             applyFilters();
         };
@@ -1423,37 +1379,37 @@ async function fetchProducts() {
 
             if (hasVariants) {
                 defaultPriceStr = formatRupiah(p.variants[0].price);
-                variantHTML = \`
+                variantHTML = `
                     <div class="variant-selector mb-4">
                         <label style="display:block; margin-bottom:8px; font-weight:700;">Pilih Varian/Ukuran:</label>
                         <select class="form-control" id="modalVariantSelect" onchange="updateModalPrice()">
-                            \${p.variants.map((v, index) => \`<option value="\${index}">\${v.name}</option>\`).join('')}
+                            ${p.variants.map((v, index) => `<option value="${index}">${v.name}</option>`).join('')}
                         </select>
                     </div>
-                \`;
+                `;
             } else {
                 defaultPriceStr = formatRupiah(p.price || 0);
-                variantHTML = \`<div class="mb-4 text-muted">Varian: Default (1 kg / 1 Pack)</div>\`;
+                variantHTML = `<div class="mb-4 text-muted">Varian: Default (1 kg / 1 Pack)</div>`;
             }
 
             const modalBody = document.getElementById('productModalBody');
-            modalBody.innerHTML = \`
+            modalBody.innerHTML = `
                 <div class="product-detail-layout">
-                    <div class="product-detail-img img-placeholder" style="background: \${p.imageStyle || 'var(--metallic-white)'}; font-size: 2rem;">
-                        \${p.name ? p.name.split(' ')[0] : 'Kopi'}
+                    <div class="product-detail-img img-placeholder" style="background: ${p.imageStyle || 'var(--metallic-white)'}; font-size: 2rem;">
+                        ${p.name ? p.name.split(' ')[0] : 'Kopi'}
                     </div>
                     <div class="product-detail-info">
-                        <span class="category-badge \${p.category === 'drink' ? 'Minuman Kopi' : (p.category === 'roasted' ? 'badge-roasted' : 'badge-green')}" style="position:relative; top:0; left:0; display:inline-block; margin-bottom:10px;">\${(p.category || 'PRODUK').toUpperCase()}</span>
-                        <h2 style="margin-bottom: 5px;">\${p.name}</h2>
-                        <div class="product-rating mb-4"><i class="fa-solid fa-star"></i> \${p.rating || 0}</div>
+                        <span class="category-badge ${p.category === 'drink' ? 'Minuman Kopi' : (p.category === 'roasted' ? 'badge-roasted' : 'badge-green')}" style="position:relative; top:0; left:0; display:inline-block; margin-bottom:10px;">${(p.category || 'PRODUK').toUpperCase()}</span>
+                        <h2 style="margin-bottom: 5px;">${p.name}</h2>
+                        <div class="product-rating mb-4"><i class="fa-solid fa-star"></i> ${p.rating || 0}</div>
                         
-                        <div style="font-size: 1.5rem; font-weight: 700; color: #B38728; margin-bottom: 20px;" id="modalPriceDisplay">\${defaultPriceStr}</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #B38728; margin-bottom: 20px;" id="modalPriceDisplay">${defaultPriceStr}</div>
                         
-                        <p class="mb-4"><strong>Notes:</strong> \${p.notes || '-'}</p>
-                        \${p.origin ? \`<p class="mb-2"><strong>Origin:</strong> \${p.origin}</p>\` : ''}
-                        \${p.process ? \`<p class="mb-4"><strong>Proses:</strong> \${p.process}</p>\` : ''}
+                        <p class="mb-4"><strong>Notes:</strong> ${p.notes || '-'}</p>
+                        ${p.origin ? `<p class="mb-2"><strong>Origin:</strong> ${p.origin}</p>` : ''}
+                        ${p.process ? `<p class="mb-4"><strong>Proses:</strong> ${p.process}</p>` : ''}
                         
-                        \${variantHTML}
+                        ${variantHTML}
 
                         <div style="display: flex; gap: 15px; margin-top: 20px;">
                             <div class="qty-controls" style="border: 1px solid var(--border); border-radius: var(--radius); padding: 5px;">
@@ -1465,7 +1421,7 @@ async function fetchProducts() {
                         </div>
                     </div>
                 </div>
-            \`;
+            `;
 
             document.getElementById('productModal').classList.add('active');
             document.getElementById('overlay').classList.add('active');
@@ -1547,7 +1503,7 @@ async function fetchProducts() {
             else cart.push(newItem);
             
             saveCart();
-            showToast(\`\${newItem.name} ditambahkan ke keranjang\`);
+            showToast(`${newItem.name} ditambahkan ke keranjang`);
         };
 
         const renderCart = () => {
@@ -1567,22 +1523,22 @@ async function fetchProducts() {
 
                 const div = document.createElement('div');
                 div.className = 'cart-item';
-                div.innerHTML = \`
-                    <div class="cart-item-img img-placeholder" style="background: \${item.imageStyle}; font-size: 0.8rem;">\${item.name.split(' ')[0]}</div>
+                div.innerHTML = `
+                    <div class="cart-item-img img-placeholder" style="background: ${item.imageStyle}; font-size: 0.8rem;">${item.name.split(' ')[0]}</div>
                     <div class="cart-item-info">
-                        <div class="cart-item-title">\${item.name}</div>
-                        <div class="cart-item-variant">\${item.variantName !== 'Default' ? item.variantName : ''}</div>
-                        <div class="cart-item-price">\${formatRupiah(item.price)}</div>
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-variant">${item.variantName !== 'Default' ? item.variantName : ''}</div>
+                        <div class="cart-item-price">${formatRupiah(item.price)}</div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div class="qty-controls">
-                                <button class="qty-btn" onclick="updateCartQty(\${index}, -1)">-</button>
-                                <span style="font-size: 0.9rem; font-weight:700;">\${item.qty}</span>
-                                <button class="qty-btn" onclick="updateCartQty(\${index}, 1)">+</button>
+                                <button class="qty-btn" onclick="updateCartQty(${index}, -1)">-</button>
+                                <span style="font-size: 0.9rem; font-weight:700;">${item.qty}</span>
+                                <button class="qty-btn" onclick="updateCartQty(${index}, 1)">+</button>
                             </div>
-                            <button class="remove-item" onclick="removeFromCart(\${index})"><i class="fa-solid fa-trash"></i></button>
+                            <button class="remove-item" onclick="removeFromCart(${index})"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
-                \`;
+                `;
                 container.appendChild(div);
             });
 
@@ -1668,7 +1624,7 @@ async function fetchProducts() {
                 } catch (err) {
                     console.error("Error Checkout to Supabase:", err);
                     const errorMessage = err.message || "Error tidak diketahui";
-                    alert(\`GAGAL MENYIMPAN KE DATABASE!\n\nAlasan dari Supabase:\n"\${errorMessage}"\n\nSaran Perbaikan di Supabase Anda:\n1. Pastikan tabel 'orders' sudah ada.\n2. Pastikan RLS (Row Level Security) untuk tabel 'orders' sudah di-disable, ATAU Anda sudah menambahkan "Insert Policy" untuk publik.\n3. Pastikan kolom yang ada: items (text/jsonb), total_price (int8/numeric), payment_method (text), status (text).\`);
+                    alert(`GAGAL MENYIMPAN KE DATABASE!nnAlasan dari Supabase:n"${errorMessage}"nnSaran Perbaikan di Supabase Anda:n1. Pastikan tabel 'orders' sudah ada.n2. Pastikan RLS (Row Level Security) untuk tabel 'orders' sudah di-disable, ATAU Anda sudah menambahkan "Insert Policy" untuk publik.n3. Pastikan kolom yang ada: items (text/jsonb), total_price (int8/numeric), payment_method (text), status (text).`);
                     
                     hideLoader();
                     return;
@@ -1680,7 +1636,7 @@ async function fetchProducts() {
             hideLoader();
             closeModal('paymentModal');
 
-            alert(`✅ PEMBAYARAN BERHASIL!\n\nMetode: ${selectedPaymentMethod}\nTotal Dibayar: ${formatRupiah(total)}\n\nTerima kasih telah berbelanja di Biosphere Roast Works. Pesanan Anda akan segera diproses.`);
+            alert(`✅ PEMBAYARAN BERHASIL!nnMetode: ${selectedPaymentMethod}nTotal Dibayar: ${formatRupiah(total)}nnTerima kasih telah berbelanja di Biosphere Roast Works. Pesanan Anda akan segera diproses.`);
 
             cart = [];
             saveCart();
@@ -1712,7 +1668,7 @@ async function fetchProducts() {
             } catch (err) {
                 console.error("Error Send Contact:", err);
                 const errorMessage = err.message || "Error tidak diketahui";
-                alert(`GAGAL MENGIRIM PESAN!\n\nAlasan dari Supabase:\n"${errorMessage}"\n\nPastikan RLS sudah di-disable pada tabel 'contacts'.`);
+                alert(`GAGAL MENGIRIM PESAN!nnAlasan dari Supabase:n"${errorMessage}"nnPastikan RLS sudah di-disable pada tabel 'contacts'.`);
             } finally {
                 hideLoader();
                 document.getElementById('btnSubmitContact').disabled = false;
@@ -1777,7 +1733,7 @@ async function fetchProducts() {
                 }
                 updateAuthUI();
             } catch(err) {
-                alert(`Autentikasi Gagal:\n${err.message}`);
+                alert(`Autentikasi Gagal:n${err.message}`);
             } finally {
                 if(isSupabaseConfigured) {
                     hideLoader();
