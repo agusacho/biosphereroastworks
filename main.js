@@ -7,7 +7,15 @@
         let isSupabaseConfigured = true;
 
         if(isSupabaseConfigured) {
-            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            try {
+                if (typeof supabase !== 'undefined') {
+                    _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                } else {
+                    console.error("Supabase is not defined.");
+                }
+            } catch(e) {
+                console.error("Supabase init error:", e);
+            }
         } else {
             console.warn("⚠️ Supabase belum dikonfigurasi. Berjalan dalam mode simulasi offline.");
         }
@@ -18,7 +26,12 @@
             { id: '2', name: 'Kamojang Vinoso', category: 'roasted', origin: 'Kamojang', process: 'Anaerob', type: 'Experimental', notes: 'Grape, Wine', rating: 5.0, imageStyle: 'var(--metallic-gold)',
               variants: [ { name: '100 gram', price: 59900 }, { name: '200 gram', price: 114500 } ] }
         ];        /* --- 3. STATE MANAGEMENT --- */
-        let cart = JSON.parse(localStorage.getItem('biosphere_cart')) || [];
+        let cart = [];
+        try {
+            cart = JSON.parse(localStorage.getItem('biosphere_cart')) || [];
+        } catch(e) {
+            console.error("LocalStorage error:", e);
+        }
         let allProductsData = [];
         let currentFilteredProducts = [...productsDB];
         let activeCategoryFilter = 'all';
