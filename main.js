@@ -824,7 +824,7 @@ async function fetchProducts() {
                         const li = document.createElement('li');
                         li.style.padding = '8px 0';
                         li.style.borderBottom = '1px dashed rgba(0,0,0,0.1)';
-                        li.innerHTML = <strong>x</strong>  <span style="float:right;"> + formatRupiah(item.price * item.qty) + </span>;
+                        li.innerHTML = `<strong>${item.qty}x</strong> ${item.name} <span style="float:right;">` + formatRupiah(item.price * item.qty) + `</span>`;
                         ul.appendChild(li);
                     });
                 }
