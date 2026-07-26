@@ -845,13 +845,13 @@
                 <div class="filter-group">
                     <h4>Kategori</h4>
                     <label class="filter-label">
-                        <input type="radio" name="kategori" value="semua" checked> Semua Produk
+                        <input type="radio" name="category" value="all" checked> Semua Produk
                     </label>
                     <label class="filter-label">
-                        <input type="radio" name="kategori" value="Minuman Kopi"> Minuman Kopi
+                        <input type="radio" name="category" value="Minuman Kopi"> Minuman Kopi
                     </label>
                     <label class="filter-label">
-                        <input type="radio" name="kategori" value="Roasted Bean"> Roasted Bean
+                        <input type="radio" name="category" value="Roasted Bean"> Roasted Bean
                     </label>
                 </div>
             </aside>
@@ -1353,7 +1353,7 @@ async function fetchProducts() {
         };
 
         const applyFilters = () => {
-            let filtered = productsDB;
+            let filtered = allProductsData.length > 0 ? allProductsData : productsDB;
 
             if(activeCategoryFilter !== 'all') {
                 filtered = filtered.filter(p => p.category === activeCategoryFilter);
