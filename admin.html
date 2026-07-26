@@ -178,6 +178,48 @@
             .row2 { grid-template-columns:1fr; }
             .settings-grid { grid-template-columns:1fr; }
         }
+
+        /* ─── IMAGE UPLOAD ─── */
+        .img-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .25s;
+            background: var(--surface2);
+            position: relative;
+        }
+        .img-upload-area:hover, .img-upload-area.drag-over {
+            border-color: var(--accent);
+            background: rgba(212,175,55,.06);
+        }
+        .img-upload-area input[type=file] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .img-upload-icon { font-size: 1.8rem; color: var(--muted); margin-bottom: 8px; }
+        .img-upload-area p { font-size: .82rem; color: var(--muted); margin: 0; }
+        .img-upload-area strong { color: var(--accent); }
+        .img-upload-progress {
+            height: 4px; background: var(--border); border-radius: 2px;
+            margin-top: 10px; overflow: hidden; display: none;
+        }
+        .img-upload-progress-bar {
+            height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent));
+            border-radius: 2px; transition: width .3s ease;
+        }
+        .img-preview-wrap {
+            position: relative; border-radius: 8px; overflow: hidden;
+            background: rgba(0,0,0,.3); margin-top: 10px; display: none;
+        }
+        .img-preview-wrap img { width: 100%; max-height: 160px; object-fit: cover; display: block; }
+        .img-preview-del {
+            position: absolute; top: 6px; right: 6px;
+            background: rgba(239,68,68,.85); color: #fff;
+            border: none; border-radius: 6px; width: 28px; height: 28px;
+            cursor: pointer; font-size: .85rem;
+            display: flex; align-items: center; justify-content: center;
+        }
         ::-webkit-scrollbar { width:5px; }
         ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
     </style>
@@ -426,6 +468,29 @@
                     <span style="color:var(--muted);font-size:.72rem;"> — contoh: [{"name":"100g","price":50000}]</span>
                 </label>
                 <textarea class="fi" id="editVariants" style="font-family:monospace;font-size:.8rem;" rows="4" placeholder='[{"name":"Botol Kale 250 ml","price":21000}]'></textarea>
+            </div>
+            <div class="fg">
+                <label>Gambar Produk</label>
+                <div class="img-upload-area" id="imgDropZone"
+                     ondragover="event.preventDefault();this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="handleImgDrop(event)">
+                    <input type="file" id="imgFileInput" accept="image/*" onchange="handleImgSelect(this)">
+                    <div id="imgUploadDefault">
+                        <div class="img-upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <p><strong>Klik atau seret gambar</strong> ke sini<br>JPG, PNG, WebP — maks. 5 MB</p>
+                    </div>
+                    <div class="img-upload-progress" id="imgProgress">
+                        <div class="img-upload-progress-bar" id="imgProgressBar" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="img-preview-wrap" id="imgPreviewWrap">
+                    <img id="imgPreviewEl" src="" alt="Preview">
+                    <button class="img-preview-del" onclick="clearProductImage()" title="Hapus gambar">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <input type="hidden" id="editImageUrl">
             </div>
             <div class="form-actions">
                 <button class="btn btn-cancel" onclick="closeModal('productModal')">Batal</button>
@@ -715,7 +780,9 @@ function renderProducts() {
         return `<tr>
             <td>
                 <div style="display:flex;align-items:center;gap:10px;">
-                    <div class="thumb">${ini}</div>
+                    ${p.image_icon
+                        ? `<img src="${p.image_icon}" alt="${p.name}" style="width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--border);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class='thumb' style='display:none'>${ini}</div>`
+                        : `<div class='thumb'>${ini}</div>`}
                     <div><div style="font-weight:600;font-size:.87rem;">${p.name}</div><div style="font-size:.73rem;color:var(--muted);">ID:${p.id}</div></div>
                 </div>
             </td>
@@ -748,9 +815,19 @@ function openProductModal(id = null) {
         document.getElementById('editNotes').value    = p.notes || '';
         document.getElementById('editDesc').value     = p.description || '';
         document.getElementById('editVariants').value = JSON.stringify(p.variants || [], null, 2);
+        // Load existing image
+        if (p.image_icon) {
+            document.getElementById('editImageUrl').value = p.image_icon;
+            document.getElementById('imgPreviewEl').src    = p.image_icon;
+            document.getElementById('imgPreviewWrap').style.display = 'block';
+            document.getElementById('imgUploadDefault').style.display = 'none';
+        } else {
+            clearProductImage();
+        }
     } else {
         document.getElementById('prodModalTitle').textContent = 'Tambah Produk Baru';
         ['editName','editPrice','editStock','editNotes','editDesc','editVariants'].forEach(i => document.getElementById(i).value = '');
+        clearProductImage();
     }
     document.getElementById('productModal').classList.add('open');
 }
@@ -767,7 +844,8 @@ async function saveProduct() {
     try { const raw = document.getElementById('editVariants').value.trim(); variants = raw ? JSON.parse(raw) : []; }
     catch { toast('Format JSON varian tidak valid!', 'err'); return; }
     if (!name) { toast('Nama produk wajib diisi!', 'err'); return; }
-    const payload = { name, category, price, stock_quantity:stock, notes, description:desc, variants };
+    const imageUrl = document.getElementById('editImageUrl').value.trim();
+    const payload = { name, category, price, stock_quantity:stock, notes, description:desc, variants, image_icon: imageUrl || null };
     try {
         let error;
         if (id) { ({error} = await _sb.from('products').update(payload).eq('id', id)); }
@@ -789,6 +867,87 @@ async function deleteProduct(id, name) {
     } catch (err) { toast('Gagal hapus: ' + err.message, 'err'); }
 }
 
+
+/* ═══ PRODUCT IMAGE UPLOAD ═══════════════════════════════════════════════ */
+const STORAGE_BUCKET = 'product-images';
+
+function handleImgDrop(e) {
+    e.preventDefault();
+    document.getElementById('imgDropZone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) uploadProductImage(file);
+}
+
+function handleImgSelect(input) {
+    const file = input.files[0];
+    if (file) uploadProductImage(file);
+}
+
+function clearProductImage() {
+    document.getElementById('editImageUrl').value      = '';
+    document.getElementById('imgPreviewEl').src        = '';
+    document.getElementById('imgPreviewWrap').style.display   = 'none';
+    document.getElementById('imgUploadDefault').style.display = '';
+    document.getElementById('imgProgress').style.display     = 'none';
+    document.getElementById('imgProgressBar').style.width    = '0%';
+    document.getElementById('imgFileInput').value = '';
+}
+
+async function uploadProductImage(file) {
+    // Validate
+    if (file.size > 5 * 1024 * 1024) { toast('Gambar terlalu besar! Maks. 5 MB.', 'err'); return; }
+    const allowed = ['image/jpeg','image/png','image/webp','image/gif'];
+    if (!allowed.includes(file.type)) { toast('Format tidak didukung. Gunakan JPG/PNG/WebP.', 'err'); return; }
+
+    // Show progress
+    const prog   = document.getElementById('imgProgress');
+    const bar    = document.getElementById('imgProgressBar');
+    prog.style.display = 'block';
+    bar.style.width = '20%';
+
+    try {
+        // Unique filename: timestamp + sanitized name
+        const ext  = file.name.split('.').pop().toLowerCase();
+        const ts   = Date.now();
+        const slug = file.name.replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 40);
+        const path = `products/${ts}_${slug}.${ext}`;
+
+        bar.style.width = '50%';
+
+        const { data: upData, error: upErr } = await _sb.storage
+            .from(STORAGE_BUCKET)
+            .upload(path, file, { upsert: true, contentType: file.type });
+
+        if (upErr) throw upErr;
+        bar.style.width = '80%';
+
+        const { data: urlData } = _sb.storage
+            .from(STORAGE_BUCKET)
+            .getPublicUrl(path);
+
+        const publicUrl = urlData.publicUrl;
+        bar.style.width = '100%';
+
+        // Set preview
+        document.getElementById('editImageUrl').value             = publicUrl;
+        document.getElementById('imgPreviewEl').src               = publicUrl;
+        document.getElementById('imgPreviewWrap').style.display   = 'block';
+        document.getElementById('imgUploadDefault').style.display = 'none';
+
+        setTimeout(() => { prog.style.display = 'none'; }, 600);
+        toast('Gambar berhasil diunggah!', 'ok');
+
+    } catch (err) {
+        prog.style.display = 'none';
+        bar.style.width = '0%';
+        // Fallback: if bucket not found, guide user
+        if (err.message && err.message.includes('Bucket not found')) {
+            toast('⚠️ Bucket belum dibuat. Buat bucket "product-images" di Supabase Storage!', 'err');
+        } else {
+            toast('Upload gagal: ' + err.message, 'err');
+        }
+    }
+}
 /* ═══ SETTINGS / TAMPILAN ═════════════════════════════════════════════════ */
 async function loadSettings() {
     document.getElementById('settingsContainer').innerHTML =
