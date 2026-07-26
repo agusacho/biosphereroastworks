@@ -68,53 +68,66 @@
        function renderProducts(products) {
     const gridMinuman = document.getElementById('grid-minuman');
     const gridRoasted = document.getElementById('grid-roasted');
-    const productGrid = document.getElementById('productGrid'); // Fallback if still exists
+    const productGrid = document.getElementById('productGrid');
 
-    if (!gridMinuman && !gridRoasted && !productGrid) return; // Exit if not on shop page
+    if (!gridMinuman && !gridRoasted && !productGrid) return;
     
     if(gridMinuman) gridMinuman.innerHTML = '';
     if(gridRoasted) gridRoasted.innerHTML = '';
     if(productGrid) productGrid.innerHTML = '';
 
+    if (products.length === 0) {
+        const empty = '<div class="empty-state"><i class="fa-solid fa-mug-saucer"></i><p>Tidak ada produk ditemukan.</p></div>';
+        if(gridMinuman) gridMinuman.innerHTML = empty;
+        if(gridRoasted) gridRoasted.innerHTML = empty;
+    }
+
     products.forEach(product => {
-        // Menyesuaikan warna badge dengan nilai 'category' dari Supabase
-        let badgeClass = 'badge-green';
-        if (product.category === 'Roasted Bean') {
-            badgeClass = 'badge-roasted';
-        } else if (product.category === 'Minuman Kopi') {
-            badgeClass = 'Minuman'; 
-        }
+        const badgeClass = product.category === 'Roasted Bean' ? 'badge-roasted' : 'badge-green';
+        const badgeLabel = product.category === 'Roasted Bean' ? '&#9749; Roasted' : '&#127861; Minuman';
 
         let defaultPriceStr = formatRupiah(product.price);
         const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
-        if(hasVariants) {
-            defaultPriceStr = formatRupiah(product.variants[0].price);
-        }
+        if(hasVariants) defaultPriceStr = formatRupiah(product.variants[0].price);
+
+        const variantTagsHtml = hasVariants
+            ? product.variants.slice(0, 3).map(v => `<span class="variant-tag">${v.name}</span>`).join('')
+            : '';
+
+        const stars = (product.rating || 0) >= 4.5
+            ? '<i class="fa-solid fa-star"></i>'.repeat(5)
+            : '<i class="fa-solid fa-star"></i>'.repeat(4) + '<i class="fa-regular fa-star"></i>';
+
+        const detailAction = `openProductDetail('${product.id}')`;
+        const addAction = hasVariants ? detailAction : `quickAddToCart('${product.id}')`;
 
         let card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-            <div class="product-img-wrapper" style="cursor:pointer;" onclick="${hasVariants ? `openProductDetail('${product.id}')` : ''}">
-                <span class="category-badge ${badgeClass}">${(product.category || 'PRODUK').toUpperCase()}</span>
+            <div class="product-img-wrapper" style="cursor:pointer;" onclick="${addAction}">
+                <span class="category-badge ${badgeClass}">${badgeLabel}</span>
                 <div class="img-placeholder">
-                    ${product.name.split(' ')[0]}
+                    ${product.name.split(' ').slice(0, 2).join(' ')}
+                </div>
+                <div class="quick-add-overlay">
+                    <button class="btn-quick btn-quick-outline" onclick="event.stopPropagation(); ${detailAction}">
+                        <i class="fa-solid fa-eye"></i> Detail
+                    </button>
+                    <button class="btn-quick btn-quick-primary" onclick="event.stopPropagation(); ${addAction}">
+                        <i class="fa-solid fa-cart-plus"></i> ${hasVariants ? 'Pilih' : 'Tambah'}
+                    </button>
                 </div>
             </div>
             <div class="product-info">
-                <h3 class="product-title">${product.name}</h3>
-                <div class="product-rating"><i class="fa-solid fa-star"></i> ${product.rating || 0}</div>
-                <div class="product-price">${defaultPriceStr}</div>
-                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
-                    ${product.notes ? 'Notes: ' + product.notes : ''}<br>
-                    ${product.stock_quantity > 0 ? 'Stok: ' + product.stock_quantity : 'Stok Habis'}
-                </div>
-                <div class="product-actions">
-                    <button class="btn btn-outline" style="padding: 10px;" onclick="openProductDetail('${product.id}')">
-                        <i class="fa-solid fa-eye"></i>
-                    </button>
-                    <button class="btn btn-primary" onclick="${hasVariants ? `openProductDetail('${product.id}')` : `quickAddToCart('${product.id}')`}">
-                        <i class="fa-solid fa-cart-plus"></i> ${hasVariants ? 'Pilih' : 'Tambah'}
-                    </button>
+                <h3 class="product-name">${product.name}</h3>
+                <p class="product-notes">${product.notes || '&nbsp;'}</p>
+                ${variantTagsHtml ? `<div class="product-variants-tags">${variantTagsHtml}</div>` : ''}
+                <div class="product-card-footer">
+                    <div>
+                        <span class="product-price-prefix">mulai dari</span>
+                        <span class="product-price">${defaultPriceStr}</span>
+                    </div>
+                    <div class="product-rating">${stars}</div>
                 </div>
             </div>
         `;
@@ -128,7 +141,6 @@
         }
     });
 
-    // Perbarui counter jumlah produk di bagian header katalog
     const countElement = document.getElementById('productCount');
     if (countElement) countElement.innerText = products.length;
 };
@@ -271,33 +283,18 @@ async function fetchProducts() {
             renderProducts(currentFilteredProducts);
         };
 
-        document.querySelectorAll('input[name="category"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                activeCategoryFilter = e.target.value;
-                
-                
-                applyFilters();
-            });
-        });
-
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('sortSelect').addEventListener('change', applyFilters);
-        document.querySelectorAll('.filter-origin, .filter-process').forEach(cb => cb.addEventListener('change', applyFilters));
+        const searchEl = document.getElementById('searchInput');
+        if (searchEl) searchEl.addEventListener('input', applyFilters);
 
         const filterByCategory = (cat) => {
-            document.querySelector(`input[name="category"][value="${cat}"]`).checked = true;
             activeCategoryFilter = cat;
             applyFilters();
         };
 
         const resetFilters = () => {
-            document.querySelector('input[name="category"][value="all"]').checked = true;
             activeCategoryFilter = 'all';
-            document.getElementById('searchInput').value = '';
-            document.getElementById('sortSelect').value = 'default';
-            document.querySelectorAll('.filter-origin, .filter-process').forEach(cb => cb.checked = false);
-            
-            
+            const searchEl2 = document.getElementById('searchInput');
+            if (searchEl2) searchEl2.value = '';
             applyFilters();
         };
 
@@ -854,9 +851,16 @@ async function fetchProducts() {
 
         /* --- 14. CATEGORY FILTERING --- */
         window.filterCategory = function(category) {
+            activeCategoryFilter = category;
+
+            // Update pill active states
+            document.querySelectorAll('#categoryPills .pill').forEach(pill => {
+                pill.classList.toggle('active', pill.dataset.cat === category);
+            });
+
+            // Show/hide sections
             const secMinuman = document.getElementById('section-minuman');
             const secRoasted = document.getElementById('section-roasted');
-            
             if(category === 'all') {
                 if(secMinuman) secMinuman.style.display = 'block';
                 if(secRoasted) secRoasted.style.display = 'block';
@@ -867,4 +871,7 @@ async function fetchProducts() {
                 if(secMinuman) secMinuman.style.display = 'none';
                 if(secRoasted) secRoasted.style.display = 'block';
             }
+
+            // Re-render with filter
+            applyFilters();
         };

@@ -211,62 +211,80 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <main>
-<section id="shop" class="section-padding">
-    <div class="container">
-        <div class="text-center mb-8">
-            <h2>Koleksi Produk Kami</h2>
-            <p>Eksplorasi rasa dari biji kopi pilihan dan minuman segar kami.</p>
+
+    <!-- PRODUK HERO BANNER -->
+    <section class="produk-hero">
+        <div class="produk-hero-bg"></div>
+        <div class="produk-hero-content">
+            <span class="produk-hero-eyebrow"><i class="fa-solid fa-mug-hot"></i> Biosphere Collection</span>
+            <h1 class="produk-hero-title">Koleksi Produk Kami</h1>
+            <p class="produk-hero-subtitle">Setiap tegukan bercerita — dari ladang ke cangkir Anda, dengan presisi dan passion.</p>
         </div>
-
-        <div class="shop-layout" style="display: grid; grid-template-columns: 250px 1fr; gap: 30px; align-items: start;">
-            <aside class="sidebar" style="background: var(--surface); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow-sm); position: sticky; top: 100px;">
-                <h3 style="margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px;">Kategori</h3>
-                <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px;">
-                    <li>
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                            <input type="radio" name="category" value="all" checked onchange="filterCategory('all')">
-                            Semua Produk
-                        </label>
-                    </li>
-                    <li>
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                            <input type="radio" name="category" value="Minuman Kopi" onchange="filterCategory('Minuman Kopi')">
-                            Minuman Kopi
-                        </label>
-                    </li>
-                    <li>
-                        <label style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                            <input type="radio" name="category" value="Roasted Bean" onchange="filterCategory('Roasted Bean')">
-                            Roasted Bean
-                        </label>
-                    </li>
-                </ul>
-            </aside>
-            <main style="min-width: 0;">
-                <div class="shop-header">
-                    <p>Menampilkan <span id="productCount">0</span> produk</p>
-                    <div class="search-sort">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Cari nama produk..." style="margin-bottom: 0;">
-                    </div>
-                </div>
-
-                <div id="section-minuman" style="margin-bottom: 50px;">
-                    <h3 style="border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; color: var(--primary);">Minuman Kopi</h3>
-                    <div class="product-grid" id="grid-minuman">
-                        <!-- Produk minuman akan dimuat di sini -->
-                    </div>
-                </div>
-
-                <div id="section-roasted">
-                    <h3 style="border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; color: var(--primary);">Roasted Bean</h3>
-                    <div class="product-grid" id="grid-roasted">
-                        <!-- Produk roasted bean akan dimuat di sini -->
-                    </div>
-                </div>
-            </main>
+        <div class="produk-hero-wave">
+            <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="var(--bg-color)"/>
+            </svg>
         </div>
-    </div>
-</section>
+    </section>
+
+    <!-- PILL NAVIGATION + SEARCH BAR -->
+    <section class="produk-controls-bar">
+        <div class="container">
+            <div class="produk-controls-inner">
+                <!-- Category Pills -->
+                <div class="category-pills" id="categoryPills">
+                    <button class="pill active" onclick="filterCategory('all')" data-cat="all">
+                        <i class="fa-solid fa-border-all"></i> Semua Produk
+                    </button>
+                    <button class="pill" onclick="filterCategory('Minuman Kopi')" data-cat="Minuman Kopi">
+                        <i class="fa-solid fa-bottle-water"></i> Minuman Kopi
+                    </button>
+                    <button class="pill" onclick="filterCategory('Roasted Bean')" data-cat="Roasted Bean">
+                        <i class="fa-solid fa-fire-flame-curved"></i> Roasted Bean
+                    </button>
+                </div>
+                <!-- Search + Count -->
+                <div class="produk-search-wrap">
+                    <div class="search-input-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Cari produk..." />
+                    </div>
+                    <span class="produk-count-badge"><span id="productCount">0</span> produk</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUCT SECTIONS -->
+    <section id="shop" class="produk-main-section">
+        <div class="container">
+            <div id="section-minuman" class="produk-category-section">
+                <div class="category-section-header">
+                    <div class="category-icon-wrap drinks-icon">
+                        <i class="fa-solid fa-bottle-water"></i>
+                    </div>
+                    <div>
+                        <h2 class="category-section-title">Minuman Kopi</h2>
+                        <p class="category-section-sub">Ready-to-drink dalam botol segar & can premium</p>
+                    </div>
+                </div>
+                <div class="product-grid" id="grid-minuman"></div>
+            </div>
+
+            <div id="section-roasted" class="produk-category-section">
+                <div class="category-section-header">
+                    <div class="category-icon-wrap roasted-icon">
+                        <i class="fa-solid fa-fire-flame-curved"></i>
+                    </div>
+                    <div>
+                        <h2 class="category-section-title">Roasted Bean</h2>
+                        <p class="category-section-sub">Biji kopi sangrai pilihan dari single origin terbaik</p>
+                    </div>
+                </div>
+                <div class="product-grid" id="grid-roasted"></div>
+            </div>
+        </div>
+    </section>
 
         <!-- SECTION: TESTIMONI -->
         <section id="testimoni" class="section-padding" style="background-color: var(--bg-color);">
@@ -480,7 +498,7 @@
     <!-- ==========================================================================
          JAVASCRIPT LOGIC DENGAN SUPABASE & SISTEM CHECKOUT E-COMMERCE
          ========================================================================== -->
-    <script src="main.js?v=2"></script>
+    <script src="main.js?v=3"></script>
 </body>
 </html>
 
