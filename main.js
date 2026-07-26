@@ -17,17 +17,22 @@
             { id: '1', name: 'Ciwidey Arabica Bio-Natural', category: 'green', origin: 'Ciwidey', process: 'Natural', price: 95000, rating: 4.8, notes: 'Fruity, Jackfruit hints', imageStyle: 'var(--metallic-white)' },
             { id: '2', name: 'Kamojang Vinoso', category: 'roasted', origin: 'Kamojang', process: 'Anaerob', type: 'Experimental', notes: 'Grape, Wine', rating: 5.0, imageStyle: 'var(--metallic-gold)',
               variants: [ { name: '100 gram', price: 59900 }, { name: '200 gram', price: 114500 } ] }
-        ];
-
-        /* --- 3. STATE MANAGEMENT --- */
+        ];        /* --- 3. STATE MANAGEMENT --- */
         let cart = JSON.parse(localStorage.getItem('biosphere_cart')) || [];
+        let allProductsData = [];
         let currentFilteredProducts = [...productsDB];
         let activeCategoryFilter = 'all';
         let selectedPaymentMethod = ''; 
 
         /* --- 4. UTILITY FUNCTIONS --- */
-        const showLoader = () => document.getElementById('loader').classList.add('active');
-        const hideLoader = () => document.getElementById('loader').classList.remove('active');
+        const showLoader = () => {
+            const loader = document.getElementById('loader');
+            if(loader) loader.classList.add('active');
+        };
+        const hideLoader = () => {
+            const loader = document.getElementById('loader');
+            if(loader) loader.classList.remove('active');
+        };
 
         const formatRupiah = (number) => {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
@@ -35,6 +40,7 @@
 
         const showToast = (message) => {
             const container = document.getElementById('toastContainer');
+            if(!container) return;
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.innerHTML = `<i class="fa-solid fa-check-circle"></i> <span>${message}</span>`;
@@ -119,6 +125,8 @@ async function fetchProducts() {
     // Jika tidak terkonfigurasi, batalkan penarikan data
     if (!isSupabaseConfigured) {
         console.warn("Supabase belum terkonfigurasi. Menampilkan produk kosong/simulasi.");
+        allProductsData = [...productsDB];
+        currentFilteredProducts = [...allProductsData];
         return; 
     }
 
@@ -136,10 +144,15 @@ async function fetchProducts() {
 
         // Render produk ke antarmuka HTML
         if (products && products.length > 0) {
+            allProductsData = products;
+            currentFilteredProducts = [...products];
             renderProducts(products); // Pastikan Anda memiliki fungsi renderProducts()
         } else {
             console.log("Koneksi berhasil, tetapi tidak ada data di dalam tabel 'products'.");
-            document.querySelector('.product-grid').innerHTML = "<p>Belum ada produk.</p>";
+            const g1 = document.getElementById('grid-minuman');
+            const g2 = document.getElementById('grid-roasted');
+            if(g1) g1.innerHTML = "<p>Belum ada produk.</p>";
+            if(g2) g2.innerHTML = "<p>Belum ada produk.</p>";
         }
 
     } catch (err) {
@@ -279,7 +292,7 @@ async function fetchProducts() {
         let currentModalProduct = null;
         
         const openProductDetail = (id) => {
-            const p = productsDB.find(prod => String(prod.id) === String(id));
+            const p = allProductsData.find(prod => String(prod.id) === String(id));
             if(!p) return;
             currentModalProduct = p;
 
@@ -363,7 +376,7 @@ async function fetchProducts() {
         };
 
         const quickAddToCart = (id) => {
-            const p = productsDB.find(prod => String(prod.id) === String(id));
+            const p = allProductsData.find(prod => String(prod.id) === String(id));
             if(!p) return;
             
             const hasVariants = p.variants && Array.isArray(p.variants) && p.variants.length > 0;
