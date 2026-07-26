@@ -847,10 +847,10 @@ async function fetchProducts() {
             if(category === 'all') {
                 if(secMinuman) secMinuman.style.display = 'block';
                 if(secRoasted) secRoasted.style.display = 'block';
-            } else if(category === 'minuman') {
+            } else if(category === 'Minuman Kopi') {
                 if(secMinuman) secMinuman.style.display = 'block';
                 if(secRoasted) secRoasted.style.display = 'none';
-            } else if(category === 'roasted') {
+            } else if(category === 'Roasted Bean') {
                 if(secMinuman) secMinuman.style.display = 'none';
                 if(secRoasted) secRoasted.style.display = 'block';
             }
