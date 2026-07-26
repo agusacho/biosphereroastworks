@@ -1338,8 +1338,8 @@ async function fetchProducts() {
         document.querySelectorAll('input[name="category"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 activeCategoryFilter = e.target.value;
-                document.getElementById('filterOrigin').style.display = (activeCategoryFilter === 'all' || activeCategoryFilter === 'green' || activeCategoryFilter === 'roasted') ? 'block' : 'none';
-                document.getElementById('filterProcess').style.display = (activeCategoryFilter === 'all' || activeCategoryFilter === 'green') ? 'block' : 'none';
+                
+                
                 applyFilters();
             });
         });
@@ -1360,8 +1360,8 @@ async function fetchProducts() {
             document.getElementById('searchInput').value = '';
             document.getElementById('sortSelect').value = 'default';
             document.querySelectorAll('.filter-origin, .filter-process').forEach(cb => cb.checked = false);
-            document.getElementById('filterOrigin').style.display = 'block';
-            document.getElementById('filterProcess').style.display = 'block';
+            
+            
             applyFilters();
         };
 
@@ -1831,9 +1831,10 @@ async function fetchProducts() {
             fetchProducts(); 
             updateCartBadge();
             checkSession();
-            document.getElementById('filterOrigin').style.display = 'block'; 
-            document.getElementById('filterProcess').style.display = 'block';
+             
+            
         });
     </script>
 </body>
 </html>
+
