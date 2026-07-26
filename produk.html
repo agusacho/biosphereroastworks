@@ -217,25 +217,7 @@
             <p>Eksplorasi rasa dari biji kopi pilihan dan minuman segar kami.</p>
         </div>
 
-        <div class="shop-layout">
-            <aside class="sidebar">
-                <button class="btn btn-primary mobile-filter-btn" id="btnToggleFilter">
-                    <i class="fas fa-filter"></i> Filter
-                </button>
-                <div class="filter-group">
-                    <h4>Kategori</h4>
-                    <label class="filter-label">
-                        <input type="radio" name="category" value="all" checked> Semua Produk
-                    </label>
-                    <label class="filter-label">
-                        <input type="radio" name="category" value="Minuman Kopi"> Minuman Kopi
-                    </label>
-                    <label class="filter-label">
-                        <input type="radio" name="category" value="Roasted Bean"> Roasted Bean
-                    </label>
-                </div>
-            </aside>
-
+        <div>
             <main>
                 <div class="shop-header">
                     <p>Menampilkan <span id="productCount">0</span> produk</p>
@@ -249,8 +231,19 @@
                     </div>
                 </div>
 
-                <div class="product-grid" id="productGrid">
+                <div style="margin-bottom: 50px;">
+                    <h3 style="border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px;">Minuman Kopi</h3>
+                    <div class="product-grid" id="grid-minuman">
+                        <!-- Produk minuman akan dimuat di sini -->
                     </div>
+                </div>
+
+                <div>
+                    <h3 style="border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px;">Roasted Bean</h3>
+                    <div class="product-grid" id="grid-roasted">
+                        <!-- Produk roasted bean akan dimuat di sini -->
+                    </div>
+                </div>
             </main>
         </div>
     </div>

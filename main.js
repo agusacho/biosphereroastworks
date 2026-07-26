@@ -45,70 +45,74 @@
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
-        };
-
-        /* --- 5. INITIALIZE DATA --- */
+        };        /* --- 5. INITIALIZE DATA --- */
        function renderProducts(products) {
-    const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return; // Exit silently if not on shop page
-    productGrid.innerHTML = '';
+    const gridMinuman = document.getElementById('grid-minuman');
+    const gridRoasted = document.getElementById('grid-roasted');
+    const productGrid = document.getElementById('productGrid'); // Fallback if still exists
+
+    if (!gridMinuman && !gridRoasted && !productGrid) return; // Exit if not on shop page
+    
+    if(gridMinuman) gridMinuman.innerHTML = '';
+    if(gridRoasted) gridRoasted.innerHTML = '';
+    if(productGrid) productGrid.innerHTML = '';
 
     products.forEach(product => {
         // Menyesuaikan warna badge dengan nilai 'category' dari Supabase
         let badgeClass = 'badge-green';
         if (product.category === 'Roasted Bean') {
-            badgeClass = 'Roasted Bean';
+            badgeClass = 'badge-roasted';
         } else if (product.category === 'Minuman Kopi') {
-            badgeClass = 'Minuman Kopi';
+            badgeClass = 'Minuman'; 
         }
 
-        // Format angka ke format Rupiah
-        const formattedPrice = new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(product.price);
+        let defaultPriceStr = formatRupiah(product.price);
+        const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
+        if(hasVariants) {
+            defaultPriceStr = formatRupiah(product.variants[0].price);
+        }
 
-        // Render card
-        const card = document.createElement('div');
+        let card = document.createElement('div');
         card.className = 'product-card';
-        
         card.innerHTML = `
-            <div class="product-img-wrapper">
-                <span class="category-badge ${badgeClass}">${product.category}</span>
-                <div class="img-placeholder" style="font-size: 5rem; height: 100%;">
-                    ${product.image_icon}
+            <div class="product-img-wrapper" style="cursor:pointer;" onclick="${hasVariants ? `openProductDetail('${product.id}')` : ''}">
+                <span class="category-badge ${badgeClass}">${(product.category || 'PRODUK').toUpperCase()}</span>
+                <div class="img-placeholder">
+                    ${product.name.split(' ')[0]}
                 </div>
             </div>
             <div class="product-info">
                 <h3 class="product-title">${product.name}</h3>
-                
-                <p class="product-rating" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">
-                    ${product.description}
-                </p>
-                
-                <div class="product-price">${formattedPrice}</div>
-                
-                <p style="font-size: 0.8rem; font-weight: bold; color: ${product.stock_quantity > 0 ? 'var(--success)' : 'var(--danger)'}; margin-bottom: 12px;">
+                <div class="product-rating"><i class="fa-solid fa-star"></i> ${product.rating || 0}</div>
+                <div class="product-price">${defaultPriceStr}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                    ${product.notes ? 'Notes: ' + product.notes : ''}<br>
                     ${product.stock_quantity > 0 ? 'Stok: ' + product.stock_quantity : 'Stok Habis'}
-                </p>
-                
+                </div>
                 <div class="product-actions">
-                    <button class="btn btn-outline" onclick="viewDetail(${product.id})">Detail</button>
-                    <button class="btn btn-primary" ${product.stock_quantity <= 0 ? 'disabled' : ''} 
-                            onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.image_icon}')">
-                        <i class="fas fa-shopping-cart"></i> ${product.stock_quantity > 0 ? 'Beli' : 'Habis'}
+                    <button class="btn btn-outline" style="padding: 10px;" onclick="openProductDetail('${product.id}')">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button class="btn btn-primary" onclick="${hasVariants ? `openProductDetail('${product.id}')` : `quickAddToCart('${product.id}')`}">
+                        <i class="fa-solid fa-cart-plus"></i> ${hasVariants ? 'Pilih' : 'Tambah'}
                     </button>
                 </div>
             </div>
         `;
-        productGrid.appendChild(card);
+
+        if (product.category === 'Minuman Kopi' && gridMinuman) {
+            gridMinuman.appendChild(card);
+        } else if (product.category === 'Roasted Bean' && gridRoasted) {
+            gridRoasted.appendChild(card);
+        } else if (productGrid) {
+            productGrid.appendChild(card);
+        }
     });
 
     // Perbarui counter jumlah produk di bagian header katalog
     const countElement = document.getElementById('productCount');
     if (countElement) countElement.innerText = products.length;
-}
+};
 
 /* --- FUNGSI FETCH PRODUK DARI SUPABASE --- */
 async function fetchProducts() {
