@@ -45,8 +45,8 @@
                     <li><a href="tentang.html">Tentang Kami</a></li>
                     <li><a href="roasting.html">Proses Sangrai</a></li>
                     <li><a href="blog.html">Blog</a></li>
-                    <li><a href="tracking.html">Lacak</a></li>
-                    <li><a href="kontak.html" class="active">Kontak</a></li>
+                    <li><a href="tracking.html" class="active">Lacak</a></li>
+                    <li><a href="kontak.html">Kontak</a></li>
                 </ul>
             </nav>
             <div class="nav-actions">
@@ -211,54 +211,41 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <main>
-<section id="kontak" class="section-padding" style="background-color: var(--surface);">
-            <div class="container">
-                <div class="contact-grid">
-                    <div>
-                        <h2 class="mb-4">Hubungi Kami</h2>
-                        <p class="mb-4">Punya pertanyaan tentang produk, pesanan khusus, atau sekadar ingin menyapa? Jangan ragu untuk menghubungi kami.</p>
-                        
-                        <form id="contactForm" onsubmit="handleContact(event)">
-                            <div class="mb-4">
-                                <input type="text" id="contactName" class="form-control" placeholder="Nama Lengkap" required>
-                            </div>
-                            <div class="mb-4">
-                                <input type="email" id="contactEmail" class="form-control" placeholder="Alamat Email" required>
-                            </div>
-                            <div class="mb-4">
-                                <textarea id="contactMessage" class="form-control" rows="5" placeholder="Pesan Anda" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary" id="btnSubmitContact">Kirim Pesan</button>
-                        </form>
-                    </div>
-                    
-                    <div class="contact-info">
-                        <h3>Biosphere Roast Works</h3>
-                        <div class="info-item">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <div>
-                                <strong>Home Roastery & Coffee</strong><br>
-                                Jl. Srikaya, Perum Bumi Tajur Raya No.7 Blok A4<br>
-                                Tajur, Kec. Citeureup, Kabupaten Bogor, Jawa Barat 16811
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <i class="fa-solid fa-phone"></i>
-                            <div>
-                                <strong>Telepon / WhatsApp</strong><br>
-                                +62 812-91731358
-                            </div>
-                        </div>
-                        <div style="height: 200px; width: 100%; border-radius: var(--radius); overflow: hidden; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2);">
-                            <iframe src="https://maps.google.com/maps?q=Jl.%20Srikaya%20Perum%20Bumi%20Tajur%20Raya%20No.7%20Blok%20A4,%20Citeureup,%20Bogor&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                        </div>
-                        <a href="https://share.google/MzqyETJo886xAY5xS" target="_blank" class="btn btn-accent" style="width: 100%;">
-                            <i class="fa-solid fa-map-location-dot"></i> Buka di Google Maps
-                        </a>
-                    </div>
-                </div>
+
+<section id="tracking" class="section-padding" style="background-color: var(--bg-color); min-height: 70vh;">
+    <div class="container" style="max-width: 600px; margin: 0 auto;">
+        <div class="text-center mb-8">
+            <h2 style="color: var(--primary);">Lacak Pesanan</h2>
+            <p>Masukkan ID Pesanan (Order ID) Anda untuk melihat status saat ini.</p>
+        </div>
+        
+        <div style="background: var(--surface); padding: 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; gap: 15px; margin-bottom: 30px;">
+                <input type="text" id="trackingOrderId" class="form-control" placeholder="Contoh: ORDER-123456789-123" style="flex: 1; margin-bottom: 0;">
+                <button class="btn btn-primary" onclick="trackOrder()" id="btnTrack">Lacak</button>
             </div>
-        </section>
+            
+            <div id="trackingResult" style="display: none; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px;">
+                <h4 style="color: var(--primary); margin-bottom: 15px;">Detail Pesanan</h4>
+                <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 20px; font-size: 0.95rem;">
+                    <strong style="color: var(--text-muted);">Status:</strong> <span id="trackStatus" style="font-weight: bold;"></span>
+                    <strong style="color: var(--text-muted);">Tanggal:</strong> <span id="trackDate"></span>
+                    <strong style="color: var(--text-muted);">Nama:</strong> <span id="trackName"></span>
+                    <strong style="color: var(--text-muted);">Total:</strong> <span id="trackTotal" style="color: var(--success); font-weight: bold;"></span>
+                </div>
+                
+                <h5 style="margin-bottom: 10px;">Item Dibeli:</h5>
+                <ul id="trackItems" style="list-style: none; padding: 0; font-size: 0.9rem; color: var(--text-muted);">
+                </ul>
+            </div>
+            
+            <div id="trackingError" style="display: none; color: var(--danger); text-align: center; padding: 20px; background: rgba(220, 53, 69, 0.1); border-radius: var(--radius);">
+                Pesanan tidak ditemukan. Pastikan Order ID sudah benar.
+            </div>
+        </div>
+    </div>
+</section>
+
 </main>
         </div>
     </div>

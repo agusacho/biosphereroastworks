@@ -764,3 +764,64 @@ async function fetchProducts() {
             
         });
     
+
+        /* --- 13. ORDER TRACKING --- */
+        async function trackOrder() {
+            const input = document.getElementById('trackingOrderId');
+            const resultDiv = document.getElementById('trackingResult');
+            const errorDiv = document.getElementById('trackingError');
+            const btn = document.getElementById('btnTrack');
+            
+            if (!input || !input.value.trim()) return;
+            
+            const orderId = input.value.trim();
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            resultDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            try {
+                if(!isSupabaseConfigured) throw new Error("Offline");
+                
+                const { data, error } = await _supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('id', orderId)
+                    .single();
+                    
+                if (error || !data) throw new Error("Not found");
+                
+                // Populate UI
+                let statusColor = 'var(--text-main)';
+                let statusText = (data.status || 'unknown').toUpperCase();
+                if(data.status === 'pending') { statusColor = '#f39c12'; statusText = 'MENUNGGU PEMBAYARAN'; }
+                if(data.status === 'paid') { statusColor = 'var(--success)'; statusText = 'LUNAS / DIPROSES'; }
+                if(data.status === 'shipped') { statusColor = 'var(--primary)'; statusText = 'DIKIRIM'; }
+                
+                document.getElementById('trackStatus').innerText = statusText;
+                document.getElementById('trackStatus').style.color = statusColor;
+                document.getElementById('trackDate').innerText = new Date(data.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+                document.getElementById('trackName').innerText = data.customer_name || '-';
+                document.getElementById('trackTotal').innerText = formatRupiah(data.total_price);
+                
+                const ul = document.getElementById('trackItems');
+                ul.innerHTML = '';
+                if(data.items && Array.isArray(data.items)) {
+                    data.items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.style.padding = '8px 0';
+                        li.style.borderBottom = '1px dashed rgba(0,0,0,0.1)';
+                        li.innerHTML = <strong>x</strong>  <span style="float:right;"> + formatRupiah(item.price * item.qty) + </span>;
+                        ul.appendChild(li);
+                    });
+                }
+                
+                resultDiv.style.display = 'block';
+            } catch (err) {
+                console.error("Tracking Error:", err);
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.innerHTML = 'Lacak';
+                btn.disabled = false;
+            }
+        }
