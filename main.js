@@ -986,5 +986,5 @@ async function fetchProducts() {
             // Re-render with filter
             applyFilters();
         };
-a p p l y T r a n s l a t i o n s ( ) ;  
- 
+
+applyTranslations();
