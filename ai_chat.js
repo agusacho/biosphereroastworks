@@ -364,9 +364,9 @@
         } else {
             // Format basic markdown
             let formatted = text
-                .replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>')
-                .replace(/\\*(.*?)\\*/g, '<em>$1</em>')
-                .replace(/\\n/g, '<br>');
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
             div.innerHTML = formatted;
         }
         
@@ -474,7 +474,7 @@
         }
 
         // Build HTML
-        let finalHtml = reply.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
+        let finalHtml = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         
         // Append product card if matched
         if (matchedProduct) {
