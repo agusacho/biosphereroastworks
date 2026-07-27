@@ -400,8 +400,16 @@
         showTyping(true);
 
         try {
-            if (geminiKey) {
-                await askGemini(text);
+            // Ignore placeholder or very short invalid keys
+            const isValidGeminiKey = geminiKey && geminiKey.length > 20 && !geminiKey.includes('ISI_DENGAN_API_KEY');
+            
+            if (isValidGeminiKey) {
+                try {
+                    await askGemini(text);
+                } catch (apiError) {
+                    console.warn("Gemini API failed, falling back to Rule-Based:", apiError);
+                    await askRuleBased(text);
+                }
             } else {
                 await askRuleBased(text);
             }
