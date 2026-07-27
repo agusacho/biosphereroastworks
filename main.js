@@ -537,8 +537,6 @@ async function fetchProducts() {
         async function processPayment() {
             if (!selectedPaymentMethod) return;
 
-            showLoader();
-
             // Kumpulkan data order
             const payload = {
                 cart: cart,
@@ -548,6 +546,34 @@ async function fetchProducts() {
                 },
                 paymentMethod: selectedPaymentMethod
             };
+
+            // Cek pengaturan order via WhatsApp
+            const waEnabled = window.SITE_SETTINGS && window.SITE_SETTINGS['enable_whatsapp_order'] === 'true';
+            if (waEnabled) {
+                const waNumber = window.SITE_SETTINGS['whatsapp_order_number'] || '6281234567890';
+                let waMessage = window.SITE_SETTINGS['whatsapp_order_message'] || 'Halo Biosphere, saya ingin memesan kopi:\n\n{cart_details}\n\nTotal: {total}\nNama: {name}\nEmail: {email}';
+                
+                let cartDetails = cart.map(item => `- ${item.name} (${item.variant}) x${item.qty} = ${formatRupiah(item.price * item.qty)}`).join('\n');
+                let totalStr = formatRupiah(cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0));
+                
+                waMessage = waMessage.replace('{cart_details}', cartDetails)
+                                     .replace('{total}', totalStr)
+                                     .replace('{name}', payload.customer.name)
+                                     .replace('{email}', payload.customer.email);
+                                     
+                const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}?text=${encodeURIComponent(waMessage)}`;
+                
+                closeModal('paymentModal');
+                closeModal('cartModal');
+                cart = [];
+                saveCart();
+                renderCart();
+                
+                window.open(waUrl, '_blank');
+                return;
+            }
+
+            showLoader();
 
             try {
                 // Panggil Backend API Vercel Serverless Function

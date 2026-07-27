@@ -30,6 +30,7 @@
         // Build key→value map
         const cfg = {};
         data.forEach(r => { cfg[r.key] = r.value || ''; });
+        window.SITE_SETTINGS = cfg;
 
         /* ── PAGE VISIBILITY CHECK ─────────────────────────────── */
         // If this page has been disabled by admin, redirect to maintenance
