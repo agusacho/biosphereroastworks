@@ -39,7 +39,18 @@
             return;
         }
 
-        const lang = localStorage.getItem('lang') || 'id';
+        
+    const getLang = () => {
+        try {
+            let l = localStorage.getItem('lang');
+            if (l) return l;
+        } catch(e) {}
+        let match = document.cookie.match(new RegExp('(^| )lang=([^;]+)'));
+        if (match) return match[2];
+        return 'id';
+    };
+
+        const lang = getLang();
         const get = (k, fb = '') => {
             if (lang === 'en' && cfg[`${k}_en`]) {
                 return cfg[`${k}_en`];

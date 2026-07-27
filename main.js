@@ -1,7 +1,22 @@
 
 /* --- I18N SUPPORT --- */
+
+function getLang() {
+    try {
+        let l = getLang();
+        if (l) return l;
+    } catch(e) {}
+    let match = document.cookie.match(new RegExp('(^| )lang=([^;]+)'));
+    if (match) return match[2];
+    return 'id';
+}
+function setLang(l) {
+    try { localStorage.setItem('lang', l); } catch(e) {}
+    document.cookie = 'lang=' + l + '; path=/; max-age=31536000';
+}
+
 function applyTranslations() {
-    const lang = localStorage.getItem('lang') || 'id';
+    const lang = getLang() || 'id';
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (window.i18n && window.i18n[lang] && window.i18n[lang][key]) {
@@ -33,9 +48,9 @@ function toggleLanguage() {
         return;
     }
     try {
-        let lang = localStorage.getItem('lang') || 'id';
+        let lang = getLang() || 'id';
         lang = lang === 'id' ? 'en' : 'id';
-        localStorage.setItem('lang', lang);
+        setLang(lang);
         
         applyTranslations();
         
@@ -141,7 +156,7 @@ function toggleLanguage() {
     products.forEach(product => {
         const badgeClass = product.category === 'Roasted Bean' ? 'badge-roasted' : 'badge-green';
         const badgeLabel = product.category === 'Roasted Bean' ? '&#9749; Roasted' : '&#127861; Minuman';
-        const lang = localStorage.getItem('lang') || 'id';
+        const lang = getLang() || 'id';
         const pNotes = (lang === 'en' && product.notes_en) ? product.notes_en : product.notes;
 
         let defaultPriceStr = formatRupiah(product.price);
@@ -367,7 +382,7 @@ async function fetchProducts() {
             let variantHTML = '';
             let defaultPriceStr = '';
             const hasVariants = p.variants && Array.isArray(p.variants) && p.variants.length > 0;
-            const lang = localStorage.getItem('lang') || 'id';
+            const lang = getLang() || 'id';
             const pNotes = (lang === 'en' && p.notes_en) ? p.notes_en : p.notes;
             const pDesc = (lang === 'en' && p.description_en) ? p.description_en : p.description;
 
@@ -452,7 +467,7 @@ async function fetchProducts() {
             if(!p) return;
             
             const hasVariants = p.variants && Array.isArray(p.variants) && p.variants.length > 0;
-            const lang = localStorage.getItem('lang') || 'id';
+            const lang = getLang() || 'id';
             const pNotes = (lang === 'en' && p.notes_en) ? p.notes_en : p.notes;
             const pDesc = (lang === 'en' && p.description_en) ? p.description_en : p.description;
             if(hasVariants) {
@@ -971,3 +986,5 @@ async function fetchProducts() {
             // Re-render with filter
             applyFilters();
         };
+a p p l y T r a n s l a t i o n s ( ) ;  
+ 
