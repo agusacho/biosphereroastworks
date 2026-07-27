@@ -28,11 +28,30 @@ function applyTranslations() {
 }
 
 function toggleLanguage() {
-    let lang = localStorage.getItem('lang') || 'id';
-    lang = lang === 'id' ? 'en' : 'id';
-    localStorage.setItem('lang', lang);
-    applyTranslations();
-    window.location.reload(); // Hard reload is better for settings and dynamic elements
+    if (typeof window.i18n === 'undefined') {
+        alert('Data bahasa belum selesai dimuat. Silakan refresh halaman.');
+        return;
+    }
+    try {
+        let lang = localStorage.getItem('lang') || 'id';
+        lang = lang === 'id' ? 'en' : 'id';
+        localStorage.setItem('lang', lang);
+        
+        applyTranslations();
+        
+        // Refresh products directly if on product page
+        if (typeof currentFilteredProducts !== 'undefined' && currentFilteredProducts.length > 0) {
+            renderProducts(currentFilteredProducts);
+        }
+        
+        document.body.style.opacity = '0.5';
+        setTimeout(() => {
+            window.location.reload();
+        }, 150);
+    } catch(e) {
+        alert('Gagal mengganti bahasa. Pastikan LocalStorage browser Anda aktif.');
+        console.error(e);
+    }
 }
 
 
