@@ -1,4 +1,41 @@
 
+/* --- I18N SUPPORT --- */
+function applyTranslations() {
+    const lang = localStorage.getItem('lang') || 'id';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (window.i18n && window.i18n[lang] && window.i18n[lang][key]) {
+            if (el.tagName === 'INPUT' && el.type === 'text') {
+                el.placeholder = window.i18n[lang][key];
+            } else {
+                el.innerText = window.i18n[lang][key];
+            }
+        }
+    });
+
+    // Update switcher UI
+    const idEl = document.getElementById('langId');
+    const enEl = document.getElementById('langEn');
+    if (idEl && enEl) {
+        if (lang === 'en') {
+            idEl.style.color = 'var(--muted)';
+            enEl.style.color = 'var(--accent)';
+        } else {
+            idEl.style.color = 'var(--accent)';
+            enEl.style.color = 'var(--muted)';
+        }
+    }
+}
+
+function toggleLanguage() {
+    let lang = localStorage.getItem('lang') || 'id';
+    lang = lang === 'id' ? 'en' : 'id';
+    localStorage.setItem('lang', lang);
+    applyTranslations();
+    window.location.reload(); // Hard reload is better for settings and dynamic elements
+}
+
+
         /* --- 1. SETUP SUPABASE --- */
         const SUPABASE_URL = 'https://gvuzsbrplmgqjuchjcpk.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2dXpzYnJwbG1ncWp1Y2hqY3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MTE5NDMsImV4cCI6MjA5MTI4Nzk0M30.PowRUwVvHnEKvfBC3jvK5gHUsCACT2ecTJxOAat8qXU';
@@ -85,6 +122,8 @@
     products.forEach(product => {
         const badgeClass = product.category === 'Roasted Bean' ? 'badge-roasted' : 'badge-green';
         const badgeLabel = product.category === 'Roasted Bean' ? '&#9749; Roasted' : '&#127861; Minuman';
+        const lang = localStorage.getItem('lang') || 'id';
+        const pNotes = (lang === 'en' && product.notes_en) ? product.notes_en : product.notes;
 
         let defaultPriceStr = formatRupiah(product.price);
         const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
@@ -120,7 +159,7 @@
             </div>
             <div class="product-info">
                 <h3 class="product-name">${product.name}</h3>
-                <p class="product-notes">${product.notes || '&nbsp;'}</p>
+                <p class="product-notes">${pNotes || '&nbsp;'}</p>
                 ${variantTagsHtml ? `<div class="product-variants-tags">${variantTagsHtml}</div>` : ''}
                 <div class="product-card-footer">
                     <div>
@@ -309,6 +348,9 @@ async function fetchProducts() {
             let variantHTML = '';
             let defaultPriceStr = '';
             const hasVariants = p.variants && Array.isArray(p.variants) && p.variants.length > 0;
+            const lang = localStorage.getItem('lang') || 'id';
+            const pNotes = (lang === 'en' && p.notes_en) ? p.notes_en : p.notes;
+            const pDesc = (lang === 'en' && p.description_en) ? p.description_en : p.description;
 
             if (hasVariants) {
                 defaultPriceStr = formatRupiah(p.variants[0].price);
@@ -338,7 +380,8 @@ async function fetchProducts() {
                         
                         <div style="font-size: 1.5rem; font-weight: 700; color: #B38728; margin-bottom: 20px;" id="modalPriceDisplay">${defaultPriceStr}</div>
                         
-                        <p class="mb-4"><strong>Notes:</strong> ${p.notes || '-'}</p>
+                        <p class="mb-4"><strong>Notes:</strong> ${pNotes || '-'}</p>
+                        ${pDesc ? `<p class="mb-4 text-muted" style="font-size:0.95rem; line-height:1.5;">${pDesc.replace(/\n/g, '<br>')}</p>` : ''}
                         ${p.origin ? `<p class="mb-2"><strong>Origin:</strong> ${p.origin}</p>` : ''}
                         ${p.process ? `<p class="mb-4"><strong>Proses:</strong> ${p.process}</p>` : ''}
                         
@@ -390,6 +433,9 @@ async function fetchProducts() {
             if(!p) return;
             
             const hasVariants = p.variants && Array.isArray(p.variants) && p.variants.length > 0;
+            const lang = localStorage.getItem('lang') || 'id';
+            const pNotes = (lang === 'en' && p.notes_en) ? p.notes_en : p.notes;
+            const pDesc = (lang === 'en' && p.description_en) ? p.description_en : p.description;
             if(hasVariants) {
                 openProductDetail(id); 
                 return;

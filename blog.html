@@ -39,16 +39,19 @@
             </a>
             <nav>
                 <ul class="nav-links" id="navLinks">
-                    <li><a href="index.html">Beranda</a></li>
-                    <li><a href="produk.html">Produk</a></li>
-                    <li><a href="tentang.html">Tentang Kami</a></li>
-                    <li><a href="roasting.html">Proses Sangrai</a></li>
-                    <li><a href="blog.html" class="active">Blog</a></li>
+                    <li><a href="index.html" data-i18n="nav_home">Beranda</a></li>
+                    <li><a href="produk.html" data-i18n="nav_products">Produk</a></li>
+                    <li><a href="tentang.html" data-i18n="nav_about">Tentang Kami</a></li>
+                    <li><a href="roasting.html" data-i18n="nav_roasting">Proses Sangrai</a></li>
+                    <li><a href="blog.html" class="active" data-i18n="nav_blog">Blog</a></li>
                     <li><a href="tracking.html">Lacak</a></li>
-                    <li><a href="kontak.html">Kontak</a></li>
+                    <li><a href="kontak.html" data-i18n="nav_contact">Kontak</a></li>
                 </ul>
             </nav>
             <div class="nav-actions">
+                <div class="lang-switch" style="cursor: pointer; font-size: .95rem; color: var(--primary); margin-right: 15px; font-weight: 700;" onclick="toggleLanguage()">
+                    <span id="langId" style="color:var(--accent);">ID</span> | <span id="langEn" style="color:var(--muted);">EN</span>
+                </div>
                 <div class="user-icon" id="userIcon" onclick="openAuthModal()" style="cursor: pointer; font-size: 1.3rem; color: var(--primary);">
                     <i class="fa-regular fa-user"></i>
                 </div>

@@ -1025,12 +1025,20 @@
                 </div>
             </div>
             <div class="fg">
-                <label>Notes / Flavor Profile</label>
+                <label>Notes / Flavor Profile (ID)</label>
                 <input type="text" class="fi" id="editNotes" placeholder="Fruity, Chocolate, Citrus...">
             </div>
             <div class="fg">
-                <label>Deskripsi</label>
+                <label>Notes / Flavor Profile (EN)</label>
+                <input type="text" class="fi" id="editNotesEn" placeholder="Fruity, Chocolate, Citrus...">
+            </div>
+            <div class="fg">
+                <label>Deskripsi (ID)</label>
                 <textarea class="fi" id="editDesc" placeholder="Deskripsi produk..."></textarea>
+            </div>
+            <div class="fg">
+                <label>Deskripsi (EN)</label>
+                <textarea class="fi" id="editDescEn" placeholder="Product description..."></textarea>
             </div>
             <div class="fg">
                 <label>Varian (JSON)
@@ -1430,6 +1438,8 @@ function openProductModal(id = null) {
         document.getElementById('editStock').value    = p.stock_quantity || '';
         document.getElementById('editNotes').value    = p.notes || '';
         document.getElementById('editDesc').value     = p.description || '';
+        document.getElementById('editNotesEn').value  = p.notes_en || '';
+        document.getElementById('editDescEn').value   = p.description_en || '';
         document.getElementById('editVariants').value = JSON.stringify(p.variants || [], null, 2);
         // Load existing image
         if (p.image_icon) {
@@ -1442,7 +1452,7 @@ function openProductModal(id = null) {
         }
     } else {
         document.getElementById('prodModalTitle').textContent = 'Tambah Produk Baru';
-        ['editName','editPrice','editStock','editNotes','editDesc','editVariants'].forEach(i => document.getElementById(i).value = '');
+        ['editName','editPrice','editStock','editNotes','editDesc','editNotesEn','editDescEn','editVariants'].forEach(i => document.getElementById(i).value = '');
         clearProductImage();
     }
     document.getElementById('productModal').classList.add('open');
@@ -1456,6 +1466,8 @@ async function saveProduct() {
     const stock    = parseInt(document.getElementById('editStock').value) || 0;
     const notes    = document.getElementById('editNotes').value.trim();
     const desc     = document.getElementById('editDesc').value.trim();
+    const notes_en = document.getElementById('editNotesEn').value.trim();
+    const desc_en  = document.getElementById('editDescEn').value.trim();
     let variants = [];
     try { const raw = document.getElementById('editVariants').value.trim(); variants = raw ? JSON.parse(raw) : []; }
     catch { toast('Format JSON varian tidak valid!', 'err'); return; }

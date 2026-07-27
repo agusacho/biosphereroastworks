@@ -39,7 +39,13 @@
             return;
         }
 
-        const get = (k, fb = '') => cfg[k] !== undefined ? cfg[k] : fb;
+        const lang = localStorage.getItem('lang') || 'id';
+        const get = (k, fb = '') => {
+            if (lang === 'en' && cfg[`${k}_en`]) {
+                return cfg[`${k}_en`];
+            }
+            return cfg[k] !== undefined ? cfg[k] : fb;
+        };
         const page = document.body.dataset.page || '';
 
         /* ── ANNOUNCEMENT BAR (semua halaman) ─────────────────────── */
