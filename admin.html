@@ -179,6 +179,50 @@
             .settings-grid { grid-template-columns:1fr; }
         }
 
+
+        /* ─── TOGGLE SWITCH ─── */
+        .toggle-wrap { display:flex; align-items:center; justify-content:space-between; }
+        .toggle { position:relative; display:inline-block; width:50px; height:26px; flex-shrink:0; }
+        .toggle input { opacity:0; width:0; height:0; }
+        .toggle-slider {
+            position:absolute; cursor:pointer; inset:0;
+            background:var(--surface2); border:1px solid var(--border);
+            border-radius:26px; transition:.3s;
+        }
+        .toggle-slider::before {
+            content:''; position:absolute; height:18px; width:18px;
+            left:4px; bottom:3px; background:var(--muted);
+            border-radius:50%; transition:.3s;
+        }
+        .toggle input:checked + .toggle-slider { background:rgba(34,197,94,.2); border-color:#22C55E; }
+        .toggle input:checked + .toggle-slider::before { transform:translateX(24px); background:#22C55E; }
+
+        /* ─── PAGE CARDS ─── */
+        .pages-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+        .page-card {
+            background:var(--surface); border:1px solid var(--border);
+            border-radius:14px; overflow:hidden; transition:transform .2s, border-color .2s;
+        }
+        .page-card:hover { transform:translateY(-2px); }
+        .page-card.card-active  { border-color:rgba(34,197,94,.3); }
+        .page-card.card-offline { border-color:rgba(239,68,68,.3); }
+        .page-card-top {
+            height:6px;
+        }
+        .page-card.card-active  .page-card-top { background:linear-gradient(90deg,#168782,#22C55E); }
+        .page-card.card-offline .page-card-top { background:linear-gradient(90deg,#EF4444,#F97316); }
+        .page-card-body { padding:18px; }
+        .page-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+        .page-card-icon { width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex-shrink:0; }
+        .page-card-name { font-weight:700; font-size:.95rem; }
+        .page-card-url  { font-size:.75rem; color:var(--muted); font-family:monospace; }
+        .page-card-desc { font-size:.82rem; color:var(--muted); margin:10px 0 14px; line-height:1.5; }
+        .page-card-footer { display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px solid var(--border); }
+        .status-pill { font-size:.72rem; font-weight:700; padding:3px 10px; border-radius:20px; letter-spacing:.4px; text-transform:uppercase; }
+        .status-pill.online  { background:rgba(34,197,94,.12); color:#22C55E; }
+        .status-pill.offline { background:rgba(239,68,68,.12);  color:#EF4444; }
+        .page-open-link { font-size:.78rem; color:var(--muted); text-decoration:none; display:flex; align-items:center; gap:4px; transition:color .2s; }
+        .page-open-link:hover { color:var(--accent); }
         /* ─── IMAGE UPLOAD ─── */
         .img-upload-area {
             border: 2px dashed var(--border);
@@ -271,6 +315,9 @@
         </a>
 
         <div class="nav-label">Konten</div>
+        <a class="nav-item" onclick="showPage('pages')" id="nav-pages">
+            <i class="fa-solid fa-toggle-on"></i> Halaman Aktif
+        </a>
         <a class="nav-item" onclick="showPage('settings')" id="nav-settings">
             <i class="fa-solid fa-palette"></i> Tampilan & Konten
         </a>
@@ -396,6 +443,22 @@
                         <thead><tr><th>Produk</th><th>Kategori</th><th>Harga</th><th>Varian</th><th>Stok</th><th>Rating</th><th>Notes</th><th>Aksi</th></tr></thead>
                         <tbody id="productsBody"><tr class="ld"><td colspan="8"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</td></tr></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ── HALAMAN AKTIF ─────────────────────────────────────────── -->
+        <div class="page" id="page-pages">
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-head">
+                    <div>
+                        <div class="card-title">Manajemen Status Halaman</div>
+                        <div style="font-size:.82rem;color:var(--muted);margin-top:2px;">Nonaktifkan halaman sementara — pengunjung akan melihat halaman maintenance.</div>
+                    </div>
+                </div>
+                <div style="padding:20px;" id="pagesGrid">
+                    <div style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</div>
                 </div>
             </div>
         </div>
@@ -567,6 +630,7 @@ function showPage(name) {
     if (name === 'orders')   loadOrders();
     if (name === 'products') loadProducts();
     if (name === 'settings') loadSettings();
+    if (name === 'pages')    loadPages();
     closeSidebar();
 }
 
@@ -576,6 +640,7 @@ function refreshCurrent() {
     if (active === 'orders')    loadOrders();
     if (active === 'products')  loadProducts();
     if (active === 'settings')  loadSettings();
+    if (active === 'pages')     loadPages();
     toast('Diperbarui', 'info');
 }
 
@@ -946,6 +1011,107 @@ async function uploadProductImage(file) {
         } else {
             toast('Upload gagal: ' + err.message, 'err');
         }
+    }
+}
+
+/* ═══ PAGE VISIBILITY MANAGEMENT ══════════════════════════════════════════ */
+const PAGE_DEFS = [
+    { key:'page_beranda',   name:'Beranda',        url:'index.html',    icon:'fa-house',          color:'rgba(212,175,55,.12)',  colorText:'#D4AF37', desc:'Halaman utama dengan hero slider, quiz kopi, testimoni, dan tentang kami.' },
+    { key:'page_produk',    name:'Produk',         url:'produk.html',   icon:'fa-mug-hot',         color:'rgba(22,135,130,.12)', colorText:'#168782', desc:'Katalog produk minuman kopi dan roasted bean dengan filter kategori.' },
+    { key:'page_tentang',   name:'Tentang Kami',   url:'tentang.html',  icon:'fa-store',           color:'rgba(59,130,246,.12)', colorText:'#3B82F6', desc:'Profil perusahaan, visi misi, dan anggota tim Biosphere Roast Works.' },
+    { key:'page_roasting',  name:'Proses Sangrai', url:'roasting.html', icon:'fa-fire-flame-curved',color:'rgba(249,115,22,.12)',colorText:'#F97316', desc:'Penjelasan filosofi dan tahapan proses sangrai kopi kami.' },
+    { key:'page_blog',      name:'Blog',           url:'blog.html',     icon:'fa-newspaper',       color:'rgba(168,85,247,.12)', colorText:'#A855F7', desc:'Artikel dan tips seputar dunia kopi dari tim Biosphere.' },
+    { key:'page_tracking',  name:'Lacak Pesanan',  url:'tracking.html', icon:'fa-truck-fast',      color:'rgba(34,197,94,.12)', colorText:'#22C55E', desc:'Halaman pelacakan status dan riwayat pesanan pelanggan.' },
+    { key:'page_kontak',    name:'Kontak',         url:'kontak.html',   icon:'fa-phone',           color:'rgba(239,68,68,.12)', colorText:'#EF4444', desc:'Formulir kontak, nomor WhatsApp, alamat, dan peta lokasi.' },
+];
+
+let pageStates = {}; // key → 'true'/'false'
+
+async function loadPages() {
+    const grid = document.getElementById('pagesGrid');
+    grid.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</div>`;
+    try {
+        const { data, error } = await _sb.from('site_settings')
+            .select('key,value')
+            .in('key', PAGE_DEFS.map(p => p.key));
+        if (error) throw error;
+
+        // Build state map, default = true (active)
+        pageStates = {};
+        PAGE_DEFS.forEach(p => { pageStates[p.key] = 'true'; });
+        (data || []).forEach(row => { pageStates[row.key] = row.value; });
+
+        renderPages();
+    } catch (err) {
+        grid.innerHTML = `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i>Gagal memuat: ${err.message}</div>`;
+    }
+}
+
+function renderPages() {
+    const grid = document.getElementById('pagesGrid');
+    grid.innerHTML = `<div class="pages-grid">${PAGE_DEFS.map(p => {
+        const isActive = pageStates[p.key] !== 'false';
+        return `
+        <div class="page-card ${isActive ? 'card-active' : 'card-offline'}" id="card_${p.key}">
+            <div class="page-card-top"></div>
+            <div class="page-card-body">
+                <div class="page-card-header">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div class="page-card-icon" style="background:${p.color};color:${p.colorText};">
+                            <i class="fa-solid ${p.icon}"></i>
+                        </div>
+                        <div>
+                            <div class="page-card-name">${p.name}</div>
+                            <div class="page-card-url">/${p.url}</div>
+                        </div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" ${isActive ? 'checked' : ''} onchange="togglePage('${p.key}', this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="page-card-desc">${p.desc}</div>
+                <div class="page-card-footer">
+                    <span class="status-pill ${isActive ? 'online' : 'offline'}">
+                        ${isActive ? '● Aktif' : '● Maintenance'}
+                    </span>
+                    <a href="${p.url}" target="_blank" class="page-open-link">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka
+                    </a>
+                </div>
+            </div>
+        </div>`;
+    }).join('')}</div>`;
+}
+
+async function togglePage(key, isActive) {
+    const value = isActive ? 'true' : 'false';
+    pageStates[key] = value;
+
+    // Optimistic UI update
+    const card = document.getElementById('card_' + key);
+    if (card) {
+        card.className = 'page-card ' + (isActive ? 'card-active' : 'card-offline');
+        const pill = card.querySelector('.status-pill');
+        if (pill) {
+            pill.className = 'status-pill ' + (isActive ? 'online' : 'offline');
+            pill.textContent = isActive ? '● Aktif' : '● Maintenance';
+        }
+    }
+
+    try {
+        const { error } = await _sb.from('site_settings').upsert(
+            [{ key, value, type:'boolean', label: PAGE_DEFS.find(p=>p.key===key)?.name + ' — Status Aktif', section:'pages', updated_at: new Date().toISOString() }],
+            { onConflict:'key' }
+        );
+        if (error) throw error;
+        const def = PAGE_DEFS.find(p => p.key === key);
+        toast(`${def?.name} → ${isActive ? '✅ Aktif' : '🔴 Maintenance'}`, isActive ? 'ok' : 'info');
+    } catch (err) {
+        // Revert
+        pageStates[key] = isActive ? 'false' : 'true';
+        renderPages();
+        toast('Gagal mengubah status: ' + err.message, 'err');
     }
 }
 /* ═══ SETTINGS / TAMPILAN ═════════════════════════════════════════════════ */

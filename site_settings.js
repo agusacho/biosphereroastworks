@@ -9,6 +9,19 @@
     const SUPABASE_URL = 'https://gvuzsbrplmgqjuchjcpk.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2dXpzYnJwbG1ncWp1Y2hqY3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MTE5NDMsImV4cCI6MjA5MTI4Nzk0M30.PowRUwVvHnEKvfBC3jvK5gHUsCACT2ecTJxOAat8qXU';
 
+    // Map: filename → settings key
+    const PAGE_KEY_MAP = {
+        'index.html':    'page_beranda',
+        'produk.html':   'page_produk',
+        'tentang.html':  'page_tentang',
+        'roasting.html': 'page_roasting',
+        'blog.html':     'page_blog',
+        'tracking.html': 'page_tracking',
+        'kontak.html':   'page_kontak',
+    };
+    const currentFile = window.location.pathname.split('/').pop() || 'index.html';
+    const pageKey     = PAGE_KEY_MAP[currentFile];
+
     try {
         const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const { data, error } = await _sb.from('site_settings').select('key,value,type');
@@ -17,6 +30,13 @@
         // Build key→value map
         const cfg = {};
         data.forEach(r => { cfg[r.key] = r.value || ''; });
+
+        /* ── PAGE VISIBILITY CHECK ─────────────────────────────── */
+        // If this page has been disabled by admin, redirect to maintenance
+        if (pageKey && cfg[pageKey] === 'false') {
+            window.location.replace('maintenance.html');
+            return;
+        }
 
         const get = (k, fb = '') => cfg[k] !== undefined ? cfg[k] : fb;
         const page = document.body.dataset.page || '';
