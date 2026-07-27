@@ -501,6 +501,37 @@ async function fetchProducts() {
                 return;
             }
 
+            // Cek pengaturan order via WhatsApp
+            const waEnabled = window.SITE_SETTINGS && window.SITE_SETTINGS['enable_whatsapp_order'] === 'true';
+            if (waEnabled) {
+                const waNumber = window.SITE_SETTINGS['whatsapp_order_number'] || '6281234567890';
+                let waMessage = window.SITE_SETTINGS['whatsapp_order_message'] || 'Halo Biosphere, saya ingin memesan kopi:\n\n{cart_details}\n\nTotal: {total}\nNama: {name}\nEmail: {email}';
+                
+                let cartDetails = cart.map(item => `- ${item.name} (${item.variant}) x${item.qty} = ${formatRupiah(item.price * item.qty)}`).join('\n');
+                let totalStr = formatRupiah(cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0));
+                
+                let cName = currentUser ? (currentUser.user_metadata?.name || 'User') : 'Guest';
+                let cEmail = currentUser ? currentUser.email : 'guest@example.com';
+
+                waMessage = waMessage.replace('{cart_details}', cartDetails)
+                                     .replace('{total}', totalStr)
+                                     .replace('{name}', cName)
+                                     .replace('{email}', cEmail);
+                                     
+                const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}?text=${encodeURIComponent(waMessage)}`;
+                
+                document.getElementById('cartOffcanvas').classList.remove('active');
+                const overlay = document.getElementById('overlay');
+                if(overlay) overlay.classList.remove('active');
+                
+                cart = [];
+                saveCart();
+                renderCart();
+                
+                window.open(waUrl, '_blank');
+                return;
+            }
+
             const total = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
             document.getElementById('paymentTotalDisplay').innerText = formatRupiah(total);
 
@@ -546,32 +577,6 @@ async function fetchProducts() {
                 },
                 paymentMethod: selectedPaymentMethod
             };
-
-            // Cek pengaturan order via WhatsApp
-            const waEnabled = window.SITE_SETTINGS && window.SITE_SETTINGS['enable_whatsapp_order'] === 'true';
-            if (waEnabled) {
-                const waNumber = window.SITE_SETTINGS['whatsapp_order_number'] || '6281234567890';
-                let waMessage = window.SITE_SETTINGS['whatsapp_order_message'] || 'Halo Biosphere, saya ingin memesan kopi:\n\n{cart_details}\n\nTotal: {total}\nNama: {name}\nEmail: {email}';
-                
-                let cartDetails = cart.map(item => `- ${item.name} (${item.variant}) x${item.qty} = ${formatRupiah(item.price * item.qty)}`).join('\n');
-                let totalStr = formatRupiah(cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0));
-                
-                waMessage = waMessage.replace('{cart_details}', cartDetails)
-                                     .replace('{total}', totalStr)
-                                     .replace('{name}', payload.customer.name)
-                                     .replace('{email}', payload.customer.email);
-                                     
-                const waUrl = `https://wa.me/${waNumber.replace(/\D/g, '')}?text=${encodeURIComponent(waMessage)}`;
-                
-                closeModal('paymentModal');
-                closeModal('cartModal');
-                cart = [];
-                saveCart();
-                renderCart();
-                
-                window.open(waUrl, '_blank');
-                return;
-            }
 
             showLoader();
 
