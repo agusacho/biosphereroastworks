@@ -142,8 +142,72 @@
         .settings-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
         .setting-item { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px; }
         .setting-item label { display:block; font-size:.75rem; font-weight:600; color:var(--muted); margin-bottom:8px; letter-spacing:.4px; }
-        .image-preview { margin-top:8px; border-radius:8px; overflow:hidden; max-height:100px; background:rgba(0,0,0,.2); }
-        .image-preview img { width:100%; height:100px; object-fit:cover; display:block; }
+        .image-preview { margin-top:8px; border-radius:8px; overflow:hidden; background:rgba(0,0,0,.2); position:relative; }
+        .image-preview img { width:100%; height:110px; object-fit:cover; display:block; }
+        .image-preview-del {
+            position:absolute; top:6px; right:6px;
+            background:rgba(239,68,68,.85); color:#fff; border:none;
+            border-radius:6px; width:26px; height:26px; cursor:pointer;
+            font-size:.8rem; display:flex; align-items:center; justify-content:center;
+        }
+        /* Mini upload row for settings image fields */
+        .img-field-wrap { display:flex; gap:6px; align-items:stretch; }
+        .img-field-wrap .fi { flex:1; }
+        .btn-upload-mini {
+            display:flex; align-items:center; justify-content:center; gap:5px;
+            padding:0 12px; border-radius:8px; border:1px solid var(--border);
+            background:rgba(212,175,55,.1); color:var(--accent); font-size:.78rem;
+            font-weight:600; cursor:pointer; font-family:var(--font); white-space:nowrap;
+            transition:all .2s; flex-shrink:0;
+        }
+        .btn-upload-mini:hover { background:rgba(212,175,55,.22); border-color:var(--accent); }
+        .btn-upload-mini:disabled { opacity:.5; cursor:not-allowed; }
+        /* Full-screen upload modal */
+        .upload-modal {
+            position:fixed; inset:0; z-index:2000;
+            background:rgba(0,0,0,.75); backdrop-filter:blur(8px);
+            display:none; align-items:center; justify-content:center; padding:20px;
+        }
+        .upload-modal.open { display:flex; }
+        .upload-modal-box {
+            background:var(--surface); border:1px solid var(--border);
+            border-radius:18px; width:100%; max-width:480px;
+            animation:mIn .28s cubic-bezier(.4,0,.2,1);
+        }
+        .upload-modal-head {
+            padding:18px 22px; border-bottom:1px solid var(--border);
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .upload-modal-head h3 { font-size:.95rem; font-weight:700; }
+        .upload-modal-body { padding:22px; }
+        /* Drop zone inside upload modal */
+        .cnt-drop-zone {
+            border:2px dashed var(--border); border-radius:12px;
+            padding:28px 20px; text-align:center; cursor:pointer;
+            background:var(--surface2); transition:all .25s; position:relative;
+        }
+        .cnt-drop-zone:hover, .cnt-drop-zone.drag-over {
+            border-color:var(--accent); background:rgba(212,175,55,.05);
+        }
+        .cnt-drop-zone input[type=file] {
+            position:absolute; inset:0; opacity:0; cursor:pointer;
+        }
+        .cnt-drop-icon { font-size:2rem; color:var(--muted); margin-bottom:10px; }
+        .cnt-drop-zone p { font-size:.82rem; color:var(--muted); margin:0; }
+        .cnt-drop-zone strong { color:var(--accent); }
+        .cnt-progress { height:5px; background:var(--border); border-radius:3px; margin-top:14px; overflow:hidden; display:none; }
+        .cnt-progress-bar { height:100%; width:0%; border-radius:3px; background:linear-gradient(90deg,var(--accent2),var(--accent)); transition:width .3s; }
+        .cnt-preview { margin-top:14px; border-radius:10px; overflow:hidden; display:none; position:relative; }
+        .cnt-preview img { width:100%; max-height:160px; object-fit:cover; display:block; }
+        .cnt-preview-del {
+            position:absolute; top:6px; right:6px;
+            background:rgba(239,68,68,.85); color:#fff; border:none;
+            border-radius:6px; width:26px; height:26px; cursor:pointer;
+            font-size:.8rem; display:flex; align-items:center; justify-content:center;
+        }
+        .cnt-url-row { margin-top:12px; }
+        .cnt-url-row label { font-size:.72rem; font-weight:600; color:var(--muted); letter-spacing:.4px; display:block; margin-bottom:5px; }
+        .upload-modal-foot { padding:14px 22px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
 
         /* ─── TOAST ─── */
         .toast-wrap { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
@@ -562,6 +626,48 @@
         </div>
     </div>
 </div>
+
+<!-- ═══ CONTENT IMAGE UPLOAD MODAL ══════════════════════════════════════════ -->
+<div class="upload-modal" id="contentUploadModal">
+    <div class="upload-modal-box">
+        <div class="upload-modal-head">
+            <h3 id="uploadModalTitle"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent);margin-right:7px;"></i>Upload Gambar</h3>
+            <button class="modal-close" onclick="closeContentUpload()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="upload-modal-body">
+            <div class="cnt-drop-zone" id="cntDropZone"
+                 ondragover="event.preventDefault();this.classList.add('drag-over')"
+                 ondragleave="this.classList.remove('drag-over')"
+                 ondrop="handleCntDrop(event)">
+                <input type="file" id="cntFileInput" accept="image/*" onchange="handleCntSelect(this)">
+                <div id="cntDropDefault">
+                    <div class="cnt-drop-icon"><i class="fa-solid fa-image"></i></div>
+                    <p><strong>Klik atau seret gambar</strong> ke sini<br>JPG, PNG, WebP, GIF — maks. 5 MB</p>
+                </div>
+            </div>
+            <div class="cnt-progress" id="cntProgress">
+                <div class="cnt-progress-bar" id="cntProgressBar"></div>
+            </div>
+            <div class="cnt-preview" id="cntPreview">
+                <img id="cntPreviewImg" src="" alt="Preview">
+                <button class="cnt-preview-del" onclick="clearCntUpload()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="cnt-url-row">
+                <label>URL GAMBAR</label>
+                <div style="display:flex;gap:8px;">
+                    <input type="text" class="fi" id="cntUrlInput" placeholder="Atau tempel URL gambar..." oninput="onCntUrlChange(this.value)">
+                </div>
+            </div>
+        </div>
+        <div class="upload-modal-foot">
+            <button class="btn btn-cancel" onclick="closeContentUpload()">Batal</button>
+            <button class="btn btn-save" id="cntApplyBtn" onclick="applyCntImage()" disabled>
+                <i class="fa-solid fa-check"></i> Terapkan
+            </button>
+        </div>
+    </div>
+</div>
+
 
 <!-- Toast -->
 <div class="toast-wrap" id="toastWrap"></div>
@@ -1189,9 +1295,16 @@ function renderSettings() {
                     <input type="text" id="s_${item.key}_txt" class="fi" style="flex:1;" value="${item.value||'#000000'}" onchange="document.getElementById('s_${item.key}').value=this.value">
                 </div>`;
             } else if (item.type === 'image_url') {
-                html += `<input type="text" class="fi" id="s_${item.key}" value="${escHtml(item.value||'')}" placeholder="https://..." oninput="updateImgPreview('${item.key}',this.value)">`;
-                html += `<div class="image-preview" id="prev_${item.key}" style="${item.value?'':'display:none;'}">
-                    <img src="${escHtml(item.value||'')}" onerror="this.parentElement.style.display='none'" alt="Preview">
+                const hasImg = !!item.value;
+                html += `<div class="img-field-wrap">
+                    <input type="text" class="fi" id="s_${item.key}" value="${escHtml(item.value||'')}" placeholder="https://... atau klik Upload" oninput="updateImgPreview('${item.key}',this.value)">
+                    <button class="btn-upload-mini" onclick="openContentUpload('${item.key}')">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                    </button>
+                </div>`;
+                html += `<div class="image-preview" id="prev_${item.key}" style="${hasImg?'':'display:none;'}">
+                    <img src="${escHtml(item.value||'')}" onerror="this.parentElement.style.display='none'" alt="Preview" style="height:110px;object-fit:cover;width:100%;">
+                    <button class="image-preview-del" onclick="clearSettingImage('${item.key}')" title="Hapus gambar"><i class="fa-solid fa-xmark"></i></button>
                 </div>`;
             } else {
                 html += `<input type="text" class="fi" id="s_${item.key}" value="${escHtml(item.value||'')}">`;
@@ -1244,6 +1357,165 @@ async function saveSettings() {
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open')); });
+
+/* ═══ CONTENT IMAGE UPLOAD (site_settings image_url fields) ═══════════════ */
+const CONTENT_BUCKET = 'content-images';
+let _cntTargetKey   = null;   // which setting key is being edited
+let _cntUploadedUrl = '';     // URL after successful upload
+
+function openContentUpload(key) {
+    _cntTargetKey = key;
+    // Pre-fill with existing value
+    const existing = document.getElementById('s_' + key)?.value || '';
+    _cntUploadedUrl = existing;
+    document.getElementById('cntUrlInput').value  = existing;
+    document.getElementById('cntApplyBtn').disabled = !existing;
+    // Show preview if existing
+    const prev = document.getElementById('cntPreview');
+    const img  = document.getElementById('cntPreviewImg');
+    if (existing) {
+        img.src = existing;
+        prev.style.display = '';
+        document.getElementById('cntDropDefault').style.display = 'none';
+    } else {
+        clearCntUpload();
+    }
+    document.getElementById('cntProgress').style.display     = 'none';
+    document.getElementById('cntProgressBar').style.width    = '0%';
+    document.getElementById('cntFileInput').value = '';
+    // Set modal title based on setting label
+    const s = siteSettings.find(x => x.key === key);
+    document.getElementById('uploadModalTitle').innerHTML =
+        `<i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent);margin-right:7px;"></i>Upload — ${s?.label || key}`;
+    document.getElementById('contentUploadModal').classList.add('open');
+}
+
+function closeContentUpload() {
+    document.getElementById('contentUploadModal').classList.remove('open');
+    _cntTargetKey = null;
+    _cntUploadedUrl = '';
+}
+
+function clearCntUpload() {
+    _cntUploadedUrl = '';
+    document.getElementById('cntPreview').style.display = 'none';
+    document.getElementById('cntPreviewImg').src = '';
+    document.getElementById('cntDropDefault').style.display = '';
+    document.getElementById('cntFileInput').value = '';
+    document.getElementById('cntUrlInput').value  = '';
+    document.getElementById('cntApplyBtn').disabled = true;
+}
+
+function onCntUrlChange(url) {
+    _cntUploadedUrl = url;
+    document.getElementById('cntApplyBtn').disabled = !url;
+    if (url) {
+        document.getElementById('cntPreviewImg').src = url;
+        document.getElementById('cntPreview').style.display = '';
+        document.getElementById('cntDropDefault').style.display = 'none';
+        document.getElementById('cntPreviewImg').onerror = () => {
+            document.getElementById('cntPreview').style.display = 'none';
+        };
+    } else {
+        document.getElementById('cntPreview').style.display = 'none';
+        document.getElementById('cntDropDefault').style.display = '';
+    }
+}
+
+function handleCntDrop(e) {
+    e.preventDefault();
+    document.getElementById('cntDropZone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) uploadContentImage(file);
+}
+
+function handleCntSelect(input) {
+    const file = input.files[0];
+    if (file) uploadContentImage(file);
+}
+
+async function uploadContentImage(file) {
+    if (file.size > 5 * 1024 * 1024) { toast('Gambar terlalu besar! Maks. 5 MB.', 'err'); return; }
+    const allowed = ['image/jpeg','image/png','image/webp','image/gif','image/svg+xml'];
+    if (!allowed.includes(file.type)) { toast('Format tidak didukung. Gunakan JPG/PNG/WebP/GIF.', 'err'); return; }
+
+    const prog = document.getElementById('cntProgress');
+    const bar  = document.getElementById('cntProgressBar');
+    prog.style.display = 'block';
+    bar.style.width    = '15%';
+    document.getElementById('cntDropDefault').style.display = 'none';
+    document.getElementById('cntApplyBtn').disabled = true;
+
+    try {
+        const ext  = file.name.split('.').pop().toLowerCase().replace('jpeg','jpg');
+        const ts   = Date.now();
+        const slug = (_cntTargetKey || 'img').replace(/[^a-z0-9_]/gi,'_').toLowerCase();
+        const path = `${slug}/${ts}.${ext}`;
+
+        bar.style.width = '45%';
+
+        const { error: upErr } = await _sb.storage
+            .from(CONTENT_BUCKET)
+            .upload(path, file, { upsert: true, contentType: file.type });
+
+        if (upErr) throw upErr;
+        bar.style.width = '80%';
+
+        const { data: urlData } = _sb.storage.from(CONTENT_BUCKET).getPublicUrl(path);
+        _cntUploadedUrl = urlData.publicUrl;
+
+        bar.style.width = '100%';
+        setTimeout(() => { prog.style.display = 'none'; }, 500);
+
+        // Show preview inside modal
+        const prevEl = document.getElementById('cntPreview');
+        const imgEl  = document.getElementById('cntPreviewImg');
+        imgEl.src = _cntUploadedUrl;
+        prevEl.style.display = '';
+        document.getElementById('cntUrlInput').value = _cntUploadedUrl;
+        document.getElementById('cntApplyBtn').disabled = false;
+        toast('Gambar berhasil diunggah!', 'ok');
+
+    } catch (err) {
+        prog.style.display = 'none';
+        bar.style.width = '0%';
+        document.getElementById('cntDropDefault').style.display = '';
+        if (err.message?.includes('Bucket not found')) {
+            toast('⚠️ Bucket "content-images" belum dibuat di Supabase Storage!', 'err');
+        } else {
+            toast('Upload gagal: ' + err.message, 'err');
+        }
+    }
+}
+
+function applyCntImage() {
+    if (!_cntTargetKey || !_cntUploadedUrl) return;
+    // Apply to the setting input
+    const input = document.getElementById('s_' + _cntTargetKey);
+    if (input) {
+        input.value = _cntUploadedUrl;
+        updateImgPreview(_cntTargetKey, _cntUploadedUrl);
+    }
+    // Update local siteSettings model
+    const s = siteSettings.find(x => x.key === _cntTargetKey);
+    if (s) s.value = _cntUploadedUrl;
+    toast('Gambar diterapkan! Klik Simpan Perubahan untuk menyimpan.', 'info');
+    closeContentUpload();
+}
+
+function clearSettingImage(key) {
+    const input = document.getElementById('s_' + key);
+    if (input) input.value = '';
+    updateImgPreview(key, '');
+    const s = siteSettings.find(x => x.key === key);
+    if (s) s.value = '';
+}
+
+// Close upload modal on backdrop click
+document.getElementById('contentUploadModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeContentUpload();
+});
+
 </script>
 </body>
 </html>
