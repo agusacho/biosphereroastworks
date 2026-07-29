@@ -1,66 +1,386 @@
 /**
  * i18n.js — Biosphere Roast Works Translation Dictionary
+ * Full bilingual support: Indonesian (id) & English (en)
  */
-
-const translations = {
+window.i18n = {
     id: {
-        // Navigasi
+        // === NAVIGASI ===
         'nav_home': 'Beranda',
         'nav_products': 'Produk',
-        'nav_about': 'Tentang',
-        'nav_roasting': 'Roasting',
+        'nav_about': 'Tentang Kami',
+        'nav_roasting': 'Proses Sangrai',
         'nav_blog': 'Blog',
+        'nav_track': 'Lacak',
         'nav_contact': 'Kontak',
 
-        // Keranjang & Checkout
+        // === HERO (INDEX) ===
+        'hero1_title': 'Single Origin Pilihan, Disangrai Setiap Pekan',
+        'hero1_sub': 'Temukan profil rasa terbaik dari biji kopi terbaik yang diproses dengan presisi.',
+        'hero1_cta': 'Jelajahi Koleksi',
+        'hero2_title': 'Racikan Kopi Segar dari Pengalaman Kami',
+        'hero2_sub': 'Nikmati kreasi minuman kopi spesialti kami, dari yang menyegarkan hingga creamy.',
+        'hero2_cta': 'Lihat Menu Minuman',
+        'hero3_title': 'Langsung dari Petani Penduduk Lokal',
+        'hero3_sub': 'Kami bekerja sama langsung dengan pekebun untuk memastikan keberlanjutan dan kualitas.',
+        'hero3_cta': 'Tentang Kami',
+
+        // === QUIZ (INDEX) ===
+        'quiz_teaser': 'Belum tahu mana yang cocok? Jawab dua pertanyaan singkat untuk menemukan kopi ideal Anda.',
+        'quiz_start_btn': 'Mulai Kuis',
+        'quiz_q1': 'Bagaimana Anda menyeduh kopi Anda?',
+        'quiz_q1_opt1': 'Mesin Espresso / Susu',
+        'quiz_q1_opt2': 'V60 / Pour-Over',
+        'quiz_q1_opt3': 'French Press',
+        'quiz_q2': 'Profil rasa apa yang Anda cari?',
+        'quiz_q2_opt1': 'Fruity, Floral, Asam Segar',
+        'quiz_q2_opt2': 'Cokelat, Karamel, Tebal',
+        'quiz_recommendation_title': 'Ini Rekomendasi Kami!',
+        'quiz_view_detail': 'Lihat Detail',
+        'quiz_no_result': 'Silakan cek koleksi lengkap kami!',
+        'quiz_notes_fallback': 'Pilihan terbaik untuk Anda',
+
+        // === PRODUK PAGE ===
+        'produk_hero_title': 'Koleksi Produk Kami',
+        'produk_hero_sub': 'Setiap tegukan bercerita — dari ladang ke cangkir Anda, dengan presisi dan passion.',
+        'produk_filter_all': 'Semua Produk',
+        'produk_filter_drinks': 'Minuman Kopi',
+        'produk_filter_beans': 'Roasted Bean',
+        'produk_search_placeholder': 'Cari produk...',
+        'produk_count_label': 'produk',
+        'produk_cat1_title': 'Minuman Kopi',
+        'produk_cat1_sub': 'Ready-to-drink dalam botol segar & can premium',
+        'produk_cat2_sub': 'Biji kopi sangrai pilihan dari single origin terbaik',
+        'produk_empty': 'Tidak ada produk ditemukan.',
+        'produk_starting_from': 'mulai dari',
+        'produk_badge_drinks': '🍵 Minuman',
+        'produk_badge_roasted': '☕ Roasted',
+        'produk_btn_detail': 'Detail',
+        'produk_btn_select': 'Pilih',
+        'produk_btn_add': 'Tambah',
+        'produk_select_variant': 'Pilih Varian/Ukuran:',
+        'produk_default_variant': 'Varian: Default (1 kg / 1 Pack)',
+        'produk_add_to_cart': 'Tambahkan ke Keranjang',
+        'produk_process_label': 'Proses:',
+        'produk_no_products_yet': 'Belum ada produk.',
+
+        // === CART ===
         'cart_title': 'Keranjang Belanja',
-        'cart_empty': 'Keranjang kosong',
-        'cart_checkout': 'Checkout Sekarang',
+        'cart_empty': 'Keranjang Anda kosong.',
         'cart_total': 'Total:',
-        
-        // Modal & Umum
-        'btn_close': 'Tutup',
-        'btn_buy': 'Beli',
-        'btn_read_more': 'Baca Selengkapnya',
-        
-        // Footer
+        'cart_checkout': 'Checkout Sekarang',
+        'cart_added_toast': 'ditambahkan ke keranjang',
+        'cart_empty_alert': 'Keranjang Anda kosong. Silakan belanja terlebih dahulu.',
+
+        // === PAYMENT MODAL ===
+        'payment_title': 'Pembayaran',
+        'payment_amount_due': 'Total Tagihan',
+        'payment_select_method': 'Pilih Metode Pembayaran',
+        'payment_auto_verify': 'Verifikasi Otomatis',
+        'payment_gopay_desc': 'Bayar instan pakai aplikasi Gojek',
+        'payment_pay_btn': 'Bayar Sekarang',
+        'payment_success': 'Pembayaran berhasil! Pesanan Anda akan segera diproses.',
+        'payment_pending': 'Menunggu pembayaran Anda!',
+        'payment_failed': 'Pembayaran gagal!',
+        'payment_closed': 'Anda menutup popup tanpa menyelesaikan pembayaran',
+        'payment_error': 'Terjadi kesalahan saat memproses pembayaran.',
+
+        // === AUTH MODAL ===
+        'auth_signin_title': 'Masuk ke Akun',
+        'auth_register_title': 'Daftar Akun Baru',
+        'auth_name_placeholder': 'Nama Lengkap',
+        'auth_email_placeholder': 'Alamat Email',
+        'auth_password_placeholder': 'Kata Sandi',
+        'auth_signin_btn': 'Masuk',
+        'auth_register_btn': 'Daftar',
+        'auth_no_account': 'Belum punya akun?',
+        'auth_have_account': 'Sudah punya akun?',
+        'auth_register_link': 'Daftar di sini',
+        'auth_signin_link': 'Masuk di sini',
+        'auth_profile_title': 'Profil Anda',
+        'auth_user_fallback': 'Pengguna',
+        'auth_logout_btn': 'Keluar',
+        'auth_success_signin': 'Berhasil masuk!',
+        'auth_success_register': 'Pendaftaran berhasil! Silakan cek email jika butuh verifikasi.',
+        'auth_success_signout': 'Berhasil keluar.',
+
+        // === TESTIMONI ===
+        'testimoni_title': 'Apa Kata Mereka',
+        'testimoni1_text': '"Profil roaster-nya sangat konsisten. Saya selalu beli Kamojang Vinoso dan rasanya selalu pas di V60. Sangat direkomendasikan!"',
+        'testimoni1_name': 'Rizki A.',
+        'testimoni1_role': 'Home Brewer',
+        'testimoni2_text': '"Pesan untuk cafe kecil saya, dan pelanggan sangat suka dengan blend espressonya. Pengiriman selalu tepat waktu dan kopinya masih fresh."',
+        'testimoni2_name': 'Dewi S.',
+        'testimoni2_role': 'Pemilik Kafe',
+        'testimoni3_text': '"Baru pertama kali coba beans dari sini, packing rapi, dan aroma kopi saat dibuka luar biasa wangi. Definitely will buy again."',
+        'testimoni3_name': 'Budi P.',
+        'testimoni3_role': 'Coffee Enthusiast',
+
+        // === TENTANG SECTION ===
+        'about_title': 'Tentang Kami',
+        'about_p1': 'Biosphere Roast Works lahir dari dedikasi untuk memahami kopi tidak hanya sebagai minuman, tetapi sebagai entitas biologis dan kimiawi yang kompleks.',
+        'about_p2': 'Perjalanan kami dimulai di dataran tinggi Jawa Barat, bekerja berdampingan dengan petani lokal untuk memastikan setiap ceri kopi dipanen pada puncak kematangannya.',
+        'about_plantation': 'Perkebunan Mitra Kami',
+        'about_cta': 'Tentang Kami',
+
+        // === ROASTING SECTION ===
+        'roasting_title': 'Filosofi Sangrai Kami',
+        'roasting_sub': 'Pendekatan presisi untuk mengeluarkan potensi maksimal setiap biji.',
+        'roasting_step1_title': '1. Pemanasan (Drying)',
+        'roasting_step1_desc': 'Menghilangkan kelembaban awal biji dengan suhu terkontrol perlahan.',
+        'roasting_step2_title': '2. Pengembangan (Maillard)',
+        'roasting_step2_desc': 'Reaksi kimia dimulai, gula karamelisasi, membentuk aroma kompleks.',
+        'roasting_step3_desc': 'Pecahnya biji melepas uap air, menandakan fase development dimulai.',
+        'roasting_step4_title': '4. Pendinginan Cepat',
+        'roasting_step4_desc': 'Menghentikan proses sangrai seketika untuk mengunci profil rasa.',
+        'roasting_table_level': 'Level Sangrai',
+        'roasting_table_char': 'Karakteristik Rasa',
+        'roasting_table_best': 'Cocok Untuk',
+        'roasting_light_desc': 'Asiditas tinggi, aroma floral/fruity sangat jelas, body ringan.',
+        'roasting_medium_desc': 'Seimbang antara asiditas, kemanisan, dan body. Catatan karamel/coklat mulai muncul.',
+        'roasting_dark_desc': 'Asiditas rendah, body tebal, rasa coklat pekat, smoky, manis bittersweet.',
+        'roasting_milk_coffee': 'Kopi Susu',
+
+        // === KONTAK SECTION ===
+        'kontak_title': 'Hubungi Kami',
+        'kontak_sub': 'Punya pertanyaan tentang produk, pesanan khusus, atau sekadar ingin menyapa? Jangan ragu untuk menghubungi kami.',
+        'kontak_name_placeholder': 'Nama Lengkap',
+        'kontak_email_placeholder': 'Alamat Email',
+        'kontak_message_placeholder': 'Pesan Anda',
+        'kontak_send_btn': 'Kirim Pesan',
+        'kontak_phone_label': 'Telepon / WhatsApp',
+        'kontak_maps_link': 'Buka di Google Maps',
+        'kontak_sent_toast': 'Pesan berhasil dikirim!',
+        'kontak_sent_offline': 'Simulasi Offline: Pesan terkirim!',
+
+        // === TRACKING PAGE ===
+        'track_title': 'Lacak Pesanan',
+        'track_sub': 'Masukkan ID Pesanan (Order ID) Anda untuk melihat status saat ini.',
+        'track_placeholder': 'Contoh: ORDER-123456789-123',
+        'track_btn': 'Lacak',
+        'track_detail_title': 'Detail Pesanan',
+        'track_status_label': 'Status:',
+        'track_date_label': 'Tanggal:',
+        'track_name_label': 'Nama:',
+        'track_total_label': 'Total:',
+        'track_items_label': 'Item Dibeli:',
+        'track_not_found': 'Pesanan tidak ditemukan. Pastikan Order ID sudah benar.',
+        'track_status_pending': 'MENUNGGU PEMBAYARAN',
+        'track_status_paid': 'LUNAS / DIPROSES',
+        'track_status_shipped': 'DIKIRIM',
+
+        // === BLOG PAGE ===
+        'blog_title': 'Jurnal & Edukasi',
+        'blog_sub': 'Menyelami dunia kopi dari hulu hingga hilir bersama Biosphere Roast Works.',
+        'blog_toc_title': 'Daftar Artikel',
+        'blog_art1_link': 'Dari Biji Kecil Menjadi Pohon Rindang: Awal Mula Perjalanan Kopi',
+        'blog_art2_link': 'Menjemur di Bawah Matahari: Seni Pascapanen yang Menentukan Kualitas Kopi',
+        'blog_art3_link': 'Api dan Aroma: Transformasi Biji Hijau Menjadi Kopi Berkarakter',
+        'blog_art4_link': 'Dari Bubuk ke Cangkir: Seni Menyeduh Kopi yang Sempurna',
+        'blog_art5_link': 'Dari Hulu ke Hilir: Masa Depan Industri Kopi Indonesia',
+        'blog_back_top': 'Kembali ke atas',
+
+        // === FOOTER ===
         'footer_products': 'Produk Kami',
         'footer_info': 'Info',
         'footer_follow': 'Ikuti Kami',
         'footer_copyright': '© 2026 Biosphere Roast Works. Hak Cipta dilindungi.',
 
-        // AI Chat
+        // === AI CHAT ===
         'ai_chat_placeholder': 'Ketik pesan...',
+
+        // === GENERAL ===
+        'btn_close': 'Tutup',
+        'lang_error_not_loaded': 'Data bahasa belum selesai dimuat. Silakan refresh halaman.',
+        'lang_error_failed': 'Gagal mengganti bahasa.',
     },
     en: {
-        // Navigasi
+        // === NAVIGASI ===
         'nav_home': 'Home',
         'nav_products': 'Products',
         'nav_about': 'About Us',
         'nav_roasting': 'Roasting',
         'nav_blog': 'Blog',
+        'nav_track': 'Track',
         'nav_contact': 'Contact',
 
-        // Keranjang & Checkout
+        // === HERO (INDEX) ===
+        'hero1_title': 'Premium Single Origin, Roasted Every Week',
+        'hero1_sub': 'Discover the best flavor profiles from the finest coffee beans, processed with precision.',
+        'hero1_cta': 'Explore the Collection',
+        'hero2_title': 'Fresh Coffee Blends from Our Expertise',
+        'hero2_sub': 'Enjoy our specialty coffee drink creations, from refreshing to creamy.',
+        'hero2_cta': 'View Drinks Menu',
+        'hero3_title': 'Directly from Local Farmers',
+        'hero3_sub': 'We work directly with growers to ensure sustainability and quality.',
+        'hero3_cta': 'About Us',
+
+        // === QUIZ (INDEX) ===
+        'quiz_teaser': 'Not sure which one suits you? Answer two quick questions to find your ideal coffee.',
+        'quiz_start_btn': 'Start Quiz',
+        'quiz_q1': 'How do you brew your coffee?',
+        'quiz_q1_opt1': 'Espresso Machine / Milk-based',
+        'quiz_q1_opt2': 'V60 / Pour-Over',
+        'quiz_q1_opt3': 'French Press',
+        'quiz_q2': 'What flavor profile are you looking for?',
+        'quiz_q2_opt1': 'Fruity, Floral, Bright Acidity',
+        'quiz_q2_opt2': 'Chocolate, Caramel, Full-bodied',
+        'quiz_recommendation_title': "Here's Our Recommendation!",
+        'quiz_view_detail': 'View Detail',
+        'quiz_no_result': 'Please check our full collection!',
+        'quiz_notes_fallback': 'The best choice for you',
+
+        // === PRODUK PAGE ===
+        'produk_hero_title': 'Our Product Collection',
+        'produk_hero_sub': 'Every sip tells a story — from the farm to your cup, with precision and passion.',
+        'produk_filter_all': 'All Products',
+        'produk_filter_drinks': 'Coffee Drinks',
+        'produk_filter_beans': 'Roasted Bean',
+        'produk_search_placeholder': 'Search products...',
+        'produk_count_label': 'products',
+        'produk_cat1_title': 'Coffee Drinks',
+        'produk_cat1_sub': 'Ready-to-drink in fresh bottles & premium cans',
+        'produk_cat2_sub': 'Selected roasted beans from the best single origins',
+        'produk_empty': 'No products found.',
+        'produk_starting_from': 'starting from',
+        'produk_badge_drinks': '🍵 Drinks',
+        'produk_badge_roasted': '☕ Roasted',
+        'produk_btn_detail': 'Detail',
+        'produk_btn_select': 'Select',
+        'produk_btn_add': 'Add',
+        'produk_select_variant': 'Select Variant / Size:',
+        'produk_default_variant': 'Variant: Default (1 kg / 1 Pack)',
+        'produk_add_to_cart': 'Add to Cart',
+        'produk_process_label': 'Process:',
+        'produk_no_products_yet': 'No products yet.',
+
+        // === CART ===
         'cart_title': 'Shopping Cart',
-        'cart_empty': 'Cart is empty',
-        'cart_checkout': 'Checkout Now',
+        'cart_empty': 'Your cart is empty.',
         'cart_total': 'Total:',
-        
-        // Modal & Umum
-        'btn_close': 'Close',
-        'btn_buy': 'Buy',
-        'btn_read_more': 'Read More',
-        
-        // Footer
+        'cart_checkout': 'Checkout Now',
+        'cart_added_toast': 'added to cart',
+        'cart_empty_alert': 'Your cart is empty. Please shop first.',
+
+        // === PAYMENT MODAL ===
+        'payment_title': 'Payment',
+        'payment_amount_due': 'Amount Due',
+        'payment_select_method': 'Select Payment Method',
+        'payment_auto_verify': 'Automatic Verification',
+        'payment_gopay_desc': 'Pay instantly via the Gojek app',
+        'payment_pay_btn': 'Pay Now',
+        'payment_success': 'Payment successful! Your order will be processed shortly.',
+        'payment_pending': 'Waiting for your payment!',
+        'payment_failed': 'Payment failed!',
+        'payment_closed': 'You closed the popup without completing payment',
+        'payment_error': 'An error occurred while processing payment.',
+
+        // === AUTH MODAL ===
+        'auth_signin_title': 'Sign In',
+        'auth_register_title': 'Create New Account',
+        'auth_name_placeholder': 'Full Name',
+        'auth_email_placeholder': 'Email Address',
+        'auth_password_placeholder': 'Password',
+        'auth_signin_btn': 'Sign In',
+        'auth_register_btn': 'Register',
+        'auth_no_account': "Don't have an account?",
+        'auth_have_account': 'Already have an account?',
+        'auth_register_link': 'Register here',
+        'auth_signin_link': 'Sign in here',
+        'auth_profile_title': 'Your Profile',
+        'auth_user_fallback': 'User',
+        'auth_logout_btn': 'Log Out',
+        'auth_success_signin': 'Signed in successfully!',
+        'auth_success_register': 'Registration successful! Please check your email if verification is needed.',
+        'auth_success_signout': 'Logged out successfully.',
+
+        // === TESTIMONI ===
+        'testimoni_title': 'What They Say',
+        'testimoni1_text': '"The roaster\'s profile is very consistent. I always buy Kamojang Vinoso and it always tastes perfect in V60. Highly recommended!"',
+        'testimoni1_name': 'Rizki A.',
+        'testimoni1_role': 'Home Brewer',
+        'testimoni2_text': '"Ordered for my small café, and customers love the espresso blend. Delivery is always on time and the coffee is still fresh."',
+        'testimoni2_name': 'Dewi S.',
+        'testimoni2_role': 'Café Owner',
+        'testimoni3_text': '"First time trying beans from here, packaging is neat, and the coffee aroma when opened is incredibly fragrant. Definitely will buy again."',
+        'testimoni3_name': 'Budi P.',
+        'testimoni3_role': 'Coffee Enthusiast',
+
+        // === TENTANG SECTION ===
+        'about_title': 'About Us',
+        'about_p1': 'Biosphere Roast Works was born from a dedication to understanding coffee not only as a beverage, but as a complex biological and chemical entity.',
+        'about_p2': 'Our journey began in the highlands of West Java, working side by side with local farmers to ensure every coffee cherry is harvested at peak ripeness.',
+        'about_plantation': 'Our Partner Plantation',
+        'about_cta': 'About Us',
+
+        // === ROASTING SECTION ===
+        'roasting_title': 'Our Roasting Philosophy',
+        'roasting_sub': 'A precision approach to unlock the maximum potential of every bean.',
+        'roasting_step1_title': '1. Heating (Drying)',
+        'roasting_step1_desc': 'Removing initial moisture from the beans with a slowly controlled temperature.',
+        'roasting_step2_title': '2. Development (Maillard)',
+        'roasting_step2_desc': 'Chemical reactions begin, sugars caramelize, forming complex aromas.',
+        'roasting_step3_desc': 'The bean crack releases steam, signaling the development phase has begun.',
+        'roasting_step4_title': '4. Rapid Cooling',
+        'roasting_step4_desc': 'Immediately stopping the roasting process to lock in the flavor profile.',
+        'roasting_table_level': 'Roast Level',
+        'roasting_table_char': 'Flavor Characteristics',
+        'roasting_table_best': 'Best For',
+        'roasting_light_desc': 'High acidity, very clear floral/fruity aroma, light body.',
+        'roasting_medium_desc': 'Balanced acidity, sweetness, and body. Caramel/chocolate notes begin to emerge.',
+        'roasting_dark_desc': 'Low acidity, full body, rich chocolate flavor, smoky, bittersweet sweetness.',
+        'roasting_milk_coffee': 'Milk Coffee',
+
+        // === KONTAK SECTION ===
+        'kontak_title': 'Contact Us',
+        'kontak_sub': 'Have a question about products, custom orders, or just want to say hello? Don\'t hesitate to reach out.',
+        'kontak_name_placeholder': 'Full Name',
+        'kontak_email_placeholder': 'Email Address',
+        'kontak_message_placeholder': 'Your Message',
+        'kontak_send_btn': 'Send Message',
+        'kontak_phone_label': 'Phone / WhatsApp',
+        'kontak_maps_link': 'Open in Google Maps',
+        'kontak_sent_toast': 'Message sent successfully!',
+        'kontak_sent_offline': 'Offline Simulation: Message sent!',
+
+        // === TRACKING PAGE ===
+        'track_title': 'Track Your Order',
+        'track_sub': 'Enter your Order ID to view the current status.',
+        'track_placeholder': 'Example: ORDER-123456789-123',
+        'track_btn': 'Track',
+        'track_detail_title': 'Order Details',
+        'track_status_label': 'Status:',
+        'track_date_label': 'Date:',
+        'track_name_label': 'Name:',
+        'track_total_label': 'Total:',
+        'track_items_label': 'Items Purchased:',
+        'track_not_found': 'Order not found. Please make sure the Order ID is correct.',
+        'track_status_pending': 'AWAITING PAYMENT',
+        'track_status_paid': 'PAID / PROCESSING',
+        'track_status_shipped': 'SHIPPED',
+
+        // === BLOG PAGE ===
+        'blog_title': 'Journal & Education',
+        'blog_sub': 'Diving into the world of coffee from farm to cup with Biosphere Roast Works.',
+        'blog_toc_title': 'Article Index',
+        'blog_art1_link': 'From a Tiny Seed to a Shady Tree: The Beginning of Coffee\'s Journey',
+        'blog_art2_link': 'Drying Under the Sun: The Art of Post-Harvest that Determines Coffee Quality',
+        'blog_art3_link': 'Fire and Aroma: The Transformation of Green Beans into Characterful Coffee',
+        'blog_art4_link': 'From Powder to Cup: The Art of Brewing the Perfect Coffee',
+        'blog_art5_link': 'From Farm to Cup: The Future of Indonesia\'s Coffee Industry',
+        'blog_back_top': 'Back to top',
+
+        // === FOOTER ===
         'footer_products': 'Our Products',
         'footer_info': 'Info',
         'footer_follow': 'Follow Us',
         'footer_copyright': '© 2026 Biosphere Roast Works. All Rights Reserved.',
 
-        // AI Chat
+        // === AI CHAT ===
         'ai_chat_placeholder': 'Type a message...',
+
+        // === GENERAL ===
+        'btn_close': 'Close',
+        'lang_error_not_loaded': 'Language data not yet loaded. Please refresh the page.',
+        'lang_error_failed': 'Failed to switch language.',
     }
 };
-
-window.i18n = translations;

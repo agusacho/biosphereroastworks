@@ -41,11 +41,11 @@
                 <ul class="nav-links" id="navLinks">
                     <li><a href="index.html" data-i18n="nav_home">Beranda</a></li>
                     <li><a href="produk.html" class="active" data-i18n="nav_products">Produk</a></li>
-                    <li><a href="tentang.html" data-i18n="nav_about">Tentang Kami</a></li>
-                    <li><a href="roasting.html" data-i18n="nav_roasting">Proses Sangrai</a></li>
+                    <li><a href="tentang.html" data-i18n="nav_about" data-i18n="nav_about">Tentang Kami</a></li>
+                    <li><a href="roasting.html" data-i18n="nav_roasting" data-i18n="nav_roasting">Proses Sangrai</a></li>
                     <li><a href="blog.html" data-i18n="nav_blog">Blog</a></li>
-                    <li><a href="tracking.html">Lacak</a></li>
-                    <li><a href="kontak.html" data-i18n="nav_contact">Kontak</a></li>
+                    <li><a href="tracking.html" data-i18n="nav_track">Lacak</a></li>
+                    <li><a href="kontak.html" data-i18n="nav_contact" data-i18n="nav_contact">Kontak</a></li>
                 </ul>
             </nav>
             <div class="nav-actions">
@@ -69,7 +69,7 @@
     <!-- OFFCANVAS CART -->
     <div class="cart-offcanvas" id="cartOffcanvas">
         <div class="cart-header">
-            <h3>Keranjang Belanja</h3>
+            <h3 data-i18n="cart_title">Keranjang Belanja</h3>
             <button class="close-btn" onclick="toggleCart()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="cart-body" id="cartItemsContainer">
@@ -219,8 +219,8 @@
         <div class="produk-hero-bg"></div>
         <div class="produk-hero-content">
             <span class="produk-hero-eyebrow"><i class="fa-solid fa-mug-hot"></i> Biosphere Collection</span>
-            <h1 class="produk-hero-title">Koleksi Produk Kami</h1>
-            <p class="produk-hero-subtitle">Setiap tegukan bercerita — dari ladang ke cangkir Anda, dengan presisi dan passion.</p>
+            <h1 class="produk-hero-title" data-i18n="produk_hero_title">Koleksi Produk Kami</h1>
+            <p class="produk-hero-subtitle produk-hero-sub" data-i18n="produk_hero_sub">Setiap tegukan bercerita — dari ladang ke cangkir Anda, dengan presisi dan passion.</p>
         </div>
         <div class="produk-hero-wave">
             <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -249,7 +249,7 @@
                 <div class="produk-search-wrap">
                     <div class="search-input-wrap">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="searchInput" placeholder="Cari produk..." />
+                        <input type="text" id="searchInput" placeholder="Cari produk..." data-i18n="produk_search_placeholder" id="searchInput" />
                     </div>
                     <span class="produk-count-badge"><span id="productCount">0</span> produk</span>
                 </div>
@@ -266,7 +266,7 @@
                         <i class="fa-solid fa-bottle-water"></i>
                     </div>
                     <div>
-                        <h2 class="category-section-title">Minuman Kopi</h2>
+                        <h2 class="category-section-title produk-cat1-title" data-i18n="produk_cat1_title">Minuman Kopi</h2>
                         <p class="category-section-sub">Ready-to-drink dalam botol segar & can premium</p>
                     </div>
                 </div>
@@ -500,9 +500,9 @@
     <!-- ==========================================================================
          JAVASCRIPT LOGIC DENGAN SUPABASE & SISTEM CHECKOUT E-COMMERCE
          ========================================================================== -->
-    <script src="i18n.js?v=4"></script>
-    <script src="main.js?v=4"></script>
-<script src="site_settings.js?v=4"></script>
+    <script src="i18n.js?v=5"></script>
+    <script src="main.js?v=5"></script>
+<script src="site_settings.js?v=5"></script>
     <script src="ai_chat.js"></script>
 </body>
 </html>

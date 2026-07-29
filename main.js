@@ -1,9 +1,8 @@
-
 /* --- I18N SUPPORT --- */
 
 function getLang() {
     try {
-        let l = getLang();
+        let l = localStorage.getItem('lang');
         if (l) return l;
     } catch(e) {}
     let match = document.cookie.match(new RegExp('(^| )lang=([^;]+)'));
@@ -17,47 +16,130 @@ function setLang(l) {
 
 function applyTranslations() {
     const lang = getLang() || 'id';
+    if (!window.i18n) return;
+
+    // --- Apply data-i18n attributes ---
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (window.i18n && window.i18n[lang] && window.i18n[lang][key]) {
-            if (el.tagName === 'INPUT' && el.type === 'text') {
-                el.placeholder = window.i18n[lang][key];
-            } else {
-                el.innerText = window.i18n[lang][key];
-            }
+        const val = t(key);
+        if (!val || val === key) return;
+        const tag = el.tagName;
+        if ((tag === 'INPUT' || tag === 'TEXTAREA') && el.placeholder !== undefined) {
+            el.placeholder = val;
+        } else {
+            el.innerText = val;
         }
     });
 
-    // Update switcher UI
+    // --- Apply translations by selector (no data-i18n needed) ---
+    const setTxt = (sel, key) => {
+        document.querySelectorAll(sel).forEach(el => { if(t(key) !== key) el.innerText = t(key); });
+    };
+    const setPlaceholder = (sel, key) => {
+        document.querySelectorAll(sel).forEach(el => { if(t(key) !== key) el.placeholder = t(key); });
+    };
+
+    // Shared Navigation
+    setTxt('a[href="tracking.html"]:not([data-i18n])', 'nav_track');
+
+    // Shared Cart Offcanvas
+    setTxt('#cartPanel h3, #cartOffcanvas h3', 'cart_title');
+    setTxt('#emptyCartMsg, .cart-empty-msg', 'cart_empty');
+    setTxt('#cartCheckoutBtn, .btn-checkout', 'cart_checkout');
+    setTxt('.cart-total-label', 'cart_total');
+
+    // Shared Payment Modal
+    setTxt('#paymentModal h3, #paymentModalTitle', 'payment_title');
+    setTxt('#totalBillingLabel, .total-billing-label', 'payment_amount_due');
+    setTxt('#selectMethodLabel, .select-method-label', 'payment_select_method');
+    document.querySelectorAll('.auto-verify-badge, .badge-auto').forEach(el => { el.innerText = t('payment_auto_verify'); });
+    setTxt('.gopay-desc', 'payment_gopay_desc');
+    setTxt('#payBtn, .pay-now-btn', 'payment_pay_btn');
+
+    // Shared Auth Modal
+    setTxt('#authModal h3:first-of-type, #authModalTitle', 'auth_signin_title');
+    setPlaceholder('#authName, input[name="name"]', 'auth_name_placeholder');
+    setPlaceholder('#authEmail, input[name="email"]', 'auth_email_placeholder');
+    setPlaceholder('#authPassword, input[name="password"]', 'auth_password_placeholder');
+    setTxt('#authSubmitBtn', 'auth_signin_btn');
+    setTxt('#authToggleText', 'auth_no_account');
+    setTxt('#authToggleLink', 'auth_register_link');
+    setTxt('#authLogoutBtn, .auth-logout', 'auth_logout_btn');
+
+    // Shared Testimoni
+    setTxt('.testimoni-title, section h2.testimoni', 'testimoni_title');
+
+    // Shared About
+    setTxt('.about-title, .tentang-title', 'about_title');
+
+    // Shared Roasting Section
+    setTxt('.roasting-title, .filosofi-title', 'roasting_title');
+    setTxt('.roasting-sub, .filosofi-sub', 'roasting_sub');
+
+    // Shared Kontak Section
+    setTxt('.kontak-title, .contact-title', 'kontak_title');
+    setTxt('.kontak-sub, .contact-sub', 'kontak_sub');
+    setPlaceholder('input[name="kontakName"], #kontakName', 'kontak_name_placeholder');
+    setPlaceholder('input[name="kontakEmail"], #kontakEmail', 'kontak_email_placeholder');
+    setPlaceholder('textarea[name="kontakMessage"], #kontakMessage', 'kontak_message_placeholder');
+    setTxt('#kontakSendBtn, .kontak-send-btn', 'kontak_send_btn');
+
+    // Quiz Modal
+    document.querySelectorAll('.quiz-recommendation-title').forEach(el => el.innerText = t('quiz_recommendation_title'));
+
+    // Blog page
+    setTxt('.blog-header h2, .blog-title', 'blog_title');
+    setTxt('.blog-header p, .blog-sub', 'blog_sub');
+    setTxt('.toc-title, .blog-toc h4', 'blog_toc_title');
+
+    // Tracking page
+    setTxt('.track-title', 'track_title');
+    setTxt('.track-sub', 'track_sub');
+    setPlaceholder('#trackingOrderId', 'track_placeholder');
+    setTxt('#trackBtn', 'track_btn');
+
+    // Product page hero
+    setTxt('.produk-hero-title', 'produk_hero_title');
+    setTxt('.produk-hero-subtitle, .produk-hero-sub', 'produk_hero_sub');
+    setPlaceholder('#searchInput, .product-search', 'produk_search_placeholder');
+
+    // Footer
+    setTxt('.footer-col-products h4, .footer-products-title', 'footer_products');
+    setTxt('.footer-col-info h4, .footer-info-title', 'footer_info');
+    setTxt('.footer-col-social h4, .footer-follow-title', 'footer_follow');
+    setTxt('.footer-copyright, .footer-copy', 'footer_copyright');
+
+    // AI Chat
+    setPlaceholder('#aiChatInput, .ai-chat-input', 'ai_chat_placeholder');
+
+    // Language switcher highlight
     const idEl = document.getElementById('langId');
     const enEl = document.getElementById('langEn');
     if (idEl && enEl) {
         if (lang === 'en') {
-            idEl.style.color = 'var(--muted)';
-            enEl.style.color = 'var(--accent)';
+            idEl.style.opacity = '0.45'; enEl.style.opacity = '1';
+            enEl.style.fontWeight = '800'; idEl.style.fontWeight = '400';
         } else {
-            idEl.style.color = 'var(--accent)';
-            enEl.style.color = 'var(--muted)';
+            idEl.style.opacity = '1'; enEl.style.opacity = '0.45';
+            idEl.style.fontWeight = '800'; enEl.style.fontWeight = '400';
         }
     }
+
+    // Blog language toggle: show/hide lang-specific blocks
+    document.querySelectorAll('[data-lang]').forEach(el => {
+        el.style.display = (el.dataset.lang === lang) ? '' : 'none';
+    });
 }
 
 function toggleLanguage() {
     if (typeof window.i18n === 'undefined') {
-        alert('Data bahasa belum selesai dimuat. Silakan refresh halaman.');
+        alert(t('lang_error_not_loaded', 'Please refresh.'));
         return;
     }
     try {
         let lang = getLang() || 'id';
         lang = lang === 'id' ? 'en' : 'id';
         setLang(lang);
-        
-        applyTranslations();
-        
-        // Refresh products directly if on product page
-        if (typeof currentFilteredProducts !== 'undefined' && currentFilteredProducts.length > 0) {
-            renderProducts(currentFilteredProducts);
-        }
         
         document.body.style.opacity = '0.5';
         setTimeout(() => {
@@ -148,16 +230,16 @@ function toggleLanguage() {
     if(productGrid) productGrid.innerHTML = '';
 
     if (products.length === 0) {
-        const empty = '<div class="empty-state"><i class="fa-solid fa-mug-saucer"></i><p>Tidak ada produk ditemukan.</p></div>';
+        const empty = `<div class="empty-state"><i class="fa-solid fa-mug-saucer"></i><p>${t('produk_empty')}</p></div>`;
         if(gridMinuman) gridMinuman.innerHTML = empty;
         if(gridRoasted) gridRoasted.innerHTML = empty;
+        if(productGrid) productGrid.innerHTML = empty;
     }
 
     products.forEach(product => {
         const badgeClass = product.category === 'Roasted Bean' ? 'badge-roasted' : 'badge-green';
-        const badgeLabel = product.category === 'Roasted Bean' ? '&#9749; Roasted' : '&#127861; Minuman';
-        const lang = getLang() || 'id';
-        const pNotes = (lang === 'en' && product.notes_en) ? product.notes_en : product.notes;
+        const badgeLabel = product.category === 'Roasted Bean' ? t('produk_badge_roasted') : t('produk_badge_drinks');
+        const pNotes = (getLang() === 'en' && product.notes_en) ? product.notes_en : product.notes;
 
         let defaultPriceStr = formatRupiah(product.price);
         const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
@@ -184,10 +266,10 @@ function toggleLanguage() {
                 </div>
                 <div class="quick-add-overlay">
                     <button class="btn-quick btn-quick-outline" onclick="event.stopPropagation(); ${detailAction}">
-                        <i class="fa-solid fa-eye"></i> Detail
+                        <i class="fa-solid fa-eye"></i> ${t('produk_btn_detail')}
                     </button>
                     <button class="btn-quick btn-quick-primary" onclick="event.stopPropagation(); ${addAction}">
-                        <i class="fa-solid fa-cart-plus"></i> ${hasVariants ? 'Pilih' : 'Tambah'}
+                        <i class="fa-solid fa-cart-plus"></i> ${hasVariants ? t('produk_btn_select') : t('produk_btn_add')}
                     </button>
                 </div>
             </div>
@@ -197,7 +279,7 @@ function toggleLanguage() {
                 ${variantTagsHtml ? `<div class="product-variants-tags">${variantTagsHtml}</div>` : ''}
                 <div class="product-card-footer">
                     <div>
-                        <span class="product-price-prefix">mulai dari</span>
+                        <span class="product-price-prefix">${t('produk_starting_from')}</span>
                         <span class="product-price">${defaultPriceStr}</span>
                     </div>
                     <div class="product-rating">${stars}</div>
@@ -390,7 +472,7 @@ async function fetchProducts() {
                 defaultPriceStr = formatRupiah(p.variants[0].price);
                 variantHTML = `
                     <div class="variant-selector mb-4">
-                        <label style="display:block; margin-bottom:8px; font-weight:700;">Pilih Varian/Ukuran:</label>
+                        <label style="display:block; margin-bottom:8px; font-weight:700;">${t('produk_select_variant')}</label>
                         <select class="form-control" id="modalVariantSelect" onchange="updateModalPrice()">
                             ${p.variants.map((v, index) => `<option value="${index}">${v.name}</option>`).join('')}
                         </select>
@@ -398,14 +480,14 @@ async function fetchProducts() {
                 `;
             } else {
                 defaultPriceStr = formatRupiah(p.price || 0);
-                variantHTML = `<div class="mb-4 text-muted">Varian: Default (1 kg / 1 Pack)</div>`;
+                variantHTML = `<div class="mb-4 text-muted">${t('produk_default_variant')}</div>`;
             }
 
             const modalBody = document.getElementById('productModalBody');
             modalBody.innerHTML = `
                 <div class="product-detail-layout">
                     <div class="product-detail-img img-placeholder" style="background: ${p.imageStyle || 'var(--metallic-white)'}; font-size: 2rem;">
-                        ${p.name ? p.name.split(' ')[0] : 'Kopi'}
+                        ${p.name ? p.name.split(' ')[0] : 'Coffee'}
                     </div>
                     <div class="product-detail-info">
                         <span class="category-badge ${p.category === 'drink' ? 'Minuman Kopi' : (p.category === 'roasted' ? 'badge-roasted' : 'badge-green')}" style="position:relative; top:0; left:0; display:inline-block; margin-bottom:10px;">${(p.category || 'PRODUK').toUpperCase()}</span>
@@ -417,7 +499,7 @@ async function fetchProducts() {
                         <p class="mb-4"><strong>Notes:</strong> ${pNotes || '-'}</p>
                         ${pDesc ? `<p class="mb-4 text-muted" style="font-size:0.95rem; line-height:1.5;">${pDesc.replace(/\n/g, '<br>')}</p>` : ''}
                         ${p.origin ? `<p class="mb-2"><strong>Origin:</strong> ${p.origin}</p>` : ''}
-                        ${p.process ? `<p class="mb-4"><strong>Proses:</strong> ${p.process}</p>` : ''}
+                        ${p.process ? `<p class="mb-4"><strong>${t('produk_process_label')}</strong> ${p.process}</p>` : ''}
                         
                         ${variantHTML}
 
@@ -427,7 +509,7 @@ async function fetchProducts() {
                                 <span id="modalQty" style="width: 30px; text-align: center; font-weight: 700;">1</span>
                                 <button class="qty-btn" onclick="adjustModalQty(1)">+</button>
                             </div>
-                            <button class="btn btn-primary" style="flex-grow: 1;" onclick="addToCartFromModal()">Tambahkan ke Keranjang</button>
+                            <button class="btn btn-primary" style="flex-grow: 1;" onclick="addToCartFromModal()">${t('produk_add_to_cart')}</button>
                         </div>
                     </div>
                 </div>
@@ -516,7 +598,7 @@ async function fetchProducts() {
             else cart.push(newItem);
             
             saveCart();
-            showToast(`${newItem.name} ditambahkan ke keranjang`);
+            showToast(`${newItem.name} ${t('cart_added_toast')}`);
         };
 
         const renderCart = () => {
@@ -577,7 +659,7 @@ async function fetchProducts() {
         /* --- 10. E-COMMERCE CHECKOUT & PAYMENT LOGIC --- */
         function openPaymentModal() {
             if(cart.length === 0) {
-                alert("Keranjang Anda kosong. Silakan belanja terlebih dahulu.");
+                alert(t('cart_empty_alert'));
                 return;
             }
 
@@ -671,7 +753,7 @@ async function fetchProducts() {
                 const data = await response.json();
 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Terjadi kesalahan saat memproses pembayaran');
+                    throw new Error(data.error || t('payment_error'));
                 }
 
                 hideLoader();
@@ -680,22 +762,22 @@ async function fetchProducts() {
                 // Panggil Pop-up Midtrans Snap
                 window.snap.pay(data.token, {
                     onSuccess: function(result){
-                        alert("Pembayaran berhasil! Pesanan Anda akan segera diproses.");
+                        alert(t('payment_success'));
                         cart = [];
                         saveCart();
                         renderCart();
                     },
                     onPending: function(result){
-                        alert("Menunggu pembayaran Anda!");
+                        alert(t('payment_pending'));
                         cart = [];
                         saveCart();
                         renderCart();
                     },
                     onError: function(result){
-                        alert("Pembayaran gagal!");
+                        alert(t('payment_failed'));
                     },
                     onClose: function(){
-                        alert('Anda menutup popup tanpa menyelesaikan pembayaran');
+                        alert(t('payment_closed'));
                     }
                 });
 
@@ -714,7 +796,7 @@ async function fetchProducts() {
             const pesan = document.getElementById('contactMessage').value;
 
             if(!isSupabaseConfigured) {
-                showToast("Simulasi Offline: Pesan terkirim!");
+                showToast(t('kontak_sent_offline'));
                 e.target.reset();
                 return;
             }
@@ -726,7 +808,7 @@ async function fetchProducts() {
                 const { error } = await _supabase.from('contacts').insert([{ nama, email, pesan }]);
                 if (error) throw error;
 
-                showToast("Pesan berhasil dikirim!");
+                showToast(t('kontak_sent_toast'));
                 e.target.reset();
             } catch (err) {
                 console.error("Error Send Contact:", err);
@@ -752,10 +834,10 @@ async function fetchProducts() {
         const toggleAuthMode = (e) => {
             e.preventDefault();
             isLoginMode = !isLoginMode;
-            document.getElementById('authModalTitle').innerText = isLoginMode ? 'Masuk ke Akun' : 'Daftar Akun Baru';
-            document.getElementById('btnSubmitAuth').innerText = isLoginMode ? 'Masuk' : 'Daftar';
-            document.getElementById('authToggleText').innerText = isLoginMode ? 'Belum punya akun?' : 'Sudah punya akun?';
-            document.getElementById('authToggleLink').innerText = isLoginMode ? 'Daftar di sini' : 'Masuk di sini';
+            document.getElementById('authModalTitle').innerText = isLoginMode ? t('auth_signin_title') : t('auth_register_title');
+            document.getElementById('btnSubmitAuth').innerText = isLoginMode ? t('auth_signin_btn') : t('auth_register_btn');
+            document.getElementById('authToggleText').innerText = isLoginMode ? t('auth_no_account') : t('auth_have_account');
+            document.getElementById('authToggleLink').innerText = isLoginMode ? t('auth_register_link') : t('auth_signin_link');
             document.getElementById('registerNameGroup').style.display = isLoginMode ? 'none' : 'block';
             if(!isLoginMode) document.getElementById('authName').required = true;
             else document.getElementById('authName').required = false;
@@ -776,7 +858,7 @@ async function fetchProducts() {
                     setTimeout(() => {
                         currentUser = { email: email, user_metadata: { name: name || 'User Simulasi' } };
                         updateAuthUI();
-                        showToast(isLoginMode ? "Berhasil masuk (Offline)" : "Berhasil daftar (Offline)");
+                        showToast(isLoginMode ? t('auth_success_signin') : t('auth_success_register'));
                         hideLoader();
                         document.getElementById('btnSubmitAuth').disabled = false;
                     }, 1000);
@@ -787,12 +869,12 @@ async function fetchProducts() {
                     const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
                     if(error) throw error;
                     currentUser = data.user;
-                    showToast("Berhasil masuk!");
+                    showToast(t('auth_success_signin'));
                 } else {
                     const { data, error } = await _supabase.auth.signUp({ email, password, options: { data: { name } } });
                     if(error) throw error;
                     currentUser = data.user;
-                    showToast("Pendaftaran berhasil! Silakan cek email jika butuh verifikasi.");
+                    showToast(t('auth_success_register'));
                 }
                 updateAuthUI();
             } catch(err) {
@@ -813,7 +895,7 @@ async function fetchProducts() {
                 }
                 currentUser = null;
                 updateAuthUI();
-                showToast("Berhasil keluar.");
+                showToast(t('auth_success_signout'));
                 closeModal('authModal');
             } catch(err) {
                 console.error(err);
@@ -834,14 +916,14 @@ async function fetchProducts() {
             if(currentUser) {
                 document.getElementById('authForm').style.display = 'none';
                 document.getElementById('loggedInView').style.display = 'block';
-                document.getElementById('authModalTitle').innerText = 'Profil Anda';
-                document.getElementById('loggedInName').innerText = currentUser.user_metadata?.name || 'Pengguna';
+                document.getElementById('authModalTitle').innerText = t('auth_profile_title');
+                document.getElementById('loggedInName').innerText = currentUser.user_metadata?.name || t('auth_user_fallback');
                 document.getElementById('loggedInEmail').innerText = currentUser.email;
                 document.getElementById('userIcon').innerHTML = '<i class="fa-solid fa-user-check"></i>';
             } else {
                 document.getElementById('authForm').style.display = 'block';
                 document.getElementById('loggedInView').style.display = 'none';
-                document.getElementById('authModalTitle').innerText = isLoginMode ? 'Masuk ke Akun' : 'Daftar Akun Baru';
+                document.getElementById('authModalTitle').innerText = isLoginMode ? t('auth_signin_title') : t('auth_register_title');
                 document.getElementById('userIcon').innerHTML = '<i class="fa-regular fa-user"></i>';
             }
         }
@@ -881,7 +963,7 @@ async function fetchProducts() {
                 rView.innerHTML = `
                     <div style="font-size: 3rem; margin-bottom: 10px; color: var(--accent);"><i class="fa-solid fa-mug-hot"></i></div>
                     <h3 style="margin-bottom: 5px;">${recommended.name}</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">${recommended.notes || 'Pilihan terbaik untuk Anda'}</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">${recommended.notes || t('quiz_notes_fallback')}</p>
                     <button class="btn btn-accent" onclick="closeModal('quizModal'); openProductDetail('${recommended.id}')">Lihat Detail</button>
                 `;
             } else {
@@ -928,9 +1010,9 @@ async function fetchProducts() {
                 // Populate UI
                 let statusColor = 'var(--text-main)';
                 let statusText = (data.status || 'unknown').toUpperCase();
-                if(data.status === 'pending') { statusColor = '#f39c12'; statusText = 'MENUNGGU PEMBAYARAN'; }
-                if(data.status === 'paid') { statusColor = 'var(--success)'; statusText = 'LUNAS / DIPROSES'; }
-                if(data.status === 'shipped') { statusColor = 'var(--primary)'; statusText = 'DIKIRIM'; }
+                if(data.status === 'pending') { statusColor = '#f39c12'; statusText = t('track_status_pending'); }
+                if(data.status === 'paid') { statusColor = 'var(--success)'; statusText = t('track_status_paid'); }
+                if(data.status === 'shipped') { statusColor = 'var(--primary)'; statusText = t('track_status_shipped'); }
                 
                 document.getElementById('trackStatus').innerText = statusText;
                 document.getElementById('trackStatus').style.color = statusColor;
@@ -955,7 +1037,7 @@ async function fetchProducts() {
                 console.error("Tracking Error:", err);
                 errorDiv.style.display = 'block';
             } finally {
-                btn.innerHTML = 'Lacak';
+                btn.innerHTML = t('track_btn');
                 btn.disabled = false;
             }
         }
