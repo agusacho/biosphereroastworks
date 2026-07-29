@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Supabase JS Library -->
+    <script src="lang-init.js?v=6"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript"
   src="https://app.sandbox.midtrans.com/snap/snap.js"
@@ -41,11 +42,11 @@
                 <ul class="nav-links" id="navLinks">
                     <li><a href="index.html" data-i18n="nav_home">Beranda</a></li>
                     <li><a href="produk.html" data-i18n="nav_products">Produk</a></li>
-                    <li><a href="tentang.html" data-i18n="nav_about" data-i18n="nav_about">Tentang Kami</a></li>
-                    <li><a href="roasting.html" data-i18n="nav_roasting" data-i18n="nav_roasting">Proses Sangrai</a></li>
+                    <li><a href="tentang.html" data-i18n="nav_about">Tentang Kami</a></li>
+                    <li><a href="roasting.html" data-i18n="nav_roasting">Proses Sangrai</a></li>
                     <li><a href="blog.html" class="active" data-i18n="nav_blog">Blog</a></li>
                     <li><a href="tracking.html" data-i18n="nav_track">Lacak</a></li>
-                    <li><a href="kontak.html" data-i18n="nav_contact" data-i18n="nav_contact">Kontak</a></li>
+                    <li><a href="kontak.html" data-i18n="nav_contact">Kontak</a></li>
                 </ul>
             </nav>
             <div class="nav-actions">
@@ -583,9 +584,10 @@
     <!-- ==========================================================================
          JAVASCRIPT LOGIC DENGAN SUPABASE & SISTEM CHECKOUT E-COMMERCE
          ========================================================================== -->
-    <script src="i18n.js?v=5"></script>
-    <script src="main.js?v=5"></script>
-<script src="site_settings.js?v=5"></script>
+    <script src="i18n.js?v=6"></script>
+    <script>if(window.i18n && window.applyTranslations) window.applyTranslations();</script>
+    <script src="main.js?v=6"></script>
+<script src="site_settings.js?v=6"></script>
     <script src="ai_chat.js"></script>
 </body>
 </html>
