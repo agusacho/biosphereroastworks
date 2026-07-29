@@ -177,6 +177,11 @@ window.i18n = {
         'blog_art3_link': 'Api dan Aroma: Transformasi Biji Hijau Menjadi Kopi Berkarakter',
         'blog_art4_link': 'Dari Bubuk ke Cangkir: Seni Menyeduh Kopi yang Sempurna',
         'blog_art5_link': 'Dari Hulu ke Hilir: Masa Depan Industri Kopi Indonesia',
+        'blog_tag1': 'PEMBIBITAN DAN BUDIDAYA',
+        'blog_tag2': 'PASCAPANEN',
+        'blog_tag3': 'ROASTING',
+        'blog_tag4': 'BREWING',
+        'blog_tag5': 'INDUSTRI',
         'blog_back_top': 'Kembali ke atas',
 
         // === FOOTER ===
@@ -367,6 +372,11 @@ window.i18n = {
         'blog_art3_link': 'Fire and Aroma: The Transformation of Green Beans into Characterful Coffee',
         'blog_art4_link': 'From Powder to Cup: The Art of Brewing the Perfect Coffee',
         'blog_art5_link': 'From Farm to Cup: The Future of Indonesia\'s Coffee Industry',
+        'blog_tag1': 'NURSERY AND CULTIVATION',
+        'blog_tag2': 'POST-HARVEST',
+        'blog_tag3': 'ROASTING',
+        'blog_tag4': 'BREWING',
+        'blog_tag5': 'INDUSTRY',
         'blog_back_top': 'Back to top',
 
         // === FOOTER ===
