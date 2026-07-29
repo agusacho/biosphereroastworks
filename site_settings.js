@@ -88,17 +88,36 @@
 
         /* ── HERO SLIDER (index.html) ──────────────────────────────── */
         const heroSlides = document.querySelectorAll('#heroSlider .slide');
+        const heroI18nKeys = [
+            { title: 'hero1_title', sub: 'hero1_sub', cta: 'hero1_cta' },
+            { title: 'hero2_title', sub: 'hero2_sub', cta: 'hero2_cta' },
+            { title: 'hero3_title', sub: 'hero3_sub', cta: 'hero3_cta' },
+        ];
         heroSlides.forEach((slide, i) => {
             const n = i + 1;
             const img   = get(`hero_slide${n}_image`);
+            // For text: prefer EN-specific DB value, then ID DB value (override HTML), then i18n.js fallback
             const title = get(`hero_slide${n}_title`);
             const sub   = get(`hero_slide${n}_subtitle`);
             const cta   = get(`hero_slide${n}_cta`);
             if (img)   { slide.style.backgroundImage = `url('${img}')`; slide.style.backgroundSize = 'cover'; slide.style.backgroundPosition = 'center'; }
-            const h2 = slide.querySelector('.slide-content h2'); if (h2 && title) h2.textContent = title;
-            const p  = slide.querySelector('.slide-content p');  if (p  && sub)   p.textContent  = sub;
-            const a  = slide.querySelector('.slide-content a');  if (a  && cta)   a.textContent  = cta;
+            const h2 = slide.querySelector('.slide-content h2');
+            const p  = slide.querySelector('.slide-content p');
+            const a  = slide.querySelector('.slide-content a');
+            // Set DB value if present; i18n fallback applied later by applyTranslations()
+            if (h2 && title) h2.textContent = title;
+            if (p  && sub)   p.textContent  = sub;
+            if (a  && cta)   a.textContent  = cta;
+            // Tag for i18n if no DB value
+            if (h2 && !title && heroI18nKeys[i]) h2.setAttribute('data-i18n', heroI18nKeys[i].title);
+            if (p  && !sub   && heroI18nKeys[i]) p.setAttribute('data-i18n', heroI18nKeys[i].sub);
+            if (a  && !cta   && heroI18nKeys[i]) a.setAttribute('data-i18n', heroI18nKeys[i].cta);
+            // If DB has value but we're in EN — try to translate
+            if (h2 && title && heroI18nKeys[i]) h2.setAttribute('data-i18n-override', heroI18nKeys[i].title);
+            if (p  && sub   && heroI18nKeys[i]) p.setAttribute('data-i18n-override', heroI18nKeys[i].sub);
+            if (a  && cta   && heroI18nKeys[i]) a.setAttribute('data-i18n-override', heroI18nKeys[i].cta);
         });
+
 
         /* ── HALAMAN PRODUK ────────────────────────────────────────── */
         setText('.produk-hero-title',    get('produk_hero_title'));
@@ -222,4 +241,24 @@
         if (!value) return;
         document.querySelectorAll(selector).forEach(el => el.textContent = value);
     }
+
+    // ── APPLY i18n OVERRIDE (runs last, overrides DB text when lang=en) ─
+    const _lang = (function() {
+        try { var l = localStorage.getItem('lang'); if (l) return l; } catch(e) {}
+        var m = document.cookie.match(/(^|; )lang=([^;]+)/);
+        return m ? m[2] : 'id';
+    })();
+
+    if (_lang === 'en' && window.i18n && window.i18n.en) {
+        // Override all data-i18n-override elements with English i18n.js values
+        document.querySelectorAll('[data-i18n-override]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-override');
+            var val = window.i18n.en[key];
+            if (val) el.textContent = val;
+        });
+    }
+
+    // Always run applyTranslations at the very end so it wins over DB overwrites
+    if (window.applyTranslations) window.applyTranslations();
+
 })();
