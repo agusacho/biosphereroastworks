@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Supabase JS Library -->
-    <script src="lang-init.js?v=6"></script>
+    <script src="lang-init.js?v=7"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript"
   src="https://app.sandbox.midtrans.com/snap/snap.js"
@@ -78,7 +78,7 @@
         </div>
         <div class="cart-footer">
             <div class="cart-total">
-                <span>Total:</span>
+                <span data-i18n="cart_total">Total:</span>
                 <span id="cartTotalPrice">Rp 0</span>
             </div>
             <button class="btn btn-primary" style="width: 100%;" onclick="openPaymentModal()">Checkout Sekarang</button>
@@ -103,18 +103,18 @@
         </div>
         <div class="modal-body" style="padding: 24px; background-color: var(--bg-color);">
             <div style="text-align: center; margin-bottom: 24px; padding: 15px; background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid var(--border);">
-                <p class="text-muted" style="margin-bottom: 5px; font-size: 0.9rem;">Total Tagihan</p>
+                <p class="text-muted" style="margin-bottom: 5px; font-size: 0.9rem;" data-i18n="payment_amount_due">Total Tagihan</p>
                 <h2 id="paymentTotalDisplay" style="color: #B38728; margin: 0;">Rp 0</h2>
             </div>
 
-            <h4 class="mb-2" style="font-size: 1rem; color: var(--primary);">Pilih Metode Pembayaran</h4>
+            <h4 class="mb-2" style="font-size: 1rem; color: var(--primary);" data-i18n="payment_select_method">Pilih Metode Pembayaran</h4>
             
             <div class="payment-methods">
                 <div class="payment-option" onclick="selectPaymentMethod('BCA Virtual Account', this)">
                     <i class="fa-solid fa-building-columns" style="color: #0066AE;"></i>
                     <div style="flex-grow: 1;">
                         <strong style="display: block;">BCA Virtual Account</strong>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Verifikasi Otomatis</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="payment_auto_verify">Verifikasi Otomatis</span>
                     </div>
                 </div>
 
@@ -122,7 +122,7 @@
                     <i class="fa-solid fa-building-columns" style="color: #003D79;"></i>
                     <div style="flex-grow: 1;">
                         <strong style="display: block;">Mandiri Virtual Account</strong>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Verifikasi Otomatis</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="payment_auto_verify">Verifikasi Otomatis</span>
                     </div>
                 </div>
 
@@ -138,7 +138,7 @@
                     <i class="fa-solid fa-wallet" style="color: #00AED6;"></i>
                     <div style="flex-grow: 1;">
                         <strong style="display: block;">GoPay</strong>
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Bayar instan pakai aplikasi Gojek</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="payment_gopay_desc">Bayar instan pakai aplikasi Gojek</span>
                     </div>
                 </div>
             </div>
@@ -166,7 +166,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary" id="btnSubmitAuth" style="width: 100%; margin-bottom: 1rem;">Masuk</button>
                 <div style="text-align: center; font-size: 0.9rem;">
-                    <span id="authToggleText">Belum punya akun?</span>
+                    <span id="authToggleText" data-i18n="auth_no_account">Belum punya akun?</span>
                     <a href="#" onclick="toggleAuthMode(event)" style="color: var(--accent); font-weight: bold; text-decoration: underline;" id="authToggleLink">Daftar di sini</a>
                 </div>
             </form>
@@ -466,10 +466,10 @@
     <!-- ==========================================================================
          JAVASCRIPT LOGIC DENGAN SUPABASE & SISTEM CHECKOUT E-COMMERCE
          ========================================================================== -->
-    <script src="i18n.js?v=6"></script>
+    <script src="i18n.js?v=7"></script>
     <script>if(window.i18n && window.applyTranslations) window.applyTranslations();</script>
-    <script src="main.js?v=6"></script>
-<script src="site_settings.js?v=6"></script>
+    <script src="main.js?v=7"></script>
+<script src="site_settings.js?v=7"></script>
     <script src="ai_chat.js"></script>
 </body>
 </html>
