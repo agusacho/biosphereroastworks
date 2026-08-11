@@ -615,6 +615,9 @@
                 <button class="hpp-tab" onclick="switchHppTab('drink',this)">
                     <i class="fa-solid fa-mug-hot"></i> Minuman Kopi
                 </button>
+                <button class="hpp-tab" onclick="switchHppTab('custom',this)">
+                    <i class="fa-solid fa-box-open"></i> Kategori Custom
+                </button>
                 <button class="hpp-tab" onclick="switchHppTab('analysis',this)">
                     <i class="fa-solid fa-chart-bar"></i> Analisis Produk
                 </button>
@@ -918,6 +921,106 @@
                             <div class="hpp-section-head"><i class="fa-solid fa-lightbulb"></i> Rekomendasi</div>
                             <div class="hpp-section-body" id="drinkRecommend">
                                 <p style="color:var(--muted);font-size:.84rem;">Isi form untuk melihat rekomendasi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- ── TAB: KATEGORI CUSTOM ── -->
+            <div class="hpp-panel" id="hpp-custom">
+                <!-- Result cards top -->
+                <div class="hpp-results" id="customResults">
+                    <div class="hpp-result-card c-gold"><div class="hpp-result-val" id="c-hpp-unit">Rp 0</div><div class="hpp-result-lbl">Total HPP per Unit</div></div>
+                    <div class="hpp-result-card c-teal"><div class="hpp-result-val" id="c-harga-jual">Rp 0</div><div class="hpp-result-lbl">Harga Jual Minimal</div></div>
+                    <div class="hpp-result-card c-blue"><div class="hpp-result-val" id="c-hpp-modal">Rp 0</div><div class="hpp-result-lbl">Total Modal Bahan</div></div>
+                    <div class="hpp-result-card c-purple"><div class="hpp-result-val" id="c-margin-actual">0%</div><div class="hpp-result-lbl">Margin Aktual</div></div>
+                </div>
+
+                <div class="hpp-layout">
+                    <!-- KIRI: Input Form -->
+                    <div class="hpp-input-col">
+                        
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-tag"></i> Informasi Produk</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Nama Produk</label>
+                                    <input type="text" id="c-nama-produk" class="input-modern" placeholder="Contoh: Tumbler Kaca 500ml" oninput="document.getElementById('c-breakdown-title').innerText = this.value || 'Produk Custom'">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head" style="display:flex; justify-content:space-between; align-items:center;">
+                                <span><i class="fa-solid fa-boxes-stacked"></i> Komponen Modal / Bahan Baku</span>
+                                <button class="btn btn-primary" style="font-size: 0.7rem; padding: 4px 10px;" onclick="addCustomHppRow()"><i class="fa-solid fa-plus"></i> Tambah</button>
+                            </div>
+                            <div class="hpp-section-body" id="custom-ingredients-container">
+                                <!-- Dynamic rows go here -->
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-wallet"></i> Biaya Operasional (Opsional)</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Biaya Tenaga Kerja per Unit</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="c-labor" value="0" oninput="calcCustomHpp()" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Biaya Overhead per Unit</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="c-overhead" value="0" oninput="calcCustomHpp()" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Biaya Kemasan per Unit</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="c-packaging" value="0" oninput="calcCustomHpp()" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-percent"></i> Target Penjualan</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Harga Jual Ditetapkan <span>(opsional, untuk lihat margin aktual)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="c-sell-price" value="0" oninput="calcCustomHpp()" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Target Margin Profit</label>
+                                    <div class="hpp-slider-wrap">
+                                        <input type="range" class="hpp-slider" id="c-margin" min="10" max="80" value="40" step="1" oninput="document.getElementById('c-margin-val').textContent=this.value+'%';calcCustomHpp()">
+                                        <span class="hpp-slider-val" id="c-margin-val">40%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KANAN: Breakdown -->
+                    <div>
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-list-check"></i> Breakdown: <span id="c-breakdown-title">Produk Custom</span></div>
+                            <div class="hpp-section-body">
+                                <table class="hpp-breakdown">
+                                    <thead><tr><th>Komponen</th><th style="text-align:right">Total (Rp)</th><th style="text-align:right">%</th></tr></thead>
+                                    <tbody id="customBreakdownBody">
+                                        <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:20px;">Tambahkan komponen untuk melihat breakdown</td></tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
