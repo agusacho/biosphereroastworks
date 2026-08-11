@@ -500,6 +500,9 @@
         </div>
         <div class="topbar-right">
             <button class="top-btn" onclick="refreshCurrent()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+            <button class="top-btn" id="btnDeleteSelected" style="display:none; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid #ef4444; margin-right: 8px;" onclick="deleteSelectedProducts()">
+                <i class="fa-solid fa-trash"></i> Hapus (<span id="selCount">0</span>)
+            </button>
             <button class="top-btn accent" id="topbarAction" style="display:none;" onclick="openProductModal()">
                 <i class="fa-solid fa-plus"></i> Tambah Produk
             </button>
@@ -592,8 +595,8 @@
                 </div>
                 <div style="overflow-x:auto;">
                     <table>
-                        <thead><tr><th>Produk</th><th>Kategori</th><th>Harga</th><th>Varian</th><th>Stok</th><th>Rating</th><th>Notes</th><th>Aksi</th></tr></thead>
-                        <tbody id="productsBody"><tr class="ld"><td colspan="8"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</td></tr></tbody>
+                        <thead><tr><th style="width:40px;text-align:center;"><input type="checkbox" id="selectAllProducts" onclick="toggleAllProducts(this)"></th><th>Produk</th><th>Kategori</th><th>Harga</th><th>Varian</th><th>Stok</th><th>Rating</th><th>Notes</th><th>Aksi</th></tr></thead>
+                        <tbody id="productsBody"><tr class="ld"><td colspan="9"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -1008,10 +1011,11 @@
                 </div>
                 <div class="fg">
                     <label>Kategori</label>
-                    <select class="fi" id="editCategory">
-                        <option value="Minuman Kopi">Minuman Kopi</option>
-                        <option value="Roasted Bean">Roasted Bean</option>
-                    </select>
+                    <input type="text" class="fi" id="editCategory" list="catList" placeholder="Kategori">
+                    <datalist id="catList">
+                        <option value="Minuman Kopi"></option>
+                        <option value="Roasted Bean"></option>
+                    </datalist>
                 </div>
             </div>
             <div class="row2">
@@ -1314,6 +1318,7 @@ function renderOrders() {
             <td><button class="btn btn-view" onclick="viewOrder('${enc}')"><i class="fa-solid fa-eye"></i></button></td>
         </tr>`;
     }).join('');
+    updateSelectAll();
 }
 
 async function updateStatus(id, status) {
@@ -1371,7 +1376,7 @@ function viewOrder(enc) {
 
 /* ═══ PRODUCTS ════════════════════════════════════════════════════════════ */
 async function loadProducts() {
-    document.getElementById('productsBody').innerHTML = `<tr class="ld"><td colspan="8"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</td></tr>`;
+    document.getElementById('productsBody').innerHTML = `<tr class="ld"><td colspan="9"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</td></tr>`;
     try {
         const { data, error } = await _sb.from('products').select('*').order('category').order('name');
         if (error) throw error;
@@ -1394,7 +1399,7 @@ function filterProducts() {
 function renderProducts() {
     const tbody = document.getElementById('productsBody');
     if (!filteredProducts.length) {
-        tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><i class="fa-solid fa-mug-saucer"></i>Tidak ada produk ditemukan</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty"><i class="fa-solid fa-mug-saucer"></i>Tidak ada produk ditemukan</div></td></tr>`;
         return;
     }
     tbody.innerHTML = filteredProducts.map(p => {
@@ -1402,6 +1407,7 @@ function renderProducts() {
         const col = p.category === 'Roasted Bean' ? 'var(--accent)' : 'var(--accent2)';
         const ini = p.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
         return `<tr>
+            <td style="text-align:center;"><input type="checkbox" class="prod-checkbox" value="${p.id}" onclick="updateSelectAll()"></td>
             <td>
                 <div style="display:flex;align-items:center;gap:10px;">
                     ${p.image_icon
@@ -1424,6 +1430,7 @@ function renderProducts() {
             </td>
         </tr>`;
     }).join('');
+    updateSelectAll();
 }
 
 function openProductModal(id = null) {
@@ -1483,6 +1490,54 @@ async function saveProduct() {
         closeModal('productModal');
         loadProducts();
     } catch (err) { toast('Gagal simpan: ' + err.message, 'err'); }
+}
+
+function toggleAllProducts(cb) {
+    const cbs = document.querySelectorAll('.prod-checkbox');
+    cbs.forEach(c => c.checked = cb.checked);
+    updateSelectAll();
+}
+
+function updateSelectAll() {
+    const cbs = document.querySelectorAll('.prod-checkbox');
+    const checked = document.querySelectorAll('.prod-checkbox:checked');
+    const selectAllBtn = document.getElementById('selectAllProducts');
+    if(selectAllBtn) selectAllBtn.checked = (cbs.length > 0 && cbs.length === checked.length);
+    const count = checked.length;
+    const countEl = document.getElementById('selCount');
+    if(countEl) countEl.textContent = count;
+    
+    // Only show if we are on products page
+    const pageProducts = document.getElementById('page-products');
+    const isProductsPage = pageProducts && pageProducts.classList.contains('active');
+    const btn = document.getElementById('btnDeleteSelected');
+    if(btn) btn.style.display = (count > 0 && isProductsPage) ? 'inline-flex' : 'none';
+}
+
+async function deleteSelectedProducts() {
+    const checked = document.querySelectorAll('.prod-checkbox:checked');
+    if (checked.length === 0) return;
+    if (!confirm(`Hapus ${checked.length} produk terpilih? Tidak dapat dibatalkan.`)) return;
+    
+    const btn = document.getElementById('btnDeleteSelected');
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch spin"></i> Menghapus...';
+    btn.disabled = true;
+
+    try {
+        const ids = Array.from(checked).map(c => c.value);
+        const { error } = await _sb.from('products').delete().in('id', ids);
+        if (error) throw error;
+        await loadProducts();
+        document.getElementById('selectAllProducts').checked = false;
+        updateSelectAll();
+    } catch (err) {
+        console.error('Delete selected error:', err);
+        alert('Gagal menghapus produk: ' + err.message);
+    } finally {
+        btn.innerHTML = '<i class="fa-solid fa-trash"></i> Hapus (<span id="selCount">0</span>)';
+        btn.disabled = false;
+        updateSelectAll();
+    }
 }
 
 async function deleteProduct(id, name) {
