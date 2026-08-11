@@ -1060,9 +1060,81 @@ async function fetchProducts() {
             }
         };
 
+        
+/* --- DYNAMIC SITE SETTINGS BINDING --- */
+let globalSiteSettings = {};
+
+async function fetchSiteSettings() {
+    if (!isSupabaseConfigured) return;
+    try {
+        const { data, error } = await _supabase.from('site_settings').select('key,value');
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            data.forEach(item => {
+                globalSiteSettings[item.key] = item.value;
+            });
+            applySiteSettings();
+        }
+    } catch (e) {
+        console.error("Error fetching site settings:", e);
+    }
+}
+
+window.applySiteSettings = function() {
+    const isEn = getLang() === 'en';
+    
+    // Apply text content
+    document.querySelectorAll('[data-setting]').forEach(el => {
+        const key = el.getAttribute('data-setting');
+        let val = globalSiteSettings[key];
+        
+        // Language fallback
+        if (isEn && globalSiteSettings[key + '_en']) {
+            val = globalSiteSettings[key + '_en'];
+        }
+        
+        if (val !== undefined && val !== null && val !== '') {
+            // Some keys are HTML, some are text. We'll use innerHTML to be safe for textareas containing breaks, 
+            // but for safety from XSS, this is from admin so it's trusted.
+            // If it's an input/textarea, update value
+            if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.value = val;
+            } else {
+                el.innerHTML = val.replace(/\n/g, '<br>');
+            }
+        }
+    });
+    
+    // Apply images
+    document.querySelectorAll('[data-setting-img]').forEach(el => {
+        const key = el.getAttribute('data-setting-img');
+        const val = globalSiteSettings[key];
+        if (val) {
+            if (el.tagName === 'IMG') {
+                el.src = val;
+            } else {
+                el.style.backgroundImage = `url('${val}')`;
+            }
+        }
+    });
+
+    // Special handlers
+    // Announcement bar color
+    const topbar = document.querySelector('.top-banner');
+    if (topbar && globalSiteSettings['announcement_color']) {
+        topbar.style.backgroundColor = globalSiteSettings['announcement_color'];
+    }
+    // Announcement bar toggle
+    if (topbar && globalSiteSettings['announcement_enabled'] === 'false') {
+        topbar.style.display = 'none';
+    }
+};
+
         /* --- 12. INITIALIZATION ON LOAD --- */
         document.addEventListener('DOMContentLoaded', () => {
-            fetchProducts(); 
+            fetchProducts();
+            fetchSiteSettings(); 
             updateCartBadge();
             checkSession();
              
