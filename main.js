@@ -300,6 +300,44 @@ function toggleLanguage() {
     if (countElement) countElement.innerText = products.length;
 };
 
+
+/* --- RENDER CATEGORY PILLS DYNAMICALLY --- */
+function renderCategoryPills(products) {
+    const pillsContainer = document.getElementById('categoryPills');
+    if (!pillsContainer) return;
+    
+    // Get unique categories
+    const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+    
+    // Always start with "All"
+    let html = `<button class="pill active" onclick="filterCategory('all')" data-cat="all">
+        <i class="fa-solid fa-border-all"></i> <span data-i18n="produk_filter_all">Semua Produk</span>
+    </button>`;
+    
+    categories.forEach(cat => {
+        let icon = "fa-tag"; // default icon
+        if (cat.toLowerCase().includes("minuman")) icon = "fa-bottle-water";
+        else if (cat.toLowerCase().includes("roasted") || cat.toLowerCase().includes("bean")) icon = "fa-fire-flame-curved";
+        else if (cat.toLowerCase().includes("alat") || cat.toLowerCase().includes("brew")) icon = "fa-filter";
+        else if (cat.toLowerCase().includes("merch")) icon = "fa-shirt";
+        
+        let i18nAttr = "";
+        if (cat === "Minuman Kopi") i18nAttr = `data-i18n="produk_filter_drinks"`;
+        else if (cat === "Roasted Bean") i18nAttr = `data-i18n="produk_filter_beans"`;
+        
+        html += `<button class="pill" onclick="filterCategory('${cat}')" data-cat="${cat}">
+            <i class="fa-solid ${icon}"></i> <span ${i18nAttr}>${cat}</span>
+        </button>`;
+    });
+    
+    pillsContainer.innerHTML = html;
+    
+    // Apply translations to the newly generated pills
+    if (typeof window.applyTranslations === 'function') {
+        window.applyTranslations();
+    }
+}
+
 /* --- FUNGSI FETCH PRODUK DARI SUPABASE --- */
 async function fetchProducts() {
     // Jika tidak terkonfigurasi, batalkan penarikan data
@@ -326,7 +364,8 @@ async function fetchProducts() {
         if (products && products.length > 0) {
             allProductsData = products;
             currentFilteredProducts = [...products];
-            renderProducts(products); // Pastikan Anda memiliki fungsi renderProducts()
+            renderCategoryPills(products); // Generate dynamic categories
+            renderProducts(products); // Render products
         } else {
             console.log("Koneksi berhasil, tetapi tidak ada data di dalam tabel 'products'.");
             const g1 = document.getElementById('grid-minuman');
