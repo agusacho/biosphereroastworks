@@ -2,39 +2,43 @@
 // components.js - Shared UI components (Navbar, Footer)
 
 const navbarHTML = `
-    <!-- Top Announcement Bar -->
-    <div class="top-banner" style="background-color: var(--accent);">
-        <p class="top-banner-text" data-i18n="top_banner_text" data-setting="announcement_text">Promo Terbatas! Gratis Ongkir Jawa-Bali untuk pembelian biji kopi 1kg.</p>
-    </div>
-
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-content">
+    <!-- HEADER -->
+    <header>
+        <div class="top-banner" style="background-color: var(--accent);">
+            <p class="top-banner-text" data-i18n="top_banner_text" data-setting="announcement_text">Promo Terbatas! Gratis Ongkir Jawa-Bali untuk pembelian biji kopi 1kg.</p>
+        </div>
+        <div class="container nav-container">
             <a href="index.html" class="logo">
-                <img src="logo.png" alt="Biosphere Roast Works Logo" style="height:40px; margin-right:10px;">
-                Biosphere Roast Works
+                <img src="images/logo.png" alt="Biosphere Roast Works Logo" class="nav-logo-img">
             </a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html" class="nav-item" data-page="index" data-i18n="nav_home">Beranda</a></li>
-                <li><a href="produk.html" class="nav-item" data-page="produk" data-i18n="nav_products">Produk</a></li>
-                <li><a href="tentang.html" class="nav-item" data-page="tentang" data-i18n="nav_about">Tentang Kami</a></li>
-                <li><a href="roasting.html" class="nav-item" data-page="roasting" data-i18n="nav_roasting">Proses Roasting</a></li>
-                <li><a href="blog.html" class="nav-item" data-page="blog" data-i18n="nav_blog">Blog</a></li>
-                <li><a href="kontak.html" class="nav-item" data-page="kontak" data-i18n="nav_contact">Kontak</a></li>
-                <li><a href="tracking.html" class="nav-item" data-page="tracking" data-i18n="nav_track">Lacak Pesanan</a></li>
-            </ul>
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html" class="nav-item" data-page="index" data-i18n="nav_home">Beranda</a></li>
+                    <li><a href="produk.html" class="nav-item" data-page="produk" data-i18n="nav_products">Produk</a></li>
+                    <li><a href="tentang.html" class="nav-item" data-page="tentang" data-i18n="nav_about">Tentang Kami</a></li>
+                    <li><a href="roasting.html" class="nav-item" data-page="roasting" data-i18n="nav_roasting">Proses Sangrai</a></li>
+                    <li><a href="blog.html" class="nav-item" data-page="blog" data-i18n="nav_blog">Blog</a></li>
+                    <li><a href="tracking.html" class="nav-item" data-page="tracking" data-i18n="nav_track">Lacak</a></li>
+                    <li><a href="kontak.html" class="nav-item" data-page="kontak" data-i18n="nav_contact">Kontak</a></li>
+                </ul>
+            </nav>
             <div class="nav-actions">
-                <a href="#" class="cart-icon" onclick="openCart(event)">
-                    <i class="fa-solid fa-cart-shopping"></i>
+                <div class="lang-switch" style="cursor: pointer; font-size: .95rem; color: var(--primary); margin-right: 15px; font-weight: 700;" onclick="toggleLanguage()">
+                    <span id="langId" style="color:var(--accent);">ID</span> | <span id="langEn" style="color:var(--muted);">EN</span>
+                </div>
+                <div class="user-icon" id="userIcon" onclick="openAuthModal()" style="cursor: pointer; font-size: 1.3rem; color: var(--primary);">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+                <div class="cart-icon" onclick="toggleCart()">
+                    <i class="fa-solid fa-shopping-cart"></i>
                     <span class="cart-badge" id="cartBadge">0</span>
-                </a>
-                <button class="lang-btn" id="langToggleBtn" onclick="toggleLanguage()">EN</button>
-                <div class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()">
+                </div>
+                <div class="menu-toggle" id="menuToggle">
                     <i class="fa-solid fa-bars"></i>
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 `;
 
 const footerHTML = `
