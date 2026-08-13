@@ -461,9 +461,13 @@ async function fetchProducts() {
             });
         });
 
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            document.getElementById('navLinks').classList.toggle('active');
-        });
+        const menuToggle = document.getElementById('menuToggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                const navLinks = document.getElementById('navLinks');
+                if (navLinks) navLinks.classList.toggle('active');
+            });
+        }
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', () => document.getElementById('navLinks').classList.remove('active'));
         });
@@ -486,15 +490,21 @@ async function fetchProducts() {
         };
 
         const toggleCart = () => {
-            document.getElementById('cartOffcanvas').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+            const cartOffcanvas = document.getElementById('cartOffcanvas');
+            const overlay = document.getElementById('overlay');
+            if (cartOffcanvas) cartOffcanvas.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
             renderCart();
         };
+        window.toggleCart = toggleCart;
 
         const closeModal = (id) => {
-            document.getElementById(id).classList.remove('active');
-            document.getElementById('overlay').classList.remove('active');
+            const el = document.getElementById(id);
+            const overlay = document.getElementById('overlay');
+            if (el) el.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
         };
+        window.closeModal = closeModal;
 
         document.getElementById('overlay').addEventListener('click', () => {
             document.getElementById('filterSidebar').classList.remove('active');
@@ -520,7 +530,8 @@ async function fetchProducts() {
                 filtered = filtered.filter(p => p.category === activeCategoryFilter);
             }
 
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            const searchText = searchInput ? searchInput.value.toLowerCase() : '';
             if(searchText) {
                 filtered = filtered.filter(p => p.name.toLowerCase().includes(searchText) || (p.notes && p.notes.toLowerCase().includes(searchText)));
             }
@@ -531,7 +542,8 @@ async function fetchProducts() {
             if(originChecks.length > 0) filtered = filtered.filter(p => p.origin && originChecks.includes(p.origin));
             if(processChecks.length > 0) filtered = filtered.filter(p => p.process && processChecks.includes(p.process));
 
-            const sortVal = document.getElementById('sortSelect').value;
+            const sortEl = document.getElementById('sortSelect');
+            const sortVal = sortEl ? sortEl.value : '';
             if(sortVal === 'price-asc') filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
             if(sortVal === 'price-desc') filtered.sort((a, b) => getBasePrice(b) - getBasePrice(a));
             if(sortVal === 'rating') filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
@@ -539,6 +551,7 @@ async function fetchProducts() {
             currentFilteredProducts = filtered;
             renderProducts(currentFilteredProducts);
         };
+        window.applyFilters = applyFilters;
 
         const searchEl = document.getElementById('searchInput');
         if (searchEl) searchEl.addEventListener('input', applyFilters);
@@ -547,6 +560,7 @@ async function fetchProducts() {
             activeCategoryFilter = cat;
             applyFilters();
         };
+        window.filterByCategory = filterByCategory;
 
         const resetFilters = () => {
             activeCategoryFilter = 'all';
@@ -554,6 +568,7 @@ async function fetchProducts() {
             if (searchEl2) searchEl2.value = '';
             applyFilters();
         };
+        window.resetFilters = resetFilters;
 
         /* --- 8. PRODUCT DETAIL MODAL --- */
         let currentModalProduct = null;
@@ -620,6 +635,7 @@ async function fetchProducts() {
             document.getElementById('productModal').classList.add('active');
             document.getElementById('overlay').classList.add('active');
         };
+        window.openProductDetail = openProductDetail;
 
         const updateModalPrice = () => {
             if(!currentModalProduct.variants || currentModalProduct.variants.length === 0) return;
@@ -627,6 +643,7 @@ async function fetchProducts() {
             const selectedVariant = currentModalProduct.variants[select.value];
             document.getElementById('modalPriceDisplay').innerText = formatRupiah(selectedVariant.price);
         };
+        window.updateModalPrice = updateModalPrice;
 
         const adjustModalQty = (change) => {
             const qtySpan = document.getElementById('modalQty');
@@ -634,6 +651,7 @@ async function fetchProducts() {
             if(qty < 1) qty = 1;
             qtySpan.innerText = qty;
         };
+        window.adjustModalQty = adjustModalQty;
 
         /* --- 9. CART LOGIC --- */
         const updateCartBadge = () => {
@@ -668,6 +686,7 @@ async function fetchProducts() {
                 imageStyle: p.imageStyle || 'var(--metallic-white)'
             });
         };
+        window.quickAddToCart = quickAddToCart;
 
         const addToCartFromModal = () => {
             const qty = parseInt(document.getElementById('modalQty').innerText);
@@ -693,6 +712,7 @@ async function fetchProducts() {
 
             closeModal('productModal');
         };
+        window.addToCartFromModal = addToCartFromModal;
 
         const addItemToCartObject = (newItem) => {
             const existingIndex = cart.findIndex(item => item.id === newItem.id && item.variantName === newItem.variantName);
@@ -751,12 +771,14 @@ async function fetchProducts() {
             saveCart();
             renderCart();
         };
+        window.updateCartQty = updateCartQty;
 
         const removeFromCart = (index) => {
             cart.splice(index, 1);
             saveCart();
             renderCart();
         };
+        window.removeFromCart = removeFromCart;
 
         /* --- 10. E-COMMERCE CHECKOUT & PAYMENT LOGIC --- */
         function openPaymentModal() {
@@ -938,11 +960,15 @@ async function fetchProducts() {
         let currentUser = null;
 
         const openAuthModal = () => {
-            document.getElementById('cartOffcanvas').classList.remove('active');
-            document.getElementById('authModal').classList.add('active');
-            document.getElementById('overlay').classList.add('active');
+            const cartOffcanvas = document.getElementById('cartOffcanvas');
+            if (cartOffcanvas) cartOffcanvas.classList.remove('active');
+            const authModal = document.getElementById('authModal');
+            if (authModal) authModal.classList.add('active');
+            const overlay = document.getElementById('overlay');
+            if (overlay) overlay.classList.add('active');
             checkSession();
         };
+        window.openAuthModal = openAuthModal;
 
         const toggleAuthMode = (e) => {
             e.preventDefault();
@@ -955,6 +981,7 @@ async function fetchProducts() {
             if(!isLoginMode) document.getElementById('authName').required = true;
             else document.getElementById('authName').required = false;
         };
+        window.toggleAuthMode = toggleAuthMode;
 
         async function handleAuth(e) {
             e.preventDefault();
@@ -1083,6 +1110,9 @@ async function fetchProducts() {
                 rView.innerHTML = '<p>Silakan cek koleksi lengkap kami!</p>';
             }
         };
+        window.startQuiz = startQuiz;
+        window.quizNextStep = quizNextStep;
+        window.quizResult = quizResult;
 
         
 /* --- DYNAMIC SITE SETTINGS BINDING --- */
@@ -1247,7 +1277,7 @@ window.applySiteSettings = function() {
             });
 
             // Re-render with filter
-            applyFilters();
+            window.applyFilters();
         };
 
 applyTranslations();
