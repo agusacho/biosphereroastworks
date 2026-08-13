@@ -894,15 +894,26 @@ async function fetchProducts() {
                 showLoader();
                 document.getElementById('btnSubmitContact').disabled = true;
 
-                const { error } = await _supabase.from('contacts').insert([{ nama, email, pesan }]);
-                if (error) throw error;
+                // Panggil API Vercel Serverless
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nama, email, pesan })
+                });
 
-                showToast(t('kontak_sent_toast'));
-                e.target.reset();
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Gagal mengirim pesan');
+                }
+
+                alert("PESAN BERHASIL DIKIRIM!\nTerima kasih telah menghubungi Biosphere Roast Works. Kami akan segera merespons Anda.");
+                e.target.reset(); // Kosongkan form
+
             } catch (err) {
                 console.error("Error Send Contact:", err);
                 const errorMessage = err.message || "Error tidak diketahui";
-                alert(`GAGAL MENGIRIM PESAN!nnAlasan dari Supabase:n"${errorMessage}"nnPastikan RLS sudah di-disable pada tabel 'contacts'.`);
+                alert(`GAGAL MENGIRIM PESAN!\nAlasan: "${errorMessage}"\nSilakan coba lagi nanti.`);
             } finally {
                 hideLoader();
                 document.getElementById('btnSubmitContact').disabled = false;

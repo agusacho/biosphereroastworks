@@ -453,9 +453,13 @@
         <a class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
             <i class="fa-solid fa-chart-line"></i> Dashboard
         </a>
-        <a class="nav-item" onclick="showPage('orders')" id="nav-orders">
+                <a class="nav-item" onclick="showPage('orders')" id="nav-orders">
             <i class="fa-solid fa-box-open"></i> Pesanan
             <span class="nav-badge" id="pendingBadge" style="display:none;">0</span>
+        </a>
+        <a class="nav-item" onclick="showPage('contacts')" id="nav-contacts">
+            <i class="fa-solid fa-envelope"></i> Pesan Masuk
+            <span class="nav-badge" id="contactsBadge" style="display:none;">0</span>
         </a>
 
         <div class="nav-label">Katalog</div>
@@ -554,6 +558,32 @@
         </div>
 
         <!-- ── ORDERS ─────────────────────────────────────────────── -->
+                <!-- PAGE: CONTACTS -->
+        <div class="page" id="page-contacts">
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title"><i class="fa-solid fa-envelope" style="color:var(--info); margin-right:8px;"></i> Daftar Pesan Masuk</div>
+                    <button class="btn btn-view" onclick="loadContacts()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Pesan</th>
+                                <th style="text-align:right;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsTableBody">
+                            <tr><td colspan="5" style="text-align:center;color:var(--muted);">Belum ada pesan.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div class="page" id="page-orders">
             <div class="card">
                 <div class="card-head">
@@ -2378,6 +2408,65 @@ function setEl(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
 }
+
+
+    /* --- CONTACTS / INBOX --- */
+    async function loadContacts() {
+        if (!isLoggedIn) return;
+        try {
+            const { data, error } = await _sb.from('contacts').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            
+            const tbody = document.getElementById('contactsTableBody');
+            const badge = document.getElementById('contactsBadge');
+            
+            if (data && data.length > 0) {
+                badge.style.display = 'inline-block';
+                badge.innerText = data.length;
+                
+                let html = '';
+                data.forEach(c => {
+                    const d = new Date(c.created_at).toLocaleString('id-ID');
+                    html += `
+                        <tr>
+                            <td style='white-space:nowrap;font-size:0.75rem;'>${d}</td>
+                            <td style='font-weight:600;'>${c.nama}</td>
+                            <td><a href='mailto:${c.email}' style='color:var(--info); text-decoration:none;'>${c.email}</a></td>
+                            <td style='max-width:300px; white-space:pre-wrap;'>${c.pesan}</td>
+                            <td style='text-align:right;'>
+                                <button class='btn btn-del' onclick="deleteContact('${c.id}')"><i class='fa-solid fa-trash'></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } else {
+                badge.style.display = 'none';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);">Belum ada pesan.</td></tr>';
+            }
+        } catch (err) {
+            console.error("Error loadContacts:", err);
+        }
+    }
+
+    async function deleteContact(id) {
+        if(!confirm('Hapus pesan ini secara permanen?')) return;
+        try {
+            const { error } = await _sb.from('contacts').delete().eq('id', id);
+            if (error) throw error;
+            loadContacts();
+        } catch (err) {
+            console.error("Error deleteContact:", err);
+            alert("Gagal menghapus pesan: " + err.message);
+        }
+    }
+
+    // Hook into initial load
+    const _originalInitAdmin = initAdmin;
+    initAdmin = async function() {
+        await _originalInitAdmin();
+        loadContacts();
+    };
 
 </script>
 </body>
