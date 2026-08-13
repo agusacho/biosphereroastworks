@@ -5,10 +5,29 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+const rateLimit = new Map();
+const LIMIT = 5; // Max requests
+const WINDOW_MS = 60 * 1000; // 1 minute
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
+
+    const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
+    const now = Date.now();
+    const userLimit = rateLimit.get(ip) || { count: 0, startTime: now };
+
+    if (now - userLimit.startTime > WINDOW_MS) {
+        userLimit.count = 1;
+        userLimit.startTime = now;
+    } else {
+        userLimit.count++;
+        if (userLimit.count > LIMIT) {
+            return res.status(429).json({ error: 'Terlalu banyak permintaan. Silakan coba lagi nanti.' });
+        }
+    }
+    rateLimit.set(ip, userLimit);
 
     try {
         const { nama, email, pesan } = req.body;

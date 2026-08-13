@@ -165,9 +165,11 @@ function toggleLanguage() {
                     _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 } else {
                     console.error("Supabase is not defined.");
+                    isSupabaseConfigured = false;
                 }
             } catch(e) {
                 console.error("Supabase init error:", e);
+                isSupabaseConfigured = false;
             }
         } else {
             console.warn("⚠️ Supabase belum dikonfigurasi. Berjalan dalam mode simulasi offline.");
@@ -273,8 +275,9 @@ function toggleLanguage() {
 
     products.forEach(product => {
         const badgeClass = (product.category && product.category.includes('Roasted')) ? 'badge-roasted' : 'badge-green';
-        const badgeLabel = (product.category && product.category.includes('Roasted')) ? (t('produk_badge_roasted') || 'Roasted Bean') : product.category;
-        const pNotes = (typeof getLang === 'function' && getLang() === 'en' && product.notes_en) ? product.notes_en : product.notes;
+        const pImage = product.image_icon ? product.image_icon : 'images/placeholder-product.png';
+        const badgeLabel = (product.category && product.category.includes('Roasted')) ? ((typeof t === 'function' ? t('produk_badge_roasted') : null) || 'Roasted Bean') : product.category;
+        const pNotes = product.notes;
 
         let defaultPriceStr = (typeof formatRupiah === 'function') ? formatRupiah(product.price) : `Rp ${product.price}`;
         const hasVariants = product.variants && Array.isArray(product.variants) && product.variants.length > 0;
@@ -319,9 +322,10 @@ function toggleLanguage() {
             </div>
         `;
 
-        if (product.image_url) {
+        // Render product image if available (uses image_icon field)
+        if (product.image_icon) {
             const imgEl = document.createElement('img');
-            imgEl.src = product.image_url;
+            imgEl.src = product.image_icon;
             imgEl.alt = product.name;
             imgEl.className = 'product-img';
             imgEl.loading = 'lazy';
@@ -390,11 +394,23 @@ function renderCategoryPills(products) {
 
 /* --- FUNGSI FETCH PRODUK DARI SUPABASE --- */
 async function fetchProducts() {
+    const dynamicSections = document.getElementById('dynamic-product-sections');
+    const productGrid = document.getElementById('productGrid');
+    
+    const renderEmptyState = (msg = "Katalog produk sedang dalam pembaruan.") => {
+        const empty = `<div class="col-12 text-center py-5">
+            <i class="fa-solid fa-mug-hot" style="font-size:3rem; color:var(--muted); margin-bottom:20px;"></i>
+            <h4 data-i18n="produk_empty_title">Belum ada produk</h4>
+            <p class="text-muted" data-i18n="produk_empty_desc">${msg}</p>
+        </div>`;
+        if (dynamicSections) dynamicSections.innerHTML = empty;
+        if (productGrid) productGrid.innerHTML = empty;
+    };
+
     // Jika tidak terkonfigurasi, batalkan penarikan data
     if (!isSupabaseConfigured) {
         console.warn("Supabase belum terkonfigurasi. Menampilkan produk kosong/simulasi.");
-        allProductsData = [...productsDB];
-        currentFilteredProducts = [...allProductsData];
+        renderEmptyState("Koneksi ke database gagal. Silakan muat ulang halaman.");
         return; 
     }
 
@@ -405,7 +421,7 @@ async function fetchProducts() {
         // Mengambil seluruh baris data dari tabel 'products'
         const { data: products, error } = await _supabase
             .from('products')
-            .select('*');
+            .select('id,name,category,price,stock_quantity,rating,notes,origin,process,variants,image_icon');
 
         // Jika Supabase melempar error, hentikan dan masuk ke blok catch
         if (error) throw error;
@@ -418,15 +434,12 @@ async function fetchProducts() {
             renderProducts(products); // Render products
         } else {
             console.log("Koneksi berhasil, tetapi tidak ada data di dalam tabel 'products'.");
-            const g1 = document.getElementById('grid-minuman');
-            const g2 = document.getElementById('grid-roasted');
-            if(g1) g1.innerHTML = "<p>Belum ada produk.</p>";
-            if(g2) g2.innerHTML = "<p>Belum ada produk.</p>";
+            renderEmptyState();
         }
 
     } catch (err) {
-        console.error("Error Fetch Products:", err);
-        alert(`Gagal memuat produk!nAlasan: ${err.message}`);
+        console.error("Error fetching products:", err);
+        renderEmptyState("Terjadi kesalahan sistem saat memuat produk.");
     } finally {
         // Matikan animasi loading
         if (typeof hideLoader === "function") hideLoader();
@@ -554,8 +567,8 @@ async function fetchProducts() {
             let defaultPriceStr = '';
             const hasVariants = p.variants && Array.isArray(p.variants) && p.variants.length > 0;
             const lang = getLang() || 'id';
-            const pNotes = (lang === 'en' && p.notes_en) ? p.notes_en : p.notes;
-            const pDesc = (lang === 'en' && p.description_en) ? p.description_en : p.description;
+            const pNotes = p.notes;
+            const pDesc = p.description;
 
             if (hasVariants) {
                 defaultPriceStr = formatRupiah(p.variants[0].price);
@@ -639,8 +652,8 @@ async function fetchProducts() {
             
             const hasVariants = p.variants && Array.isArray(p.variants) && p.variants.length > 0;
             const lang = getLang() || 'id';
-            const pNotes = (lang === 'en' && p.notes_en) ? p.notes_en : p.notes;
-            const pDesc = (lang === 'en' && p.description_en) ? p.description_en : p.description;
+            const pNotes = p.notes;
+            const pDesc = p.description;
             if(hasVariants) {
                 openProductDetail(id); 
                 return;
