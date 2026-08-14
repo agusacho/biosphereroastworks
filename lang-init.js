@@ -81,8 +81,8 @@
         });
 
         // Navigation
-        setText('a[href="tracking.html"]:not([data-i18n])', 'nav_track');
-        setText('a[href="index.html"]:not([data-i18n])', 'nav_home');
+        setText('.nav-links a[href="tracking.html"]:not([data-i18n])', 'nav_track');
+        setText('.nav-links a[href="index.html"]:not([data-i18n])', 'nav_home');
 
         // Cart
         setText('#cartOffcanvas h3', 'cart_title');
