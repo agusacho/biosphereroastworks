@@ -60,7 +60,8 @@
         const page = document.body.dataset.page || '';
 
         /* ── ANNOUNCEMENT BAR (semua halaman) ─────────────────────── */
-        if (get('announcement_enabled') === 'true') {
+        // Disabled per user request
+        if (false) {
             const text  = get('announcement_text');
             const color = get('announcement_color', '#0F5B58');
             if (text && !document.getElementById('announcementBar')) {

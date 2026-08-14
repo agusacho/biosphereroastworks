@@ -1183,14 +1183,7 @@ window.applySiteSettings = function() {
 
     // Special handlers
     // Announcement bar color
-    const topbar = document.querySelector('.top-banner');
-    if (topbar && globalSiteSettings['announcement_color']) {
-        topbar.style.backgroundColor = globalSiteSettings['announcement_color'];
-    }
-    // Announcement bar toggle
-    if (topbar && globalSiteSettings['announcement_enabled'] === 'false') {
-        topbar.style.display = 'none';
-    }
+    // Announcement bar code removed per user request
 };
 
         /* --- 12. INITIALIZATION ON LOAD --- */

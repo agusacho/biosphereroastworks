@@ -4,9 +4,6 @@
 const navbarHTML = `
     <!-- HEADER -->
     <header>
-        <div class="top-banner" style="background-color: var(--accent);">
-            <p class="top-banner-text" data-i18n="top_banner_text" data-setting="announcement_text">Promo Terbatas! Gratis Ongkir Jawa-Bali untuk pembelian biji kopi 1kg.</p>
-        </div>
         <div class="container nav-container">
             <a href="index.html" class="logo">
                 <img src="images/logo.png" alt="Biosphere Roast Works Logo" class="nav-logo-img">
