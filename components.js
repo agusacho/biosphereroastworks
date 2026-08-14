@@ -10,7 +10,6 @@ const navbarHTML = `
             </a>
             <nav>
                 <ul class="nav-links" id="navLinks">
-                    <li><a href="index.html" class="nav-item" data-page="index" data-i18n="nav_home">Beranda</a></li>
                     <li><a href="produk.html" class="nav-item" data-page="produk" data-i18n="nav_products">Produk</a></li>
                     <li><a href="tentang.html" class="nav-item" data-page="tentang" data-i18n="nav_about">Tentang Kami</a></li>
                     <li><a href="roasting.html" class="nav-item" data-page="roasting" data-i18n="nav_roasting">Proses Sangrai</a></li>
