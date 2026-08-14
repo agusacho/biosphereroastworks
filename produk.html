@@ -446,6 +446,26 @@
                     cats[p.category].push(p);
                 });
                 
+                // Render category pills
+                var pillsContainer = document.getElementById('categoryPills');
+                if (pillsContainer) {
+                    var html = '<button class="pill active" onclick="filterCategory(\'all\')" data-cat="all"><i class="fa-solid fa-border-all"></i> <span data-i18n="produk_filter_all">Semua Produk</span></button>';
+                    Object.keys(cats).forEach(function(cat) {
+                        var icon = "fa-tag";
+                        if (cat.toLowerCase().includes("minuman")) icon = "fa-bottle-water";
+                        else if (cat.toLowerCase().includes("roasted") || cat.toLowerCase().includes("bean")) icon = "fa-fire-flame-curved";
+                        else if (cat.toLowerCase().includes("alat") || cat.toLowerCase().includes("brew")) icon = "fa-filter";
+                        else if (cat.toLowerCase().includes("merch")) icon = "fa-shirt";
+                        
+                        var i18nAttr = "";
+                        if (cat === "Minuman Kopi") i18nAttr = 'data-i18n="produk_filter_drinks"';
+                        else if (cat === "Roasted Bean") i18nAttr = 'data-i18n="produk_filter_beans"';
+                        
+                        html += '<button class="pill" onclick="filterCategory(\'' + cat + '\')" data-cat="' + cat + '"><i class="fa-solid ' + icon + '"></i> <span ' + i18nAttr + '>' + cat + '</span></button>';
+                    });
+                    pillsContainer.innerHTML = html;
+                }
+                
                 // Render
                 if (!container) return;
                 container.innerHTML = '';

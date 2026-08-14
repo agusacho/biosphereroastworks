@@ -142,11 +142,17 @@ async function loadDashboard() {
         }
         tbody.innerHTML = allOrders.slice(0, 8).map(o => `<tr>
             <td><code style="color:var(--accent);font-size:.76rem;">#${String(o.id).slice(0,8)}</code></td>
-            <td style="font-weight:600;">${o.customer_name || 'â€”'}</td>
+            <td style="font-weight:600;">${o.customer_name || '—'}</td>
             <td style="font-weight:700;">${rp(o.total_price)}</td>
             <td>${sBadge(o.status)}</td>
             <td style="color:var(--muted);font-size:.8rem;">${fmtDate(o.created_at)}</td>
         </tr>`).join('');
+        
+        const catList = document.getElementById('catList');
+        if (catList && allProducts.length > 0) {
+            const categories = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
+            catList.innerHTML = categories.map(cat => `<option value="${cat}">`).join('');
+        }
     } catch (err) {
         toast('Gagal memuat dashboard: ' + err.message, 'err');
     }
