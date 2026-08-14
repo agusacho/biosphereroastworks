@@ -1,113 +1,79 @@
 <!DOCTYPE html>
-<html>
-<head>
+<html><head>
 <meta charset="UTF-8">
-<title>Debug - Produk</title>
+<title>Debug Products</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
-<h2>Supabase Product Debug</h2>
-<div id="log" style="font-family:monospace;white-space:pre;background:#111;color:#0f0;padding:20px;font-size:13px;"></div>
-<div id="result"></div>
+<style>body{font-family:monospace;padding:20px}#log{background:#111;color:#0f0;padding:20px;white-space:pre-wrap;font-size:13px;max-height:80vh;overflow:auto}</style>
+</head><body>
+<h2>Product Debug - Step by Step</h2>
+<div id="dynamic-product-sections"></div>
+<div id="log"></div>
 <script>
-const log = (msg, color='#0f0') => {
-  const el = document.getElementById('log');
-  el.innerHTML += `<span style="color:${color}">${msg}</span>\n`;
-};
-
-const SUPABASE_URL = 'https://gvuzsbrplmgqjuchjcpk.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2dXpzYnJwbG1ncWp1Y2hqY3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MTE5NDMsImV4cCI6MjA5MTI4Nzk0M30.PowRUwVvHnEKvfBC3jvK5gHUsCACT2ecTJxOAat8qXU';
-
-async function runTests() {
-  log('=== SUPABASE DEBUG ===');
-
-  // 1. Check if supabase is defined
-  if (typeof supabase === 'undefined') {
-    log('❌ supabase library NOT loaded', '#f44');
-    return;
-  }
-  log('✅ supabase library loaded');
-
-  // 2. Create client
-  let client;
-  try {
-    client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    log('✅ client created');
-  } catch(e) {
-    log('❌ createClient failed: ' + e.message, '#f44');
-    return;
-  }
-
-  // 3. Test SELECT * (old way - might fail)
-  log('\n--- Test 1: SELECT * ---');
-  try {
-    const { data, error } = await client.from('products').select('*').limit(1);
-    if (error) log('❌ SELECT * error: ' + error.message, '#f44');
-    else log('✅ SELECT * OK, columns: ' + Object.keys(data[0]).join(', '));
-  } catch(e) {
-    log('❌ SELECT * exception: ' + e.message, '#f44');
-  }
-
-  // 4. Test explicit columns (new way)
-  log('\n--- Test 2: Explicit columns ---');
-  try {
-    const { data, error } = await client
-      .from('products')
-      .select('id,name,category,price,stock_quantity,rating,notes,origin,process,variants,image_icon');
-    if (error) {
-      log('❌ Explicit select error: ' + error.message, '#f44');
-    } else {
-      log('✅ Fetched ' + data.length + ' products');
-      const cats = [...new Set(data.map(p => p.category))];
-      log('   Categories: ' + cats.join(', '));
-
-      // 5. Simulate renderProducts DOM test
-      log('\n--- Test 3: Simulate renderProducts ---');
-      const container = document.createElement('div');
-      container.id = 'dynamic-product-sections';
-      document.getElementById('result').appendChild(container);
-
-      const categories = [...new Set(data.map(p => p.category).filter(Boolean))];
-      categories.forEach(cat => {
-        const catId = cat.replace(/\s+/g, '-').toLowerCase();
-        const section = document.createElement('div');
-        section.id = 'section-' + catId;
-        const grid = document.createElement('div');
-        grid.id = 'grid-' + catId;
-        section.appendChild(grid);
-        container.appendChild(section);
-        log('   Created section: section-' + catId + ' / grid: grid-' + catId);
-      });
-
-      let placed = 0;
-      data.forEach(product => {
-        if (!product.category) return;
-        const catId = 'grid-' + product.category.replace(/\s+/g, '-').toLowerCase();
-        const grid = document.getElementById(catId);
-        if (grid) {
-          const card = document.createElement('div');
-          card.textContent = product.name;
-          grid.appendChild(card);
-          placed++;
-        } else {
-          log('   ⚠️ Grid NOT FOUND for catId: ' + catId, '#fa0');
-        }
-      });
-      log('✅ Placed ' + placed + '/' + data.length + ' products into grids');
-
-      document.getElementById('result').innerHTML = `
-        <h3>Products (${data.length} total)</h3>
-        <table border="1" style="border-collapse:collapse;width:100%">
-          <tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th></tr>
-          ${data.map(p => `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.category}</td><td>Rp ${p.price?.toLocaleString('id-ID')}</td></tr>`).join('')}
-        </table>`;
-    }
-  } catch(e) {
-    log('❌ Exception: ' + e.message, '#f44');
-  }
+function log(msg, ok=true) {
+  document.getElementById('log').innerHTML += `<span style="color:${ok?'#0f0':'#f44'}">${ok?'✅':'❌'} ${msg}</span>\n`;
 }
 
-document.addEventListener('DOMContentLoaded', runTests);
+document.addEventListener('DOMContentLoaded', async () => {
+  log('DOMContentLoaded fired');
+  
+  // Step 1: Check supabase library
+  if (typeof supabase === 'undefined') { log('supabase library NOT loaded', false); return; }
+  log('supabase library loaded');
+
+  // Step 2: Create client  
+  const SUPABASE_URL = 'https://gvuzsbrplmgqjuchjcpk.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2dXpzYnJwbG1ncWp1Y2hqY3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MTE5NDMsImV4cCI6MjA5MTI4Nzk0M30.PowRUwVvHnEKvfBC3jvK5gHUsCACT2ecTJxOAat8qXU';
+  
+  let _supabase;
+  try {
+    _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    log('Supabase client created');
+  } catch(e) { log('createClient failed: ' + e.message, false); return; }
+
+  // Step 3: Query products
+  log('Querying products...');
+  try {
+    const { data: products, error } = await _supabase
+      .from('products')
+      .select('id,name,category,price,stock_quantity,rating,notes,origin,process,variants,image_icon');
+    
+    if (error) { log('Query error: ' + error.message, false); return; }
+    log(`Fetched ${products.length} products`);
+    
+    // Step 4: Show categories
+    const cats = [...new Set(products.map(p => p.category).filter(Boolean))];
+    log('Categories: ' + cats.join(', '));
+
+    // Step 5: Render products
+    const container = document.getElementById('dynamic-product-sections');
+    cats.forEach(cat => {
+      const catId = cat.replace(/\s+/g, '-').toLowerCase();
+      const section = document.createElement('div');
+      section.style.marginBottom = '20px';
+      section.innerHTML = `<h3 style="color:#333">${cat}</h3>`;
+      const grid = document.createElement('div');
+      grid.id = 'grid-' + catId;
+      grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:10px';
+      section.appendChild(grid);
+      container.appendChild(section);
+    });
+
+    products.forEach(p => {
+      if (!p.category) return;
+      const catId = 'grid-' + p.category.replace(/\s+/g, '-').toLowerCase();
+      const grid = document.getElementById(catId);
+      if (grid) {
+        const card = document.createElement('div');
+        card.style.cssText = 'border:1px solid #ccc;padding:10px;border-radius:8px';
+        card.innerHTML = `<strong>${p.name}</strong><br>Rp ${(p.price||0).toLocaleString('id-ID')}<br><small>${p.notes||''}</small>`;
+        grid.appendChild(card);
+      }
+    });
+    log(`Rendered ${products.length} products into DOM`);
+    
+  } catch(e) {
+    log('Exception: ' + e.message + '\n' + e.stack, false);
+  }
+});
 </script>
-</body>
-</html>
+</body></html>
