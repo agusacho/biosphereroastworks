@@ -1,0 +1,866 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Ã¢â‚¬â€ Biosphere Roast Works</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â LOGIN SCREEN Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<div id="loginScreen">
+    <div class="login-box">
+        <img src="images/logo.png" alt="Logo" class="login-logo" onerror="this.style.display='none'">
+        <h2>Admin Panel</h2>
+        <p>Biosphere Roast Works Ã¢â‚¬â€ Restricted Area</p>
+        <div class="login-err" id="loginErr">Login gagal. Silakan coba lagi.</div>
+        <div class="fg" style="text-align:left;">
+            <label>Email Admin</label>
+            <input type="email" id="loginEmail" class="fi" placeholder="Masukkan email admin">
+        </div>
+        <div class="fg" style="text-align:left; margin-top: 10px;">
+            <label>Password Admin</label>
+            <input type="password" id="loginPw" class="fi" placeholder="Masukkan password">
+        </div>
+        <button style="width:100%;margin-top:12px;padding:12px;font-size:.95rem;background:var(--accent);color:#0a1a1a;border:none;border-radius:9px;font-weight:700;cursor:pointer;font-family:var(--font);transition:filter .2s;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''" onclick="doLogin()">
+            <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Dashboard
+        </button>
+    </div>
+</div>
+
+<!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SIDEBAR OVERLAY (mobile) Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SIDEBAR Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <img src="images/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <div class="sidebar-logo-text">
+            <h2>Biosphere</h2>
+            <span>Admin Panel</span>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-label">Utama</div>
+        <a class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+            <i class="fa-solid fa-chart-line"></i> Dashboard
+        </a>
+                <a class="nav-item" onclick="showPage('orders')" id="nav-orders">
+            <i class="fa-solid fa-box-open"></i> Pesanan
+            <span class="nav-badge" id="pendingBadge" style="display:none;">0</span>
+        </a>
+        <a class="nav-item" onclick="showPage('contacts')" id="nav-contacts">
+            <i class="fa-solid fa-envelope"></i> Pesan Masuk
+            <span class="nav-badge" id="contactsBadge" style="display:none;">0</span>
+        </a>
+
+        <div class="nav-label">Katalog</div>
+        <a class="nav-item" onclick="showPage('products')" id="nav-products">
+            <i class="fa-solid fa-mug-hot"></i> Produk
+        </a>
+        <a class="nav-item" onclick="showPage('hpp')" id="nav-hpp">
+            <i class="fa-solid fa-calculator"></i> Kalkulator HPP
+        </a>
+
+        <div class="nav-label">Konten</div>
+        <a class="nav-item" onclick="showPage('pages')" id="nav-pages">
+            <i class="fa-solid fa-toggle-on"></i> Halaman Aktif
+        </a>
+        <a class="nav-item" onclick="showPage('settings')" id="nav-settings">
+            <i class="fa-solid fa-palette"></i> Tampilan & Konten
+        </a>
+
+        <div class="nav-label">Sistem</div>
+        <a class="nav-item" href="index.html" target="_blank">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Website
+        </a>
+        <div class="sidebar-bottom">
+            <a class="nav-item" onclick="doLogout()" style="color:var(--danger);">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </a>
+        </div>
+    </nav>
+</aside>
+
+<!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â MAIN Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="ham-btn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <div class="topbar-left">
+                <h1 id="pageTitle">Dashboard</h1>
+                <p id="pageSubtitle">Ringkasan aktivitas toko</p>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="top-btn" onclick="refreshCurrent()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+            <button class="top-btn" id="btnDeleteSelected" style="display:none; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid #ef4444; margin-right: 8px;" onclick="deleteSelectedProducts()">
+                <i class="fa-solid fa-trash"></i> Hapus (<span id="selCount">0</span>)
+            </button>
+            <button class="top-btn accent" id="topbarAction" style="display:none;" onclick="openProductModal()">
+                <i class="fa-solid fa-plus"></i> Tambah Produk
+            </button>
+            <button class="top-btn accent" id="topbarSave" style="display:none;" onclick="saveSettings()">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE WRAP -->
+    <div class="page-wrap">
+
+        <!-- Ã¢â€â‚¬Ã¢â€â‚¬ DASHBOARD Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+        <div class="page active" id="page-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card c-gold">
+                    <div class="stat-icon ic-gold"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="stat-val" id="stat-orders">Ã¢â‚¬â€</div>
+                    <div class="stat-lbl">Total Pesanan</div>
+                </div>
+                <div class="stat-card c-teal">
+                    <div class="stat-icon ic-teal"><i class="fa-solid fa-money-bill-wave"></i></div>
+                    <div class="stat-val" id="stat-revenue">Ã¢â‚¬â€</div>
+                    <div class="stat-lbl">Total Pendapatan</div>
+                </div>
+                <div class="stat-card c-blue">
+                    <div class="stat-icon ic-blue"><i class="fa-solid fa-mug-hot"></i></div>
+                    <div class="stat-val" id="stat-products">Ã¢â‚¬â€</div>
+                    <div class="stat-lbl">Jenis Produk</div>
+                </div>
+                <div class="stat-card c-red">
+                    <div class="stat-icon ic-red"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-val" id="stat-pending">Ã¢â‚¬â€</div>
+                    <div class="stat-lbl">Pesanan Pending</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-head">
+                    <span class="card-title">Pesanan Terbaru</span>
+                    <button class="btn btn-view" onclick="showPage('orders')">Lihat Semua <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead><tr><th>#ID</th><th>Pelanggan</th><th>Total</th><th>Status</th><th>Tanggal</th></tr></thead>
+                        <tbody id="recentBody"><tr class="ld"><td colspan="5"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ã¢â€â‚¬Ã¢â€â‚¬ ORDERS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+                <!-- PAGE: CONTACTS -->
+        <div class="page" id="page-contacts">
+            <div class="card">
+                <div class="card-head">
+                    <div class="card-title"><i class="fa-solid fa-envelope" style="color:var(--info); margin-right:8px;"></i> Daftar Pesan Masuk</div>
+                    <button class="btn btn-view" onclick="loadContacts()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Pesan</th>
+                                <th style="text-align:right;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsTableBody">
+                            <tr><td colspan="5" style="text-align:center;color:var(--muted);">Belum ada pesan.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-orders">
+            <div class="card">
+                <div class="card-head">
+                    <span class="card-title">Manajemen Pesanan</span>
+                    <div class="toolbar">
+                        <div class="sbox"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="orderSearch" placeholder="Cari nama / email..." oninput="filterOrders()"></div>
+                        <select class="fsel" id="statusFilter" onchange="filterOrders()">
+                            <option value="">Semua Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Dikirim</option>
+                            <option value="delivered">Terkirim</option>
+                            <option value="cancelled">Dibatalkan</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead><tr><th>#</th><th>Pelanggan</th><th>Email</th><th>No. HP</th><th>Item</th><th>Total</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+                        <tbody id="ordersBody"><tr class="ld"><td colspan="9"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ã¢â€â‚¬Ã¢â€â‚¬ PRODUCTS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+        <div class="page" id="page-products">
+            <div class="card">
+                <div class="card-head">
+                    <span class="card-title">Manajemen Produk</span>
+                    <div class="toolbar">
+                        <div class="sbox"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="prodSearch" placeholder="Cari produk..." oninput="filterProducts()"></div>
+                        <select class="fsel" id="catFilter" onchange="filterProducts()">
+                            <option value="">Semua Kategori</option>
+                            <option value="Minuman Kopi">Minuman Kopi</option>
+                            <option value="Roasted Bean">Roasted Bean</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead><tr><th style="width:40px;text-align:center;"><input type="checkbox" id="selectAllProducts" onclick="toggleAllProducts(this)"></th><th>Produk</th><th>Kategori</th><th>Harga</th><th>Varian</th><th>Stok</th><th>Rating</th><th>Notes</th><th>Aksi</th></tr></thead>
+                        <tbody id="productsBody"><tr class="ld"><td colspan="9"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Ã¢â€â‚¬Ã¢â€â‚¬ KALKULATOR HPP Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+        <div class="page" id="page-hpp">
+
+            <!-- TABS -->
+            <div class="hpp-tabs">
+                <button class="hpp-tab active" onclick="switchHppTab('bean',this)">
+                    <i class="fa-solid fa-seedling"></i> Roasted Bean
+                </button>
+                <button class="hpp-tab" onclick="switchHppTab('drink',this)">
+                    <i class="fa-solid fa-mug-hot"></i> Minuman Kopi
+                </button>
+                <button class="hpp-tab" onclick="switchHppTab('custom',this)">
+                    <i class="fa-solid fa-box-open"></i> Kategori Custom
+                </button>
+                <button class="hpp-tab" onclick="switchHppTab('analysis',this)">
+                    <i class="fa-solid fa-chart-bar"></i> Analisis Produk
+                </button>
+            </div>
+
+            <!-- Ã¢â€â‚¬Ã¢â€â‚¬ TAB: ROASTED BEAN Ã¢â€â‚¬Ã¢â€â‚¬ -->
+            <div class="hpp-panel active" id="hpp-bean">
+                <!-- Result cards top -->
+                <div class="hpp-results" id="beanResults">
+                    <div class="hpp-result-card c-gold"><div class="hpp-result-val" id="br-hpp-unit">Rp 0</div><div class="hpp-result-lbl">HPP per Unit</div></div>
+                    <div class="hpp-result-card c-teal"><div class="hpp-result-val" id="br-harga-jual">Rp 0</div><div class="hpp-result-lbl">Harga Jual Minimal</div></div>
+                    <div class="hpp-result-card c-blue"><div class="hpp-result-val" id="br-hpp-kg">Rp 0</div><div class="hpp-result-lbl">HPP per Kg</div></div>
+                    <div class="hpp-result-card c-purple"><div class="hpp-result-val" id="br-output">0</div><div class="hpp-result-lbl">Unit Output</div></div>
+                    <div class="hpp-result-card c-red"><div class="hpp-result-val" id="br-margin">0%</div><div class="hpp-result-lbl">Margin Profit</div></div>
+                </div>
+
+                <div class="hpp-grid">
+                    <!-- KIRI: Input -->
+                    <div>
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-leaf"></i> Bahan Baku</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Harga Green Bean <span>(per kg)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="b-green-price" value="80000" oninput="calcBean()" placeholder="80000">
+                                        <span class="hpp-suffix">/kg</span>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Berat Green Bean per Batch <span>(kg)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <input type="number" class="hpp-input hpp-input-only" id="b-green-weight" value="5" oninput="calcBean()" placeholder="5">
+                                        <span class="hpp-suffix">kg</span>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Susut / Rendemen Roasting <span>(% kehilangan berat)</span></label>
+                                    <div class="hpp-slider-wrap">
+                                        <input type="range" class="hpp-slider" id="b-shrink" min="5" max="30" value="18" step="0.5" oninput="document.getElementById('b-shrink-val').textContent=this.value+'%';calcBean()">
+                                        <span class="hpp-slider-val" id="b-shrink-val">18%</span>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Ukuran Kemasan per Unit <span>(gram)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <input type="number" class="hpp-input hpp-input-only" id="b-unit-size" value="100" oninput="calcBean()" placeholder="100">
+                                        <span class="hpp-suffix">g</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-fire-burner"></i> Biaya Produksi</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Biaya Gas / Listrik per Batch <span></span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="b-energy" value="25000" oninput="calcBean()" placeholder="25000">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Biaya Tenaga Kerja per Batch <span></span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="b-labor" value="50000" oninput="calcBean()" placeholder="50000">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Kemasan (kantong, label, seal) per Unit <span></span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="b-pack" value="3500" oninput="calcBean()" placeholder="3500">
+                                        <span class="hpp-suffix">/unit</span>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Overhead per Batch <span>(sewa, depresiasi mesin, dll)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="b-overhead" value="30000" oninput="calcBean()" placeholder="30000">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Biaya Lain-lain per Batch <span>(marketing, pengiriman sampel, dll)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="b-misc" value="10000" oninput="calcBean()" placeholder="10000">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-percent"></i> Target Harga Jual</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Harga Jual yang Ditetapkan <span>(untuk menghitung margin aktual)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="b-sell-price" value="50000" oninput="calcBean()" placeholder="50000">
+                                        <span class="hpp-suffix">/unit</span>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Target Margin Profit <span>(untuk menghitung harga jual minimal)</span></label>
+                                    <div class="hpp-slider-wrap">
+                                        <input type="range" class="hpp-slider" id="b-margin" min="10" max="80" value="35" step="1" oninput="document.getElementById('b-margin-val').textContent=this.value+'%';calcBean()">
+                                        <span class="hpp-slider-val" id="b-margin-val">35%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KANAN: Breakdown -->
+                    <div>
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-list-check"></i> Ringkasan Batch</div>
+                            <div class="hpp-section-body">
+                                <table class="hpp-breakdown">
+                                    <thead><tr><th>Komponen</th><th style="text-align:right">Total</th><th style="text-align:right">%</th></tr></thead>
+                                    <tbody id="beanBreakdownBody">
+                                        <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:20px;">Isi form untuk melihat breakdown</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-scale-balanced"></i> Simulasi Keuntungan</div>
+                            <div class="hpp-section-body" id="beanSimBox">
+                                <p style="color:var(--muted);font-size:.84rem;">Isi form untuk melihat simulasi.</p>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-lightbulb"></i> Rekomendasi</div>
+                            <div class="hpp-section-body" id="beanRecommend">
+                                <p style="color:var(--muted);font-size:.84rem;">Isi form untuk melihat rekomendasi harga.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ã¢â€â‚¬Ã¢â€â‚¬ TAB: MINUMAN KOPI Ã¢â€â‚¬Ã¢â€â‚¬ -->
+            <div class="hpp-panel" id="hpp-drink">
+                <div class="hpp-results">
+                    <div class="hpp-result-card c-gold"><div class="hpp-result-val" id="dr-hpp">Rp 0</div><div class="hpp-result-lbl">HPP per Cup</div></div>
+                    <div class="hpp-result-card c-teal"><div class="hpp-result-val" id="dr-jual">Rp 0</div><div class="hpp-result-lbl">Harga Jual Minimal</div></div>
+                    <div class="hpp-result-card c-blue"><div class="hpp-result-val" id="dr-bahan">Rp 0</div><div class="hpp-result-lbl">Biaya Bahan</div></div>
+                    <div class="hpp-result-card c-purple"><div class="hpp-result-val" id="dr-ops">Rp 0</div><div class="hpp-result-lbl">Biaya Operasional</div></div>
+                    <div class="hpp-result-card c-red"><div class="hpp-result-val" id="dr-margin">0%</div><div class="hpp-result-lbl">Margin Profit</div></div>
+                </div>
+
+                <div class="hpp-grid">
+                    <div>
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-seedling"></i> Bahan Baku per Cup</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Dosis Kopi <span>(gram per cup)</span></label>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                        <div class="hpp-input-wrap">
+                                            <input type="number" class="hpp-input hpp-input-only" id="d-coffee-gram" value="18" oninput="calcDrink()" placeholder="18">
+                                            <span class="hpp-suffix">g</span>
+                                        </div>
+                                        <div class="hpp-input-wrap">
+                                            <span class="hpp-prefix">@Rp</span>
+                                            <input type="number" class="hpp-input" id="d-coffee-price-gram" value="500" oninput="calcDrink()" placeholder="500">
+                                            <span class="hpp-suffix">/g</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Susu / Creamer <span>(ml per cup)</span></label>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                        <div class="hpp-input-wrap">
+                                            <input type="number" class="hpp-input hpp-input-only" id="d-milk-ml" value="150" oninput="calcDrink()" placeholder="150">
+                                            <span class="hpp-suffix">ml</span>
+                                        </div>
+                                        <div class="hpp-input-wrap">
+                                            <span class="hpp-prefix">@Rp</span>
+                                            <input type="number" class="hpp-input" id="d-milk-price-ml" value="12" oninput="calcDrink()" placeholder="12">
+                                            <span class="hpp-suffix">/ml</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Gula / Sirup <span>(gram per cup)</span></label>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                        <div class="hpp-input-wrap">
+                                            <input type="number" class="hpp-input hpp-input-only" id="d-sugar-gram" value="20" oninput="calcDrink()" placeholder="20">
+                                            <span class="hpp-suffix">g</span>
+                                        </div>
+                                        <div class="hpp-input-wrap">
+                                            <span class="hpp-prefix">@Rp</span>
+                                            <input type="number" class="hpp-input" id="d-sugar-price" value="8" oninput="calcDrink()" placeholder="8">
+                                            <span class="hpp-suffix">/g</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Es Batu / Air <span>(per cup)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="d-ice" value="500" oninput="calcDrink()" placeholder="500">
+                                        <span class="hpp-suffix">/cup</span>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Bahan Tambahan Lain <span>(topping, flavor, dll)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="d-extra" value="0" oninput="calcDrink()" placeholder="0">
+                                        <span class="hpp-suffix">/cup</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-box"></i> Kemasan & Operasional per Cup</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Kemasan (cup, tutup, sedotan, kantong)</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="d-pack" value="2500" oninput="calcDrink()" placeholder="2500">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Biaya Listrik / Gas per Cup</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="d-energy" value="500" oninput="calcDrink()" placeholder="500">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Biaya Tenaga Kerja per Cup <span>(gaji ÃƒÂ· jumlah cup/hari)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="d-labor" value="3000" oninput="calcDrink()" placeholder="3000">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Overhead per Cup <span>(sewa, platform, wifi, dll)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="d-overhead" value="2000" oninput="calcDrink()" placeholder="2000">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-percent"></i> Target Harga Jual</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Harga Jual yang Ditetapkan</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="d-sell-price" value="21000" oninput="calcDrink()" placeholder="21000">
+                                        <span class="hpp-suffix">/cup</span>
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Target Margin Profit</label>
+                                    <div class="hpp-slider-wrap">
+                                        <input type="range" class="hpp-slider" id="d-margin" min="10" max="80" value="40" step="1" oninput="document.getElementById('d-margin-val').textContent=this.value+'%';calcDrink()">
+                                        <span class="hpp-slider-val" id="d-margin-val">40%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-list-check"></i> Breakdown HPP per Cup</div>
+                            <div class="hpp-section-body">
+                                <table class="hpp-breakdown">
+                                    <thead><tr><th>Komponen</th><th style="text-align:right">Biaya</th><th style="text-align:right">%</th></tr></thead>
+                                    <tbody id="drinkBreakdownBody">
+                                        <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:20px;">Isi form untuk melihat breakdown</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-scale-balanced"></i> Simulasi Harian</div>
+                            <div class="hpp-section-body" id="drinkSimBox">
+                                <p style="color:var(--muted);font-size:.84rem;">Isi form untuk melihat simulasi.</p>
+                            </div>
+                        </div>
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-lightbulb"></i> Rekomendasi</div>
+                            <div class="hpp-section-body" id="drinkRecommend">
+                                <p style="color:var(--muted);font-size:.84rem;">Isi form untuk melihat rekomendasi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- Ã¢â€â‚¬Ã¢â€â‚¬ TAB: KATEGORI CUSTOM Ã¢â€â‚¬Ã¢â€â‚¬ -->
+            <div class="hpp-panel" id="hpp-custom">
+                <!-- Result cards top -->
+                <div class="hpp-results" id="customResults">
+                    <div class="hpp-result-card c-gold"><div class="hpp-result-val" id="c-hpp-unit">Rp 0</div><div class="hpp-result-lbl">Total HPP per Unit</div></div>
+                    <div class="hpp-result-card c-teal"><div class="hpp-result-val" id="c-harga-jual">Rp 0</div><div class="hpp-result-lbl">Harga Jual Minimal</div></div>
+                    <div class="hpp-result-card c-blue"><div class="hpp-result-val" id="c-hpp-modal">Rp 0</div><div class="hpp-result-lbl">Total Modal Bahan</div></div>
+                    <div class="hpp-result-card c-purple"><div class="hpp-result-val" id="c-margin-actual">0%</div><div class="hpp-result-lbl">Margin Aktual</div></div>
+                </div>
+
+                <div class="hpp-layout">
+                    <!-- KIRI: Input Form -->
+                    <div class="hpp-input-col">
+                        
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-tag"></i> Informasi Produk</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Nama Produk</label>
+                                    <input type="text" id="c-nama-produk" class="input-modern" placeholder="Contoh: Tumbler Kaca 500ml" oninput="document.getElementById('c-breakdown-title').innerText = this.value || 'Produk Custom'">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head" style="display:flex; justify-content:space-between; align-items:center;">
+                                <span><i class="fa-solid fa-boxes-stacked"></i> Komponen Modal / Bahan Baku</span>
+                                <button class="btn btn-primary" style="font-size: 0.7rem; padding: 4px 10px;" onclick="addCustomHppRow()"><i class="fa-solid fa-plus"></i> Tambah</button>
+                            </div>
+                            <div class="hpp-section-body" id="custom-ingredients-container">
+                                <!-- Dynamic rows go here -->
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-wallet"></i> Biaya Operasional (Opsional)</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Biaya Tenaga Kerja per Unit</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="c-labor" value="0" oninput="calcCustomHpp()" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Biaya Overhead per Unit</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="c-overhead" value="0" oninput="calcCustomHpp()" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Biaya Kemasan per Unit</label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="c-packaging" value="0" oninput="calcCustomHpp()" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-percent"></i> Target Penjualan</div>
+                            <div class="hpp-section-body">
+                                <div class="hpp-field">
+                                    <label>Harga Jual Ditetapkan <span>(opsional, untuk lihat margin aktual)</span></label>
+                                    <div class="hpp-input-wrap">
+                                        <span class="hpp-prefix">Rp</span>
+                                        <input type="number" class="hpp-input" id="c-sell-price" value="0" oninput="calcCustomHpp()" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="hpp-field">
+                                    <label>Target Margin Profit</label>
+                                    <div class="hpp-slider-wrap">
+                                        <input type="range" class="hpp-slider" id="c-margin" min="10" max="80" value="40" step="1" oninput="document.getElementById('c-margin-val').textContent=this.value+'%';calcCustomHpp()">
+                                        <span class="hpp-slider-val" id="c-margin-val">40%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KANAN: Breakdown -->
+                    <div>
+                        <div class="hpp-section">
+                            <div class="hpp-section-head"><i class="fa-solid fa-list-check"></i> Breakdown: <span id="c-breakdown-title">Produk Custom</span></div>
+                            <div class="hpp-section-body">
+                                <table class="hpp-breakdown">
+                                    <thead><tr><th>Komponen</th><th style="text-align:right">Total (Rp)</th><th style="text-align:right">%</th></tr></thead>
+                                    <tbody id="customBreakdownBody">
+                                        <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:20px;">Tambahkan komponen untuk melihat breakdown</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ã¢â€â‚¬Ã¢â€â‚¬ TAB: ANALISIS PRODUK Ã¢â€â‚¬Ã¢â€â‚¬ -->
+            <div class="hpp-panel" id="hpp-analysis">
+                <div class="card">
+                    <div class="card-head">
+                        <span class="card-title">Analisis Profitabilitas Produk</span>
+                        <button class="btn btn-view" onclick="loadHppAnalysis()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produk</th>
+                                    <th>Kategori</th>
+                                    <th>Harga Jual</th>
+                                    <th>HPP Manual <span style="font-size:.65rem;color:var(--muted);font-weight:400;">(input)</span></th>
+                                    <th>Margin</th>
+                                    <th>Profit/Unit</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hppAnalysisBody">
+                                <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-circle-notch spin"></i> Memuat produk...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="padding:12px 16px;border-top:1px solid var(--border);font-size:.75rem;color:var(--muted);">
+                        <i class="fa-solid fa-circle-info"></i> Input HPP di kolom tabel untuk menghitung margin secara langsung. Data tidak tersimpan ke database.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /page-hpp -->
+        <!-- Ã¢â€â‚¬Ã¢â€â‚¬ HALAMAN AKTIF Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+        <div class="page" id="page-pages">
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-head">
+                    <div>
+                        <div class="card-title">Manajemen Status Halaman</div>
+                        <div style="font-size:.82rem;color:var(--muted);margin-top:2px;">Nonaktifkan halaman sementara Ã¢â‚¬â€ pengunjung akan melihat halaman maintenance.</div>
+                    </div>
+                </div>
+                <div style="padding:20px;" id="pagesGrid">
+                    <div style="text-align:center;padding:40px;color:var(--muted);"><i class="fa-solid fa-circle-notch spin"></i> Memuat...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ã¢â€â‚¬Ã¢â€â‚¬ SETTINGS / TAMPILAN Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ -->
+        <div class="page" id="page-settings">
+            <div id="settingsContainer">
+                <div style="text-align:center;padding:50px;color:var(--muted);"><i class="fa-solid fa-circle-notch spin"></i> Memuat pengaturan...</div>
+            </div>
+        </div>
+
+    </div><!-- /page-wrap -->
+</div><!-- /main -->
+
+<!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â MODALS Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+
+<!-- Order Detail -->
+<div class="modal-bg" id="orderModal">
+    <div class="modal-box" style="max-width:620px;">
+        <div class="modal-head">
+            <h3>Detail Pesanan <span id="modalOrderId" style="color:var(--accent)"></span></h3>
+            <button class="modal-close" onclick="closeModal('orderModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="orderModalBody"></div>
+    </div>
+</div>
+
+<!-- Product Add/Edit -->
+<div class="modal-bg" id="productModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3 id="prodModalTitle">Tambah Produk</h3>
+            <button class="modal-close" onclick="closeModal('productModal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editId">
+            <div class="row2">
+                <div class="fg">
+                    <label>Nama Produk</label>
+                    <input type="text" class="fi" id="editName" placeholder="Nama produk">
+                </div>
+                <div class="fg">
+                    <label>Kategori</label>
+                    <input type="text" class="fi" id="editCategory" list="catList" placeholder="Kategori">
+                    <datalist id="catList">
+                        <option value="Minuman Kopi"></option>
+                        <option value="Roasted Bean"></option>
+                    </datalist>
+                </div>
+            </div>
+            <div class="row2">
+                <div class="fg">
+                    <label>Harga Dasar (Rp)</label>
+                    <input type="number" class="fi" id="editPrice" placeholder="21000">
+                </div>
+                <div class="fg">
+                    <label>Stok</label>
+                    <input type="number" class="fi" id="editStock" placeholder="100">
+                </div>
+            </div>
+            <div class="fg">
+                <label>Notes / Flavor Profile (ID)</label>
+                <input type="text" class="fi" id="editNotes" placeholder="Fruity, Chocolate, Citrus...">
+            </div>
+            <div class="fg">
+                <label>Notes / Flavor Profile (EN)</label>
+                <input type="text" class="fi" id="editNotesEn" placeholder="Fruity, Chocolate, Citrus...">
+            </div>
+            <div class="fg">
+                <label>Deskripsi (ID)</label>
+                <textarea class="fi" id="editDesc" placeholder="Deskripsi produk..."></textarea>
+            </div>
+            <div class="fg">
+                <label>Deskripsi (EN)</label>
+                <textarea class="fi" id="editDescEn" placeholder="Product description..."></textarea>
+            </div>
+            <div class="fg">
+                <label>Varian (JSON)
+                    <span style="color:var(--muted);font-size:.72rem;"> Ã¢â‚¬â€ contoh: [{"name":"100g","price":50000}]</span>
+                </label>
+                <textarea class="fi" id="editVariants" style="font-family:monospace;font-size:.8rem;" rows="4" placeholder='[{"name":"Botol Kale 250 ml","price":21000}]'></textarea>
+            </div>
+            <div class="fg">
+                <label>Gambar Produk</label>
+                <div class="img-upload-area" id="imgDropZone"
+                     ondragover="event.preventDefault();this.classList.add('drag-over')"
+                     ondragleave="this.classList.remove('drag-over')"
+                     ondrop="handleImgDrop(event)">
+                    <input type="file" id="imgFileInput" accept="image/*" onchange="handleImgSelect(this)">
+                    <div id="imgUploadDefault">
+                        <div class="img-upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <p><strong>Klik atau seret gambar</strong> ke sini<br>JPG, PNG, WebP Ã¢â‚¬â€ maks. 5 MB</p>
+                    </div>
+                    <div class="img-upload-progress" id="imgProgress">
+                        <div class="img-upload-progress-bar" id="imgProgressBar" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="img-preview-wrap" id="imgPreviewWrap">
+                    <img id="imgPreviewEl" src="" alt="Preview">
+                    <button class="img-preview-del" onclick="clearProductImage()" title="Hapus gambar">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <input type="hidden" id="editImageUrl">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-cancel" onclick="closeModal('productModal')">Batal</button>
+                <button class="btn btn-save" onclick="saveProduct()"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â CONTENT IMAGE UPLOAD MODAL Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<div class="upload-modal" id="contentUploadModal">
+    <div class="upload-modal-box">
+        <div class="upload-modal-head">
+            <h3 id="uploadModalTitle"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent);margin-right:7px;"></i>Upload Gambar</h3>
+            <button class="modal-close" onclick="closeContentUpload()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="upload-modal-body">
+            <div class="cnt-drop-zone" id="cntDropZone"
+                 ondragover="event.preventDefault();this.classList.add('drag-over')"
+                 ondragleave="this.classList.remove('drag-over')"
+                 ondrop="handleCntDrop(event)">
+                <input type="file" id="cntFileInput" accept="image/*" onchange="handleCntSelect(this)">
+                <div id="cntDropDefault">
+                    <div class="cnt-drop-icon"><i class="fa-solid fa-image"></i></div>
+                    <p><strong>Klik atau seret gambar</strong> ke sini<br>JPG, PNG, WebP, GIF Ã¢â‚¬â€ maks. 5 MB</p>
+                </div>
+            </div>
+            <div class="cnt-progress" id="cntProgress">
+                <div class="cnt-progress-bar" id="cntProgressBar"></div>
+            </div>
+            <div class="cnt-preview" id="cntPreview">
+                <img id="cntPreviewImg" src="" alt="Preview">
+                <button class="cnt-preview-del" onclick="clearCntUpload()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="cnt-url-row">
+                <label>URL GAMBAR</label>
+                <div style="display:flex;gap:8px;">
+                    <input type="text" class="fi" id="cntUrlInput" placeholder="Atau tempel URL gambar..." oninput="onCntUrlChange(this.value)">
+                </div>
+            </div>
+        </div>
+        <div class="upload-modal-foot">
+            <button class="btn btn-cancel" onclick="closeContentUpload()">Batal</button>
+            <button class="btn btn-save" id="cntApplyBtn" onclick="applyCntImage()" disabled>
+                <i class="fa-solid fa-check"></i> Terapkan
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Toast -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SCRIPT Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
+<script src="js/utils.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
+
+
+
