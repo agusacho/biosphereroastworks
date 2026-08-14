@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Debug - Produk</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<h2>Supabase Product Debug</h2>
+<div id="log" style="font-family:monospace;white-space:pre;background:#111;color:#0f0;padding:20px;font-size:13px;"></div>
+<div id="result"></div>
+<script>
+const log = (msg, color='#0f0') => {
+  const el = document.getElementById('log');
+  el.innerHTML += `<span style="color:${color}">${msg}</span>\n`;
+};
+
+const SUPABASE_URL = 'https://gvuzsbrplmgqjuchjcpk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2dXpzYnJwbG1ncWp1Y2hqY3BrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MTE5NDMsImV4cCI6MjA5MTI4Nzk0M30.PowRUwVvHnEKvfBC3jvK5gHUsCACT2ecTJxOAat8qXU';
+
+async function runTests() {
+  log('=== SUPABASE DEBUG ===');
+
+  // 1. Check if supabase is defined
+  if (typeof supabase === 'undefined') {
+    log('❌ supabase library NOT loaded', '#f44');
+    return;
+  }
+  log('✅ supabase library loaded');
+
+  // 2. Create client
+  let client;
+  try {
+    client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    log('✅ client created');
+  } catch(e) {
+    log('❌ createClient failed: ' + e.message, '#f44');
+    return;
+  }
+
+  // 3. Test SELECT * (old way - might fail)
+  log('\n--- Test 1: SELECT * ---');
+  try {
+    const { data, error } = await client.from('products').select('*').limit(1);
+    if (error) log('❌ SELECT * error: ' + error.message, '#f44');
+    else log('✅ SELECT * OK, columns: ' + Object.keys(data[0]).join(', '));
+  } catch(e) {
+    log('❌ SELECT * exception: ' + e.message, '#f44');
+  }
+
+  // 4. Test explicit columns (new way)
+  log('\n--- Test 2: Explicit columns ---');
+  try {
+    const { data, error } = await client
+      .from('products')
+      .select('id,name,category,price,stock_quantity,rating,notes,origin,process,variants,image_icon');
+    if (error) {
+      log('❌ Explicit select error: ' + error.message, '#f44');
+    } else {
+      log('✅ Fetched ' + data.length + ' products');
+      const cats = [...new Set(data.map(p => p.category))];
+      log('   Categories: ' + cats.join(', '));
+
+      // 5. Simulate renderProducts DOM test
+      log('\n--- Test 3: Simulate renderProducts ---');
+      const container = document.createElement('div');
+      container.id = 'dynamic-product-sections';
+      document.getElementById('result').appendChild(container);
+
+      const categories = [...new Set(data.map(p => p.category).filter(Boolean))];
+      categories.forEach(cat => {
+        const catId = cat.replace(/\s+/g, '-').toLowerCase();
+        const section = document.createElement('div');
+        section.id = 'section-' + catId;
+        const grid = document.createElement('div');
+        grid.id = 'grid-' + catId;
+        section.appendChild(grid);
+        container.appendChild(section);
+        log('   Created section: section-' + catId + ' / grid: grid-' + catId);
+      });
+
+      let placed = 0;
+      data.forEach(product => {
+        if (!product.category) return;
+        const catId = 'grid-' + product.category.replace(/\s+/g, '-').toLowerCase();
+        const grid = document.getElementById(catId);
+        if (grid) {
+          const card = document.createElement('div');
+          card.textContent = product.name;
+          grid.appendChild(card);
+          placed++;
+        } else {
+          log('   ⚠️ Grid NOT FOUND for catId: ' + catId, '#fa0');
+        }
+      });
+      log('✅ Placed ' + placed + '/' + data.length + ' products into grids');
+
+      document.getElementById('result').innerHTML = `
+        <h3>Products (${data.length} total)</h3>
+        <table border="1" style="border-collapse:collapse;width:100%">
+          <tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th></tr>
+          ${data.map(p => `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.category}</td><td>Rp ${p.price?.toLocaleString('id-ID')}</td></tr>`).join('')}
+        </table>`;
+    }
+  } catch(e) {
+    log('❌ Exception: ' + e.message, '#f44');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', runTests);
+</script>
+</body>
+</html>

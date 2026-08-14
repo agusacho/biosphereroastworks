@@ -444,7 +444,10 @@ async function fetchProducts() {
         // Matikan animasi loading
         if (typeof hideLoader === "function") hideLoader();
     }
-}        /* --- 6. UI INTERACTION --- */
+};
+
+        /* --- 6. UI INTERACTION (inside DOMContentLoaded below) --- */
+        function initUIInteractions() {
         window.addEventListener('scroll', () => {
             const header = document.querySelector('header');
             if (window.scrollY > 50) header.style.boxShadow = 'var(--shadow-md)';
@@ -469,7 +472,10 @@ async function fetchProducts() {
             });
         }
         document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => document.getElementById('navLinks').classList.remove('active'));
+            link.addEventListener('click', () => {
+                const navLinks = document.getElementById('navLinks');
+                if (navLinks) navLinks.classList.remove('active');
+            });
         });
 
         let slideIndex = 0;
@@ -656,7 +662,8 @@ async function fetchProducts() {
         /* --- 9. CART LOGIC --- */
         const updateCartBadge = () => {
             const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-            document.getElementById('cartBadge').innerText = totalItems;
+            const badge = document.getElementById('cartBadge');
+            if (badge) badge.innerText = totalItems;
         };
 
         const saveCart = () => {
@@ -1114,7 +1121,8 @@ async function fetchProducts() {
         window.quizNextStep = quizNextStep;
         window.quizResult = quizResult;
 
-        
+} // end initUIInteractions
+
 /* --- DYNAMIC SITE SETTINGS BINDING --- */
 let globalSiteSettings = {};
 
@@ -1187,12 +1195,11 @@ window.applySiteSettings = function() {
 
         /* --- 12. INITIALIZATION ON LOAD --- */
         document.addEventListener('DOMContentLoaded', () => {
+            initUIInteractions();
             fetchProducts();
-            fetchSiteSettings(); 
+            fetchSiteSettings();
             updateCartBadge();
             checkSession();
-             
-            
         });
     
 
