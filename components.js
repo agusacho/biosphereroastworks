@@ -6,7 +6,7 @@ const navbarHTML = `
     <header>
         <div class="container nav-container">
             <a href="index.html" class="logo">
-                <img src="images/logo.png" alt="Biosphere Roast Works Logo" class="nav-logo-img">
+                <img src="images/logo.jpg" alt="Biosphere Roast Works Logo" class="nav-logo-img">
             </a>
             <nav>
                 <ul class="nav-links" id="navLinks">
