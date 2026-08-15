@@ -530,32 +530,36 @@ async function fetchProducts() {
 
 
         const applyFilters = () => {
-            let filtered = allProductsData.length > 0 ? allProductsData : productsDB;
+            try {
+                let filtered = allProductsData.length > 0 ? allProductsData : productsDB;
+                
+                if (activeCategoryFilter !== 'all') {
+                    filtered = filtered.filter(p => p.category === activeCategoryFilter);
+                }
 
-            if(activeCategoryFilter !== 'all') {
-                filtered = filtered.filter(p => p.category === activeCategoryFilter);
+                const searchInput = document.getElementById('searchInput');
+                const searchText = searchInput ? searchInput.value.toLowerCase() : '';
+                if (searchText) {
+                    filtered = filtered.filter(p => p.name.toLowerCase().includes(searchText) || (p.notes && p.notes.toLowerCase().includes(searchText)));
+                }
+
+                const originChecks = Array.from(document.querySelectorAll('.filter-origin:checked')).map(cb => cb.value);
+                const processChecks = Array.from(document.querySelectorAll('.filter-process:checked')).map(cb => cb.value);
+
+                if (originChecks.length > 0) filtered = filtered.filter(p => p.origin && originChecks.includes(p.origin));
+                if (processChecks.length > 0) filtered = filtered.filter(p => p.process && processChecks.includes(p.process));
+
+                const sortEl = document.getElementById('sortSelect');
+                const sortVal = sortEl ? sortEl.value : '';
+                if (sortVal === 'price-asc') filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
+                if (sortVal === 'price-desc') filtered.sort((a, b) => getBasePrice(b) - getBasePrice(a));
+                if (sortVal === 'rating') filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+                currentFilteredProducts = filtered;
+                renderProducts(currentFilteredProducts);
+            } catch (err) {
+                alert('applyFilters Error: ' + err.message);
             }
-
-            const searchInput = document.getElementById('searchInput');
-            const searchText = searchInput ? searchInput.value.toLowerCase() : '';
-            if(searchText) {
-                filtered = filtered.filter(p => p.name.toLowerCase().includes(searchText) || (p.notes && p.notes.toLowerCase().includes(searchText)));
-            }
-
-            const originChecks = Array.from(document.querySelectorAll('.filter-origin:checked')).map(cb => cb.value);
-            const processChecks = Array.from(document.querySelectorAll('.filter-process:checked')).map(cb => cb.value);
-
-            if(originChecks.length > 0) filtered = filtered.filter(p => p.origin && originChecks.includes(p.origin));
-            if(processChecks.length > 0) filtered = filtered.filter(p => p.process && processChecks.includes(p.process));
-
-            const sortEl = document.getElementById('sortSelect');
-            const sortVal = sortEl ? sortEl.value : '';
-            if(sortVal === 'price-asc') filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
-            if(sortVal === 'price-desc') filtered.sort((a, b) => getBasePrice(b) - getBasePrice(a));
-            if(sortVal === 'rating') filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-
-            currentFilteredProducts = filtered;
-            renderProducts(currentFilteredProducts);
         };
         window.applyFilters = applyFilters;
 
@@ -1259,25 +1263,33 @@ window.applySiteSettings = function() {
 
         /* --- 14. CATEGORY FILTERING --- */
         window.filterCategory = function(category) {
-            activeCategoryFilter = category;
+            try {
+                activeCategoryFilter = category;
+                
+                // Update pill active states
+                document.querySelectorAll('#categoryPills .pill').forEach(pill => {
+                    pill.classList.toggle('active', pill.dataset.cat === category);
+                });
 
-            // Update pill active states
-            document.querySelectorAll('#categoryPills .pill').forEach(pill => {
-                pill.classList.toggle('active', pill.dataset.cat === category);
-            });
+                // Show/hide sections dynamically
+                document.querySelectorAll('.produk-category-section').forEach(sec => {
+                    if (category === 'all') {
+                        sec.style.display = 'block';
+                    } else {
+                        const expectedId = 'section-' + category.replace(/\s+/g, '-').toLowerCase();
+                        sec.style.display = sec.id === expectedId ? 'block' : 'none';
+                    }
+                });
 
-            // Show/hide sections dynamically
-            document.querySelectorAll('.produk-category-section').forEach(sec => {
-                if (category === 'all') {
-                    sec.style.display = 'block';
+                // Re-render with filter
+                if (typeof window.applyFilters === 'function') {
+                    window.applyFilters();
                 } else {
-                    const expectedId = 'section-' + category.replace(/\s+/g, '-').toLowerCase();
-                    sec.style.display = sec.id === expectedId ? 'block' : 'none';
+                    alert('Error: applyFilters is not a function');
                 }
-            });
-
-            // Re-render with filter
-            window.applyFilters();
+            } catch (err) {
+                alert('JS Error: ' + err.message);
+            }
         };
 
 applyTranslations();
