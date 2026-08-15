@@ -189,7 +189,7 @@ function toggleLanguage() {
         }
         let allProductsData = [];
         let currentFilteredProducts = [...productsDB];
-        let activeCategoryFilter = 'all';
+        window.activeCategoryFilter = 'all';
         let selectedPaymentMethod = ''; 
 
         /* --- 4. UTILITY FUNCTIONS --- */
@@ -533,8 +533,8 @@ async function fetchProducts() {
             try {
                 let filtered = allProductsData.length > 0 ? allProductsData : productsDB;
                 
-                if (activeCategoryFilter !== 'all') {
-                    filtered = filtered.filter(p => p.category === activeCategoryFilter);
+                if (window.activeCategoryFilter !== 'all') {
+                    filtered = filtered.filter(p => p.category === window.activeCategoryFilter);
                 }
 
                 const searchInput = document.getElementById('searchInput');
@@ -567,13 +567,13 @@ async function fetchProducts() {
         if (searchEl) searchEl.addEventListener('input', applyFilters);
 
         const filterByCategory = (cat) => {
-            activeCategoryFilter = cat;
+            window.activeCategoryFilter = cat;
             applyFilters();
         };
         window.filterByCategory = filterByCategory;
 
         const resetFilters = () => {
-            activeCategoryFilter = 'all';
+            window.activeCategoryFilter = 'all';
             const searchEl2 = document.getElementById('searchInput');
             if (searchEl2) searchEl2.value = '';
             applyFilters();
@@ -1264,7 +1264,7 @@ window.applySiteSettings = function() {
         /* --- 14. CATEGORY FILTERING --- */
         window.filterCategory = function(category) {
             try {
-                activeCategoryFilter = category;
+                window.activeCategoryFilter = category;
                 
                 // Update pill active states
                 document.querySelectorAll('#categoryPills .pill').forEach(pill => {

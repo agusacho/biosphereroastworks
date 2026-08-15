@@ -401,6 +401,41 @@
 
     <!-- FALLBACK: If main.js fails to load products after 3s, load them independently -->
     <script>
+        // Define filterCategory globally so buttons NEVER throw ReferenceError
+        window.filterCategory = function(cat) {
+            try {
+                // Update active class on pills
+                var pills = document.querySelectorAll('#categoryPills .pill');
+                for (var i = 0; i < pills.length; i++) {
+                    if (pills[i].getAttribute('data-cat') === cat) pills[i].classList.add('active');
+                    else pills[i].classList.remove('active');
+                }
+                
+                // If main.js loaded successfully and applyFilters exists, use it
+                if (typeof window.applyFilters === 'function') {
+                    if (typeof window.activeCategoryFilter !== 'undefined') window.activeCategoryFilter = cat;
+                    else window.activeCategoryFilter = cat; // force global assignment
+                    window.applyFilters();
+                    return;
+                }
+                
+                // Fallback: manually hide/show sections if main.js failed
+                var secs = document.querySelectorAll('.produk-category-section');
+                for (var i = 0; i < secs.length; i++) {
+                    if (cat === 'all') {
+                        secs[i].style.display = 'block';
+                    } else {
+                        var expectedId = 'section-' + cat.replace(/\s+/g, '-').toLowerCase();
+                        secs[i].style.display = (secs[i].id === expectedId) ? 'block' : 'none';
+                    }
+                }
+            } catch(e) {
+                console.error("Filter error:", e);
+                alert("Gagal melakukan filter. Halaman akan dimuat ulang.");
+                window.location.reload();
+            }
+        };
+
     (function() {
         setTimeout(function() {
             var container = document.getElementById('dynamic-product-sections');
