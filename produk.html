@@ -550,8 +550,8 @@
                             '<h3 class="product-name">' + p.name + '</h3>' +
                             '<p class="product-notes">' + (p.notes || '&nbsp;') + '</p>' +
                             variantTags +
-                            '<div class="product-card-footer"><div><div class="product-price">' + pricePrefix + priceStr + '</div></div>' +
-                            '<div class="product-rating">' + stars + '</div></div></div>';
+                            '<div class="product-card-footer" style="align-items: flex-end;"><div><div class="product-price">' + pricePrefix + priceStr + '</div></div>' +
+                            '<button class="btn-card-cart" onclick="event.stopPropagation();' + addAction + '"><i class="fa-solid fa-cart-plus"></i> ' + (hasVariants ? 'Pilih' : 'Beli') + '</button></div></div>';
                         
                         if (p.image_icon) {
                             var img = document.createElement('img');

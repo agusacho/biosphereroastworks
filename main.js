@@ -313,11 +313,13 @@ function toggleLanguage() {
                 <h3 class="product-name">${product.name}</h3>
                 <p class="product-notes">${pNotes || '&nbsp;'}</p>
                 ${variantTagsHtml ? `<div class="product-variants-tags">${variantTagsHtml}</div>` : ''}
-                <div class="product-card-footer">
+                <div class="product-card-footer" style="align-items: flex-end;">
                     <div>
                         <div class="product-price">${hasVariants ? `<span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">Mulai dari</span><br>` : ''}${defaultPriceStr}</div>
                     </div>
-                    <div class="product-rating">${stars}</div>
+                    <button class="btn-card-cart" onclick="event.stopPropagation(); ${addAction}">
+                        <i class="fa-solid fa-cart-plus"></i> ${hasVariants ? (t('produk_btn_select') || 'Pilih') : (t('produk_btn_add') || 'Beli')}
+                    </button>
                 </div>
             </div>
         `;
