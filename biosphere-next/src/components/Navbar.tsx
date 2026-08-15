@@ -33,7 +33,6 @@ export default function Navbar() {
             <li><Link href="/tentang" className={`transition-colors text-[0.95rem] ${isActive('/tentang')}`}>Tentang Kami</Link></li>
             <li><Link href="/roasting" className={`transition-colors text-[0.95rem] ${isActive('/roasting')}`}>Proses Sangrai</Link></li>
             <li><Link href="/blog" className={`transition-colors text-[0.95rem] ${isActive('/blog')}`}>Blog</Link></li>
-            <li><Link href="/tracking" className={`transition-colors text-[0.95rem] ${isActive('/tracking')}`}>Lacak</Link></li>
             <li><Link href="/kontak" className={`transition-colors text-[0.95rem] ${isActive('/kontak')}`}>Kontak</Link></li>
           </ul>
         </nav>
@@ -76,7 +75,6 @@ export default function Navbar() {
           <Link href="/tentang" onClick={() => setIsMobileMenuOpen(false)} className={`block ${isActive('/tentang')}`}>Tentang Kami</Link>
           <Link href="/roasting" onClick={() => setIsMobileMenuOpen(false)} className={`block ${isActive('/roasting')}`}>Proses Sangrai</Link>
           <Link href="/blog" onClick={() => setIsMobileMenuOpen(false)} className={`block ${isActive('/blog')}`}>Blog</Link>
-          <Link href="/tracking" onClick={() => setIsMobileMenuOpen(false)} className={`block ${isActive('/tracking')}`}>Lacak</Link>
           <Link href="/kontak" onClick={() => setIsMobileMenuOpen(false)} className={`block ${isActive('/kontak')}`}>Kontak</Link>
         </div>
       )}
