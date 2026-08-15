@@ -809,7 +809,7 @@ async function fetchProducts() {
                 let cartDetails = cart.map(item => `- ${item.name} (${item.variant}) x${item.qty} = ${formatRupiah(item.price * item.qty)}`).join('\n');
                 let totalStr = formatRupiah(cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0));
                 
-                let cName = currentUser ? (currentUser.user_metadata?.name || 'User') : 'Guest';
+                let cName = currentUser ? ((currentUser.user_metadata && currentUser.user_metadata.name) || 'User') : 'Guest';
                 let cEmail = currentUser ? currentUser.email : 'guest@example.com';
 
                 waMessage = waMessage.replace('{cart_details}', cartDetails)
@@ -871,7 +871,7 @@ async function fetchProducts() {
             const payload = {
                 cart: cart,
                 customer: {
-                    name: currentUser ? (currentUser.user_metadata?.name || 'User') : 'Guest',
+                    name: currentUser ? ((currentUser.user_metadata && currentUser.user_metadata.name) || 'User') : 'Guest',
                     email: currentUser ? currentUser.email : 'guest@example.com'
                 },
                 paymentMethod: selectedPaymentMethod
@@ -1060,7 +1060,7 @@ async function fetchProducts() {
         async function checkSession() {
             if(isSupabaseConfigured) {
                 const { data } = await _supabase.auth.getSession();
-                currentUser = data.session?.user || null;
+                currentUser = (data.session && data.session.user) || null;
             }
             updateAuthUI();
         }
@@ -1070,7 +1070,7 @@ async function fetchProducts() {
                 document.getElementById('authForm').style.display = 'none';
                 document.getElementById('loggedInView').style.display = 'block';
                 document.getElementById('authModalTitle').innerText = t('auth_profile_title');
-                document.getElementById('loggedInName').innerText = currentUser.user_metadata?.name || t('auth_user_fallback');
+                document.getElementById('loggedInName').innerText = (currentUser.user_metadata && currentUser.user_metadata.name) || t('auth_user_fallback');
                 document.getElementById('loggedInEmail').innerText = currentUser.email;
                 document.getElementById('userIcon').innerHTML = '<i class="fa-solid fa-user-check"></i>';
             } else {
@@ -1106,9 +1106,9 @@ async function fetchProducts() {
             // Simple recommendation logic
             let recommended = productsDB[0]; // fallback
             if(quizAnswers.brew === 'espresso' || quizAnswers.taste === 'bold') {
-                recommended = productsDB.find(p => p.notes?.toLowerCase().includes('chocolate') || p.notes?.toLowerCase().includes('wine')) || productsDB[1] || productsDB[0];
+                recommended = productsDB.find(p => (p.notes && p.notes.toLowerCase().includes('chocolate')) || (p.notes && p.notes.toLowerCase().includes('wine'))) || productsDB[1] || productsDB[0];
             } else {
-                recommended = productsDB.find(p => p.notes?.toLowerCase().includes('fruity')) || productsDB[0];
+                recommended = productsDB.find(p => p.notes && p.notes.toLowerCase().includes('fruity')) || productsDB[0];
             }
 
             const rView = document.getElementById('quizRecommendedProduct');
