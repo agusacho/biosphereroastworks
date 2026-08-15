@@ -281,6 +281,19 @@ async function loadProducts() {
         if (error) throw error;
         allProducts = data || [];
         filteredProducts = [...allProducts];
+        
+        const catFilter = document.getElementById('catFilter');
+        if (catFilter) {
+            const currentVal = catFilter.value;
+            const categories = [...new Set(allProducts.map(p => p.category).filter(Boolean))];
+            let options = '<option value="">Semua Kategori</option>';
+            categories.forEach(cat => {
+                options += `<option value="${cat}">${cat}</option>`;
+            });
+            catFilter.innerHTML = options;
+            catFilter.value = currentVal || '';
+        }
+        
         renderProducts();
     } catch (err) { toast('Gagal memuat produk: ' + err.message, 'err'); }
 }
